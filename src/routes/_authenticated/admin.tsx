@@ -20,7 +20,7 @@ export const Route = createFileRoute("/_authenticated/admin")({
   component: AdminPage,
 });
 
-type Tab = "posts" | "products" | "news" | "exhibitions" | "enquiries";
+type Tab = "posts" | "products" | "news" | "exhibitions" | "enquiries" | "settings";
 
 const TABS: { id: Tab; label: string }[] = [
   { id: "posts", label: "Blog & Articles" },
@@ -28,6 +28,7 @@ const TABS: { id: Tab; label: string }[] = [
   { id: "news", label: "News" },
   { id: "exhibitions", label: "Exhibitions" },
   { id: "enquiries", label: "Enquiries" },
+  { id: "settings", label: "Email Settings" },
 ];
 
 type Row = Record<string, unknown> & { id?: string };
@@ -40,7 +41,7 @@ type FieldDef = {
   full?: boolean;
 };
 
-const SCHEMAS: Record<Exclude<Tab, "enquiries">, { table: string; order: string; asc?: boolean; titleKey: string; fields: FieldDef[]; blank: Row }> = {
+const SCHEMAS: Record<Exclude<Tab, "enquiries" | "settings">, { table: string; order: string; asc?: boolean; titleKey: string; fields: FieldDef[]; blank: Row }> = {
   posts: {
     table: "blog_posts",
     order: "published_at",
@@ -161,13 +162,13 @@ function AdminPage() {
       </header>
 
       <div className="mx-auto max-w-7xl px-5 py-10 sm:px-8">
-        {tab === "enquiries" ? <Enquiries /> : <Collection tab={tab} />}
+        {tab === "enquiries" ? <Enquiries /> : tab === "settings" ? <Settings /> : <Collection tab={tab} />}
       </div>
     </main>
   );
 }
 
-function Collection({ tab }: { tab: Exclude<Tab, "enquiries"> }) {
+function Collection({ tab }: { tab: Exclude<Tab, "enquiries" | "settings"> }) {
   const schema = SCHEMAS[tab];
   const queryClient = useQueryClient();
   const [editing, setEditing] = useState<Row | null>(null);
@@ -398,6 +399,88 @@ function Enquiries() {
             </div>
           ))}
         </div>
+      )}
+    </div>
+  );
+}
+
+const SETTING_FIELDS: { key: string; label: string; hint: string; placeholder: string }[] = [
+  { key: "admin_notify_email", label: "Lead notification email", hint: "Every new enquiry is emailed here.", placeholder: "sales@yourdomain.com" },
+  { key: "sender_email", label: "Sender email", hint: "Must be a verified sender in your Brevo account.", placeholder: "noreply@yourdomain.com" },
+  { key: "sender_name", label: "Sender name", hint: "Shown as the From name in the inbox.", placeholder: "Modtech Machinery" },
+];
+
+function Settings() {
+  const queryClient = useQueryClient();
+  const [form, setForm] = useState<Record<string, string> | null>(null);
+
+  const { data, isLoading } = useQuery({
+    queryKey: ["admin", "settings"],
+    queryFn: async () => {
+      const { data, error } = await supabase.from("site_settings").select("key, value");
+      if (error) throw error;
+      return Object.fromEntries((data ?? []).map((r) => [r.key, r.value])) as Record<string, string>;
+    },
+  });
+
+  useEffect(() => {
+    if (data && !form) setForm({ ...data });
+  }, [data, form]);
+
+  const save = useMutation({
+    mutationFn: async (values: Record<string, string>) => {
+      const rows = SETTING_FIELDS.map((f) => ({ key: f.key, value: values[f.key] ?? "" }));
+      const { error } = await supabase.from("site_settings").upsert(rows, { onConflict: "key" });
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      toast.success("Email settings saved.");
+      queryClient.invalidateQueries({ queryKey: ["admin", "settings"] });
+    },
+    onError: (e: Error) => toast.error(e.message),
+  });
+
+  const values = form ?? data ?? {};
+
+  return (
+    <div className="max-w-2xl">
+      <h1 className="font-display text-2xl font-bold tracking-tight">Email Settings</h1>
+      <p className="mt-2 text-sm text-muted-foreground">
+        Set where new website enquiries are sent, and which verified Brevo sender the emails go out from.
+      </p>
+      {isLoading ? (
+        <div className="mt-8 h-40 animate-pulse rounded-xl bg-card" />
+      ) : (
+        <form
+          className="mt-8 grid gap-5 rounded-2xl border border-border bg-card p-6"
+          onSubmit={(e) => {
+            e.preventDefault();
+            save.mutate(values);
+          }}
+        >
+          {SETTING_FIELDS.map((f) => (
+            <div key={f.key}>
+              <label className="block font-mono text-[10px] uppercase tracking-[0.2em] text-muted-foreground" htmlFor={f.key}>
+                {f.label}
+              </label>
+              <input
+                id={f.key}
+                value={values[f.key] ?? ""}
+                placeholder={f.placeholder}
+                onChange={(e) => setForm({ ...values, [f.key]: e.target.value })}
+                className="mt-2 w-full rounded-xl border border-border bg-background px-4 py-3 text-sm outline-none ring-brand/40 transition focus:border-brand focus:ring-2"
+              />
+              <p className="mt-1.5 text-xs text-muted-foreground">{f.hint}</p>
+            </div>
+          ))}
+          <button
+            type="submit"
+            disabled={save.isPending}
+            className="mt-1 inline-flex w-fit items-center gap-2 rounded-full bg-brand px-6 py-3 font-mono text-xs font-semibold uppercase tracking-wider text-brand-foreground transition hover:translate-y-[-2px] disabled:opacity-60"
+          >
+            {save.isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />} Save settings
+          </button>
+        </form>
       )}
     </div>
   );
