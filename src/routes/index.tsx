@@ -1,6 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ArrowRight, ArrowUpRight, Award, BadgeCheck, ShieldCheck, Trophy } from "lucide-react";
+import { ArrowRight, ArrowUpRight, Award, BadgeCheck, Mail, MapPin, Phone, ShieldCheck, Trophy } from "lucide-react";
 import { PageShell } from "@/components/page-shell";
+import { EnquiryForm } from "@/components/enquiry-form";
 import { useRevealOnScroll } from "@/hooks/use-reveal-on-scroll";
 import { divisions, categoryMeta, stats, industries } from "@/content/site-data";
 import machineHeroImg from "@/assets/machine-hero.jpg";
@@ -193,7 +194,54 @@ function HomePage() {
         </div>
       </section>
 
+      <section id="contact" className="relative bg-background px-5 py-16 sm:px-8 sm:py-20">
+        <div className="mx-auto max-w-6xl">
+          <div className="reveal-on-scroll text-center">
+            <div className="font-mono text-[11px] uppercase tracking-[0.3em] text-brand">/ get in touch</div>
+            <h2 className="mt-3 font-display text-3xl font-bold leading-[1.1] tracking-tight sm:text-5xl">
+              Tell us about <span className="text-gradient-brand">your line</span>.
+            </h2>
+            <p className="mx-auto mt-4 max-w-xl text-muted-foreground">
+              Send an enquiry and our engineering team will reply with a system blueprint.
+            </p>
+          </div>
+          <div className="mt-12 grid gap-8 lg:grid-cols-[1fr_1.2fr]">
+            <div className="reveal-on-scroll space-y-4">
+              <a href="mailto:info@modtechworld.com" className="group flex items-start gap-4 rounded-2xl border border-border bg-card p-6 transition hover:-translate-y-1 hover:border-brand/60">
+                <span className="grid h-11 w-11 shrink-0 place-items-center rounded-xl border border-border bg-secondary/40 text-brand">
+                  <Mail className="h-5 w-5" />
+                </span>
+                <div>
+                  <div className="font-mono text-[10px] uppercase tracking-[0.25em] text-muted-foreground">Email</div>
+                  <div className="mt-1 font-display text-base font-semibold text-foreground transition group-hover:text-brand">info@modtechworld.com</div>
+                </div>
+              </a>
+              <a href="tel:+910000000000" className="group flex items-start gap-4 rounded-2xl border border-border bg-card p-6 transition hover:-translate-y-1 hover:border-brand/60">
+                <span className="grid h-11 w-11 shrink-0 place-items-center rounded-xl border border-border bg-secondary/40 text-brand">
+                  <Phone className="h-5 w-5" />
+                </span>
+                <div>
+                  <div className="font-mono text-[10px] uppercase tracking-[0.25em] text-muted-foreground">Phone</div>
+                  <div className="mt-1 font-display text-base font-semibold text-foreground transition group-hover:text-brand">+91 00000 00000</div>
+                </div>
+              </a>
+              <div className="flex items-start gap-4 rounded-2xl border border-border bg-card p-6">
+                <span className="grid h-11 w-11 shrink-0 place-items-center rounded-xl border border-border bg-secondary/40 text-brand">
+                  <MapPin className="h-5 w-5" />
+                </span>
+                <div>
+                  <div className="font-mono text-[10px] uppercase tracking-[0.25em] text-muted-foreground">Workshop</div>
+                  <div className="mt-1 font-display text-base font-semibold text-foreground">India · Global delivery</div>
+                </div>
+              </div>
+            </div>
+            <EnquiryForm heading="Request a quote" />
+          </div>
+        </div>
+      </section>
+
       <section className="relative overflow-hidden bg-background px-5 py-16 sm:px-8 sm:py-20">
+
         <div className="pointer-events-none absolute left-1/2 top-1/2 h-[500px] w-[500px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-brand/15 blur-[140px]" />
         <div className="reveal-on-scroll relative mx-auto max-w-4xl text-center">
           <h2 className="font-display text-3xl font-bold leading-[1.1] tracking-tight sm:text-5xl">
