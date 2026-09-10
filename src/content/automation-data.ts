@@ -70,6 +70,7 @@ export type AutomationSolution = {
   slug: string;
   title: string;
   image: string;
+  gallery?: string[];
   summary: string;
   valueAdds: string[];
   includes: string[];
@@ -80,6 +81,7 @@ export const automationSolutions: AutomationSolution[] = [
     slug: "robotic-case-erector",
     title: "Robotic Case Erector",
     image: automationImages.caseErector,
+    gallery: [automationImages.caseErectorLine1, automationImages.caseErectorLine2],
     summary:
       "An automated end-of-line packaging solution for erecting corrugated boxes and bottom sealing. The cell combines a 6-axis robot handling multiple case magazines with a bottom flap folder and case sealing head — a fast, efficient way to fully automate the start of your packaging line.",
     valueAdds: [
@@ -106,6 +108,7 @@ export const automationSolutions: AutomationSolution[] = [
     slug: "robotic-case-packer",
     title: "Robotic Case Packer",
     image: automationImages.casePacker,
+    gallery: [automationImages.casePackerLine1, automationImages.casePackerLine2],
     summary:
       "A complete box filling and packaging line where a precise 6-axis robot fills the case, with sealing, labelling and inkjet printing available as peripherals. Capable of handling multiple SKUs and product sizes on the same line.",
     valueAdds: [
@@ -132,6 +135,7 @@ export const automationSolutions: AutomationSolution[] = [
     slug: "robotic-palletizing",
     title: "Robotic Palletizing",
     image: automationImages.palletizer,
+    gallery: [automationImages.palletizerLine1, automationImages.palletizerLine2],
     summary:
       "A fully automatic palletizing system with pallet feeder, configurable for many product types and plant layouts. It runs without operator input beyond loading a stack of pallets and removing finished ones.",
     valueAdds: [
@@ -156,6 +160,7 @@ export const automationSolutions: AutomationSolution[] = [
     slug: "robotic-pick-and-place",
     title: "Robotic Pick & Place",
     image: automationImages.robot6Axis,
+    gallery: [automationImages.pickPlaceLine1, automationImages.pickPlaceLine2],
     summary:
       "A robotic handling system configurable for multiple product types and plant layouts, running without operator input while picking and placing parts from one process into another — reducing repetitive strain and fatigue while lifting throughput.",
     valueAdds: [
@@ -178,6 +183,12 @@ export const automationSolutions: AutomationSolution[] = [
     slug: "machine-tending",
     title: "Machine Tending",
     image: automationImages.machineTending,
+    gallery: [
+      automationImages.tendingInjection1,
+      automationImages.tendingCnc1,
+      automationImages.tendingWax1,
+      automationImages.tendingLaminates1,
+    ],
     summary:
       "Robotic loading and unloading of components on CNC machines, plastic injection moulding, wax injection cells and laminate presses. Robots handle raw material and finished parts accurately, ensuring consistent cycle times and repeatable quality on every operation.",
     valueAdds: [
@@ -198,6 +209,7 @@ export const automationSolutions: AutomationSolution[] = [
     slug: "vision-system",
     title: "Vision System",
     image: automationImages.robotScara,
+    gallery: [automationImages.visionSystem],
     summary:
       "Robotic vision combines cameras, purpose-built lighting and software so the robot knows exactly where a part is and how it is oriented. Conveyor tracking lets the robot pick products while they are still moving, simplifying cell design and lowering cost.",
     valueAdds: [
