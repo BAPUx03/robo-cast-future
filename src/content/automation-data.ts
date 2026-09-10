@@ -15,7 +15,6 @@ import casePackerLine2 from "@/assets/case-packer-line-2.png.asset.json";
 import palletizerLine1 from "@/assets/palletizer-line-1.png.asset.json";
 import palletizerLine2 from "@/assets/palletizer-line-2.png.asset.json";
 import pickPlaceLine1 from "@/assets/pick-place-line-1.png.asset.json";
-import pickPlaceLine2 from "@/assets/pick-place-line-2.png.asset.json";
 import tendingInjection1 from "@/assets/tending-injection-1.jpg.asset.json";
 import tendingInjection2 from "@/assets/tending-injection-2.jpg.asset.json";
 import tendingCnc1 from "@/assets/tending-cnc-1.jpg.asset.json";
@@ -24,7 +23,6 @@ import tendingWax1 from "@/assets/tending-wax-1.jpg.asset.json";
 import tendingWax2 from "@/assets/tending-wax-2.jpg.asset.json";
 import tendingLaminates1 from "@/assets/tending-laminates-1.jpg.asset.json";
 import tendingLaminates2 from "@/assets/tending-laminates-2.jpg.asset.json";
-import visionSystemImg from "@/assets/vision-system.png.asset.json";
 
 // Sourced from the official Modtech "Robotics & Automation" company deck.
 export const automationImages = {
