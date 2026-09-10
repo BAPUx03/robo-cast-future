@@ -8,6 +8,21 @@ import robotCobot from "@/assets/robot-cobot.png.asset.json";
 import robotLinear from "@/assets/robot-linear.jpg.asset.json";
 import robotPalletizer from "@/assets/robot-palletizer.jpg.asset.json";
 import robotScara from "@/assets/robot-scara.jpg.asset.json";
+import caseErectorLine1 from "@/assets/case-erector-line-1.png.asset.json";
+import caseErectorLine2 from "@/assets/case-erector-line-2.png.asset.json";
+import casePackerLine1 from "@/assets/case-packer-line-1.png.asset.json";
+import casePackerLine2 from "@/assets/case-packer-line-2.png.asset.json";
+import palletizerLine1 from "@/assets/palletizer-line-1.png.asset.json";
+import palletizerLine2 from "@/assets/palletizer-line-2.png.asset.json";
+import pickPlaceLine1 from "@/assets/pick-place-line-1.png.asset.json";
+import tendingInjection1 from "@/assets/tending-injection-1.jpg.asset.json";
+import tendingInjection2 from "@/assets/tending-injection-2.jpg.asset.json";
+import tendingCnc1 from "@/assets/tending-cnc-1.jpg.asset.json";
+import tendingCnc2 from "@/assets/tending-cnc-2.jpg.asset.json";
+import tendingWax1 from "@/assets/tending-wax-1.jpg.asset.json";
+import tendingWax2 from "@/assets/tending-wax-2.jpg.asset.json";
+import tendingLaminates1 from "@/assets/tending-laminates-1.jpg.asset.json";
+import tendingLaminates2 from "@/assets/tending-laminates-2.jpg.asset.json";
 
 // Sourced from the official Modtech "Robotics & Automation" company deck.
 export const automationImages = {
@@ -21,6 +36,21 @@ export const automationImages = {
   robotLinear: robotLinear.url,
   robotPalletizer: robotPalletizer.url,
   robotScara: robotScara.url,
+  caseErectorLine1: caseErectorLine1.url,
+  caseErectorLine2: caseErectorLine2.url,
+  casePackerLine1: casePackerLine1.url,
+  casePackerLine2: casePackerLine2.url,
+  palletizerLine1: palletizerLine1.url,
+  palletizerLine2: palletizerLine2.url,
+  pickPlaceLine1: pickPlaceLine1.url,
+  tendingInjection1: tendingInjection1.url,
+  tendingInjection2: tendingInjection2.url,
+  tendingCnc1: tendingCnc1.url,
+  tendingCnc2: tendingCnc2.url,
+  tendingWax1: tendingWax1.url,
+  tendingWax2: tendingWax2.url,
+  tendingLaminates1: tendingLaminates1.url,
+  tendingLaminates2: tendingLaminates2.url,
 };
 
 export const automationStats = [
@@ -36,6 +66,7 @@ export type AutomationSolution = {
   slug: string;
   title: string;
   image: string;
+  gallery?: string[];
   summary: string;
   valueAdds: string[];
   includes: string[];
@@ -46,6 +77,7 @@ export const automationSolutions: AutomationSolution[] = [
     slug: "robotic-case-erector",
     title: "Robotic Case Erector",
     image: automationImages.caseErector,
+    gallery: [automationImages.caseErectorLine1, automationImages.caseErectorLine2],
     summary:
       "An automated end-of-line packaging solution for erecting corrugated boxes and bottom sealing. The cell combines a 6-axis robot handling multiple case magazines with a bottom flap folder and case sealing head — a fast, efficient way to fully automate the start of your packaging line.",
     valueAdds: [
@@ -72,6 +104,7 @@ export const automationSolutions: AutomationSolution[] = [
     slug: "robotic-case-packer",
     title: "Robotic Case Packer",
     image: automationImages.casePacker,
+    gallery: [automationImages.casePackerLine1, automationImages.casePackerLine2],
     summary:
       "A complete box filling and packaging line where a precise 6-axis robot fills the case, with sealing, labelling and inkjet printing available as peripherals. Capable of handling multiple SKUs and product sizes on the same line.",
     valueAdds: [
@@ -98,6 +131,7 @@ export const automationSolutions: AutomationSolution[] = [
     slug: "robotic-palletizing",
     title: "Robotic Palletizing",
     image: automationImages.palletizer,
+    gallery: [automationImages.palletizerLine1, automationImages.palletizerLine2],
     summary:
       "A fully automatic palletizing system with pallet feeder, configurable for many product types and plant layouts. It runs without operator input beyond loading a stack of pallets and removing finished ones.",
     valueAdds: [
@@ -122,6 +156,7 @@ export const automationSolutions: AutomationSolution[] = [
     slug: "robotic-pick-and-place",
     title: "Robotic Pick & Place",
     image: automationImages.robot6Axis,
+    gallery: [automationImages.pickPlaceLine1],
     summary:
       "A robotic handling system configurable for multiple product types and plant layouts, running without operator input while picking and placing parts from one process into another — reducing repetitive strain and fatigue while lifting throughput.",
     valueAdds: [
@@ -144,6 +179,12 @@ export const automationSolutions: AutomationSolution[] = [
     slug: "machine-tending",
     title: "Machine Tending",
     image: automationImages.machineTending,
+    gallery: [
+      automationImages.tendingInjection1,
+      automationImages.tendingCnc1,
+      automationImages.tendingWax1,
+      automationImages.tendingLaminates1,
+    ],
     summary:
       "Robotic loading and unloading of components on CNC machines, plastic injection moulding, wax injection cells and laminate presses. Robots handle raw material and finished parts accurately, ensuring consistent cycle times and repeatable quality on every operation.",
     valueAdds: [
@@ -180,6 +221,28 @@ export const automationSolutions: AutomationSolution[] = [
       "Inspection software and calibration",
       "Belt encoder conveyor tracking",
     ],
+  },
+];
+
+export const tendingCells: Array<{ name: string; images: string[]; video?: string }> = [
+  {
+    name: "Plastic Injection — Part Take-Out",
+    images: [automationImages.tendingInjection1, automationImages.tendingInjection2],
+    video: "https://youtu.be/QEIFrphd8FY",
+  },
+  {
+    name: "CNC Machine Tending",
+    images: [automationImages.tendingCnc1, automationImages.tendingCnc2],
+    video: "https://youtu.be/6-B0KG4wOtc",
+  },
+  {
+    name: "Wax Injection — Complete Cell with Pre & Post Processing",
+    images: [automationImages.tendingWax1, automationImages.tendingWax2],
+    video: "https://youtu.be/yUD12phHkuM",
+  },
+  {
+    name: "Laminates & Copper Clad Laminate — Assembly & Press Tending",
+    images: [automationImages.tendingLaminates1, automationImages.tendingLaminates2],
   },
 ];
 

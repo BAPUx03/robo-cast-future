@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ArrowRight, Check, Package } from "lucide-react";
+import { ArrowRight, Check, Package, Play } from "lucide-react";
 import { PageShell, PageHero } from "@/components/page-shell";
 import { useRevealOnScroll } from "@/hooks/use-reveal-on-scroll";
 import {
@@ -10,6 +10,7 @@ import {
   automationCustomers,
   automationImages,
   robotTypes,
+  tendingCells,
 } from "@/content/automation-data";
 
 export const Route = createFileRoute("/automation")({
@@ -88,8 +89,51 @@ function AutomationPage() {
                     </div>
                   </div>
                 </div>
+                {s.gallery && s.gallery.length > 0 && (
+                  <div className="border-t border-border bg-carbon-2/40 p-5 sm:p-7 lg:col-span-2">
+                    <div className="font-mono text-[10px] uppercase tracking-[0.22em] text-brand">/ on the shop floor</div>
+                    <div className={`mt-4 grid gap-4 ${s.gallery.length > 1 ? "sm:grid-cols-2" : ""} ${s.gallery.length > 2 ? "lg:grid-cols-4" : ""}`}>
+                      {s.gallery.map((g, gi) => (
+                        <div key={gi} className="overflow-hidden rounded-xl border border-border bg-carbon-2">
+                          <img src={g} alt={`${s.title} installation ${gi + 1}`} loading="lazy" className="h-44 w-full object-cover transition duration-700 hover:scale-105" />
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
               </article>
             ))}
+          </div>
+
+          {/* Machine tending cells */}
+          <div className="reveal-on-scroll mt-16">
+            <div className="text-center">
+              <div className="font-mono text-[11px] uppercase tracking-[0.3em] text-brand">/ machine tending cells</div>
+              <h2 className="mt-3 font-display text-2xl font-bold tracking-tight sm:text-3xl">
+                Real installations, <span className="text-gradient-brand">running today</span>.
+              </h2>
+            </div>
+            <ul className="mt-10 grid gap-5 sm:grid-cols-2">
+              {tendingCells.map((c) => (
+                <li key={c.name} className="group overflow-hidden rounded-2xl border border-border bg-card shadow-card">
+                  <div className="grid grid-cols-2 gap-px bg-border">
+                    {c.images.map((img, ii) => (
+                      <div key={ii} className="relative aspect-[4/3] overflow-hidden bg-carbon-2">
+                        <img src={img} alt={`${c.name} ${ii + 1}`} loading="lazy" className="h-full w-full object-cover transition duration-700 group-hover:scale-105" />
+                      </div>
+                    ))}
+                  </div>
+                  <div className="flex items-center justify-between gap-3 p-5">
+                    <h3 className="font-display text-sm font-bold tracking-tight">{c.name}</h3>
+                    {c.video && (
+                      <a href={c.video} target="_blank" rel="noreferrer" className="inline-flex shrink-0 items-center gap-1.5 rounded-full border border-brand/40 px-3 py-1.5 font-mono text-[10px] uppercase tracking-wider text-brand transition hover:bg-brand hover:text-brand-foreground">
+                        <Play className="h-3 w-3" /> Watch
+                      </a>
+                    )}
+                  </div>
+                </li>
+              ))}
+            </ul>
           </div>
         </div>
       </section>
