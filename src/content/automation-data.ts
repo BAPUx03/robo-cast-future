@@ -156,7 +156,7 @@ export const automationSolutions: AutomationSolution[] = [
     slug: "robotic-pick-and-place",
     title: "Robotic Pick & Place",
     image: automationImages.robot6Axis,
-    gallery: [automationImages.pickPlaceLine1, automationImages.pickPlaceLine2],
+    gallery: [automationImages.pickPlaceLine1],
     summary:
       "A robotic handling system configurable for multiple product types and plant layouts, running without operator input while picking and placing parts from one process into another — reducing repetitive strain and fatigue while lifting throughput.",
     valueAdds: [
@@ -205,7 +205,6 @@ export const automationSolutions: AutomationSolution[] = [
     slug: "vision-system",
     title: "Vision System",
     image: automationImages.robotScara,
-    gallery: [automationImages.visionSystem],
     summary:
       "Robotic vision combines cameras, purpose-built lighting and software so the robot knows exactly where a part is and how it is oriented. Conveyor tracking lets the robot pick products while they are still moving, simplifying cell design and lowering cost.",
     valueAdds: [
