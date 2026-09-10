@@ -80,10 +80,11 @@ function FloatingActions() {
 }
 
 function SiteFooter() {
-  const links: Array<{ to: "/" | "/about" | "/divisions" | "/solutions" | "/machines" | "/industries" | "/news" | "/contact"; label: string }> = [
+  const links: Array<{ to: "/" | "/about" | "/divisions" | "/solutions" | "/machines" | "/automation" | "/industries" | "/news" | "/contact"; label: string }> = [
     { to: "/about",      label: "About Us" },
     { to: "/divisions",  label: "Divisions" },
     { to: "/machines",   label: "Products" },
+    { to: "/automation", label: "Robotics & Automation" },
     { to: "/solutions",  label: "Services" },
     { to: "/industries", label: "Industries Served" },
     { to: "/news",       label: "Resources" },
@@ -148,9 +149,17 @@ function SiteFooter() {
                 <Mail className="h-4 w-4 text-brand" /> info@modtechworld.com
               </a>
             </li>
+            <li>
+              <a href="mailto:sales.automation@modtechworld.com" className="inline-flex items-center gap-2 transition hover:text-brand">
+                <Mail className="h-4 w-4 text-brand" /> sales.automation@modtechworld.com
+              </a>
+            </li>
             <li className="inline-flex items-start gap-2">
-              <MapPin className="mt-0.5 h-4 w-4 text-brand" />
-              <span>India · Global delivery</span>
+              <MapPin className="mt-0.5 h-4 w-4 shrink-0 text-brand" />
+              <span>
+                Modtech Machines Pvt Ltd — Survey No. 396, Plot No. 73P, New Ahmedabad Industrial Estate,
+                B/h Zydus Research Center, NH 8A, Moraiya (Dist. Sanand), Ahmedabad 382 213, Gujarat, India.
+              </span>
             </li>
           </ul>
         </div>

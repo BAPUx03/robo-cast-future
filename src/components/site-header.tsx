@@ -9,6 +9,7 @@ const NAV_ITEMS = [
   { to: "/about",      label: "About Us" },
   { to: "/divisions",  label: "Divisions" },
   { to: "/machines",   label: "Products" },
+  { to: "/automation", label: "Robotics & Automation" },
   { to: "/solutions",  label: "Services" },
   { to: "/industries", label: "Industries Served" },
   { to: "/news",       label: "Resources" },
