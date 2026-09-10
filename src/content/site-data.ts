@@ -15,6 +15,8 @@ import newsAutomationImg from "@/assets/news-automation-line.jpg";
 import newsAutomationWebp from "@/assets/news-automation-line.webp";
 import newsCastingImg from "@/assets/news-casting-pour.jpg";
 import newsCastingWebp from "@/assets/news-casting-pour.webp";
+import divCastingReal from "@/assets/tending-wax-1.jpg.asset.json";
+import divRoboticsReal from "@/assets/robot-6axis.jpg.asset.json";
 
 export type Mode = "casting" | "robotic";
 export type Category = "casting" | "robotic" | "automation";
@@ -92,7 +94,7 @@ export const divisions: Array<{
     code: "DIV.01",
     title: "Investment Casting",
     tag: "Precision foundry machinery",
-    image: castingImg,
+    image: divCastingReal.url,
     category: "casting",
     description:
       "End-to-end casting line equipment — wax injectors, conditioning tanks, slurry machines, rain sanders, and ceramic injectors built for industrial reliability.",
@@ -102,7 +104,7 @@ export const divisions: Array<{
     code: "DIV.02",
     title: "Robotics & Automation",
     tag: "Autonomous production cells",
-    image: roboticsImg,
+    image: divRoboticsReal.url,
     category: "robotic",
     description:
       "Six-axis robot integration, shelling cells, wax-room automation and PLC-driven process control engineered for repeatable factory output.",
