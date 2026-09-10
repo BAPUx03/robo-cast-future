@@ -52,9 +52,9 @@ function AboutPage() {
           {/* Story — establishment / projects / concept */}
           <div className="reveal-on-scroll mt-16 grid gap-6 lg:grid-cols-3">
             {[
-              { code: "01", title: "Establishment", body: "Founded in 1990, Modtech began with a vision to deliver innovative, reliable and high-quality manufacturing solutions — redefining industry standards through engineering excellence and advanced technology." },
-              { code: "02", title: "Projects",      body: "Modtech specialises in turnkey and custom projects — automated foundry systems and special-purpose machines — delivering efficient solutions tailored to diverse industrial needs across 45+ countries." },
-              { code: "03", title: "The Concept",   body: "We deliver innovative, precise and efficient machinery that is user-friendly and low-maintenance, with a strong focus on customisation and continuous improvement for evolving industrial needs." },
+              { code: "01", title: "Establishment", body: "Modtech manufactures state-of-the-art machines incorporating robotics and automation, engineered around each customer's line. Every product has been indigenously developed in-house since 1994." },
+              { code: "02", title: "Projects",      body: "Within two decades Modtech has become one of India's largest exporters of special-purpose machines, with an installation base across 45+ countries including the UK, France, Germany, Japan, the USA and Russia." },
+              { code: "03", title: "The Concept",   body: "We keep our equipment upgraded with new technology to stay future ready. Despite the advanced features, the machines remain easy to operate and carry a minimal cost of maintenance." },
             ].map((s) => (
               <div key={s.code} className="rounded-2xl border border-border bg-card p-7 shadow-card">
                 <div className="font-mono text-[11px] uppercase tracking-[0.3em] text-brand">/ {s.code}</div>
@@ -64,6 +64,43 @@ function AboutPage() {
             ))}
           </div>
 
+
+          {/* Distinctive divisions */}
+          <div className="reveal-on-scroll mt-16 grid gap-6 lg:grid-cols-2">
+            {[
+              {
+                title: "Wax Injectors & Shell Room Automation",
+                body: "A global leader in wax injectors and shell room automation since 1994. As a top industrial automation manufacturer we offer affordable, customised solutions specialising in the investment casting industry, ranking among India's top five automation providers — with installations in over 45 countries.",
+              },
+              {
+                title: "Robotics & Automation — Packaging",
+                body: "Established a decade ago, our automation division delivers turnkey solutions across FMCG, pharmaceuticals, food & beverages, investment casting, foundry and plastics. With 250+ skilled employees and a dedicated design and manufacturing facility in Ahmedabad, we handle cartons, bottles, cans, tins, soap, confectionery, tubs, glass, bales and sacks.",
+              },
+            ].map((d) => (
+              <div key={d.title} className="rounded-2xl border border-border bg-card p-7 shadow-card">
+                <h3 className="font-display text-xl font-bold tracking-tight">{d.title}</h3>
+                <p className="mt-3 text-sm leading-relaxed text-muted-foreground">{d.body}</p>
+              </div>
+            ))}
+          </div>
+
+          {/* Why Modtech — service & support */}
+          <div className="reveal-on-scroll mt-16 rounded-2xl border border-border bg-card/60 px-6 py-8 sm:px-10">
+            <div className="font-mono text-[11px] uppercase tracking-[0.3em] text-brand">/ why modtech</div>
+            <h3 className="mt-3 font-display text-2xl font-bold tracking-tight">Cost efficient, logical, world-class solutions</h3>
+            <ul className="mt-5 grid gap-3 sm:grid-cols-2">
+              {[
+                "Unmatched, lightning-fast service backed by a 3-tier support structure",
+                "Unique RITE service programme and service centre",
+                "24 × 7 online support from India",
+                "Global standard parts with spare back-up",
+              ].map((p) => (
+                <li key={p} className="flex gap-2 text-sm leading-relaxed text-muted-foreground">
+                  <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-brand" />{p}
+                </li>
+              ))}
+            </ul>
+          </div>
 
           {/* Capabilities */}
           <div className="reveal-on-scroll mt-16">

@@ -17,6 +17,7 @@ import { Route as IndustriesRouteImport } from './routes/industries'
 import { Route as DivisionsRouteImport } from './routes/divisions'
 import { Route as ContactRouteImport } from './routes/contact'
 import { Route as BlogRouteImport } from './routes/blog'
+import { Route as AutomationRouteImport } from './routes/automation'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
@@ -65,6 +66,11 @@ const BlogRoute = BlogRouteImport.update({
   path: '/blog',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AutomationRoute = AutomationRouteImport.update({
+  id: '/automation',
+  path: '/automation',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AuthRoute = AuthRouteImport.update({
   id: '/auth',
   path: '/auth',
@@ -104,6 +110,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
   '/auth': typeof AuthRoute
+  '/automation': typeof AutomationRoute
   '/blog': typeof BlogRouteWithChildren
   '/contact': typeof ContactRoute
   '/divisions': typeof DivisionsRoute
@@ -120,6 +127,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
   '/auth': typeof AuthRoute
+  '/automation': typeof AutomationRoute
   '/blog': typeof BlogRouteWithChildren
   '/contact': typeof ContactRoute
   '/divisions': typeof DivisionsRoute
@@ -138,6 +146,7 @@ export interface FileRoutesById {
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/about': typeof AboutRoute
   '/auth': typeof AuthRoute
+  '/automation': typeof AutomationRoute
   '/blog': typeof BlogRouteWithChildren
   '/contact': typeof ContactRoute
   '/divisions': typeof DivisionsRoute
@@ -156,6 +165,7 @@ export interface FileRouteTypes {
     | '/'
     | '/about'
     | '/auth'
+    | '/automation'
     | '/blog'
     | '/contact'
     | '/divisions'
@@ -172,6 +182,7 @@ export interface FileRouteTypes {
     | '/'
     | '/about'
     | '/auth'
+    | '/automation'
     | '/blog'
     | '/contact'
     | '/divisions'
@@ -189,6 +200,7 @@ export interface FileRouteTypes {
     | '/_authenticated'
     | '/about'
     | '/auth'
+    | '/automation'
     | '/blog'
     | '/contact'
     | '/divisions'
@@ -207,6 +219,7 @@ export interface RootRouteChildren {
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   AboutRoute: typeof AboutRoute
   AuthRoute: typeof AuthRoute
+  AutomationRoute: typeof AutomationRoute
   BlogRoute: typeof BlogRouteWithChildren
   ContactRoute: typeof ContactRoute
   DivisionsRoute: typeof DivisionsRoute
@@ -273,6 +286,13 @@ declare module '@tanstack/react-router' {
       path: '/blog'
       fullPath: '/blog'
       preLoaderRoute: typeof BlogRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/automation': {
+      id: '/automation'
+      path: '/automation'
+      fullPath: '/automation'
+      preLoaderRoute: typeof AutomationRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/auth': {
@@ -365,6 +385,7 @@ const rootRouteChildren: RootRouteChildren = {
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   AboutRoute: AboutRoute,
   AuthRoute: AuthRoute,
+  AutomationRoute: AutomationRoute,
   BlogRoute: BlogRouteWithChildren,
   ContactRoute: ContactRoute,
   DivisionsRoute: DivisionsRoute,
