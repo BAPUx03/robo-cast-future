@@ -229,6 +229,28 @@ export const automationSolutions: AutomationSolution[] = [
   },
 ];
 
+export const tendingCells: Array<{ name: string; images: string[]; video?: string }> = [
+  {
+    name: "Plastic Injection — Part Take-Out",
+    images: [automationImages.tendingInjection1, automationImages.tendingInjection2],
+    video: "https://youtu.be/QEIFrphd8FY",
+  },
+  {
+    name: "CNC Machine Tending",
+    images: [automationImages.tendingCnc1, automationImages.tendingCnc2],
+    video: "https://youtu.be/6-B0KG4wOtc",
+  },
+  {
+    name: "Wax Injection — Complete Cell with Pre & Post Processing",
+    images: [automationImages.tendingWax1, automationImages.tendingWax2],
+    video: "https://youtu.be/yUD12phHkuM",
+  },
+  {
+    name: "Laminates & Copper Clad Laminate — Assembly & Press Tending",
+    images: [automationImages.tendingLaminates1, automationImages.tendingLaminates2],
+  },
+];
+
 export const robotTypes: Array<{ name: string; image: string; desc: string }> = [
   { name: "Articulated Robot (5/6-Axis)", image: automationImages.robot6Axis, desc: "The workhorse for packing, palletizing and machine tending." },
   { name: "Collaborative Robot (Cobot)", image: automationImages.robotCobot, desc: "Safe alongside operators for light handling and inspection." },
