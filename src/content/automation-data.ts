@@ -8,6 +8,23 @@ import robotCobot from "@/assets/robot-cobot.png.asset.json";
 import robotLinear from "@/assets/robot-linear.jpg.asset.json";
 import robotPalletizer from "@/assets/robot-palletizer.jpg.asset.json";
 import robotScara from "@/assets/robot-scara.jpg.asset.json";
+import caseErectorLine1 from "@/assets/case-erector-line-1.png.asset.json";
+import caseErectorLine2 from "@/assets/case-erector-line-2.png.asset.json";
+import casePackerLine1 from "@/assets/case-packer-line-1.png.asset.json";
+import casePackerLine2 from "@/assets/case-packer-line-2.png.asset.json";
+import palletizerLine1 from "@/assets/palletizer-line-1.png.asset.json";
+import palletizerLine2 from "@/assets/palletizer-line-2.png.asset.json";
+import pickPlaceLine1 from "@/assets/pick-place-line-1.png.asset.json";
+import pickPlaceLine2 from "@/assets/pick-place-line-2.png.asset.json";
+import tendingInjection1 from "@/assets/tending-injection-1.jpg.asset.json";
+import tendingInjection2 from "@/assets/tending-injection-2.jpg.asset.json";
+import tendingCnc1 from "@/assets/tending-cnc-1.jpg.asset.json";
+import tendingCnc2 from "@/assets/tending-cnc-2.jpg.asset.json";
+import tendingWax1 from "@/assets/tending-wax-1.jpg.asset.json";
+import tendingWax2 from "@/assets/tending-wax-2.jpg.asset.json";
+import tendingLaminates1 from "@/assets/tending-laminates-1.jpg.asset.json";
+import tendingLaminates2 from "@/assets/tending-laminates-2.jpg.asset.json";
+import visionSystemImg from "@/assets/vision-system.png.asset.json";
 
 // Sourced from the official Modtech "Robotics & Automation" company deck.
 export const automationImages = {
@@ -21,6 +38,23 @@ export const automationImages = {
   robotLinear: robotLinear.url,
   robotPalletizer: robotPalletizer.url,
   robotScara: robotScara.url,
+  caseErectorLine1: caseErectorLine1.url,
+  caseErectorLine2: caseErectorLine2.url,
+  casePackerLine1: casePackerLine1.url,
+  casePackerLine2: casePackerLine2.url,
+  palletizerLine1: palletizerLine1.url,
+  palletizerLine2: palletizerLine2.url,
+  pickPlaceLine1: pickPlaceLine1.url,
+  pickPlaceLine2: pickPlaceLine2.url,
+  tendingInjection1: tendingInjection1.url,
+  tendingInjection2: tendingInjection2.url,
+  tendingCnc1: tendingCnc1.url,
+  tendingCnc2: tendingCnc2.url,
+  tendingWax1: tendingWax1.url,
+  tendingWax2: tendingWax2.url,
+  tendingLaminates1: tendingLaminates1.url,
+  tendingLaminates2: tendingLaminates2.url,
+  visionSystem: visionSystemImg.url,
 };
 
 export const automationStats = [
