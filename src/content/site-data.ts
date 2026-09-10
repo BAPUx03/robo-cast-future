@@ -16,7 +16,7 @@ import newsAutomationWebp from "@/assets/news-automation-line.webp";
 import newsCastingImg from "@/assets/news-casting-pour.jpg";
 import newsCastingWebp from "@/assets/news-casting-pour.webp";
 import divCastingReal from "@/assets/tending-wax-1.jpg.asset.json";
-import divRoboticsReal from "@/assets/robot-6axis.jpg.asset.json";
+import divRoboticsReal from "@/assets/robot-6-axis.jpg.asset.json";
 
 export type Mode = "casting" | "robotic";
 export type Category = "casting" | "robotic" | "automation";
