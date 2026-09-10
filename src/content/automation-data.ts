@@ -43,7 +43,6 @@ export const automationImages = {
   palletizerLine1: palletizerLine1.url,
   palletizerLine2: palletizerLine2.url,
   pickPlaceLine1: pickPlaceLine1.url,
-  pickPlaceLine2: pickPlaceLine2.url,
   tendingInjection1: tendingInjection1.url,
   tendingInjection2: tendingInjection2.url,
   tendingCnc1: tendingCnc1.url,
@@ -52,7 +51,6 @@ export const automationImages = {
   tendingWax2: tendingWax2.url,
   tendingLaminates1: tendingLaminates1.url,
   tendingLaminates2: tendingLaminates2.url,
-  visionSystem: visionSystemImg.url,
 };
 
 export const automationStats = [
