@@ -25,17 +25,18 @@ export const categoryMeta: Record<Category, { label: string; accent: string }> =
   automation: { label: "Automation",         accent: "from-cyan to-brand" },
 };
 
-// Stats sourced from modtechworld.com — founded 1990, 45+ countries, 44 engineers.
+// Stats sourced from the official Modtech company deck.
 export const stats = [
-  { value: "30+",  label: "Years Experience" },
-  { value: "45+",  label: "Countries Served" },
-  { value: "150+", label: "Machines Built" },
-  { value: "44",   label: "Skilled Engineers" },
+  { value: "1994",  label: "Founded" },
+  { value: "45+",   label: "Countries Served" },
+  { value: "1000+", label: "Projects Delivered" },
+  { value: "250+",  label: "Talent Pool" },
 ];
 
 export const clients = [
-  "TATA STEEL", "BHARAT FORGE", "MAHINDRA", "L&T", "ASHOK LEYLAND",
-  "JSW", "GODREJ", "BOSCH", "SIEMENS", "HONDA", "HERO", "BAJAJ",
+  "SCHOTT KAISHA", "SRF", "UNILEVER", "PERFETTI VAN MELLE", "L&T TECHNOLOGY SERVICES",
+  "HINDUSTAN UNILEVER", "WIPRO", "UPL", "USV", "PIDILITE", "ASTRAL PIPES",
+  "ITC LIMITED", "PARAGON", "MITSU", "ATLAS PLASTIC",
 ];
 
 // Industries Modtech serves — used by the marquee strip under the hero.
