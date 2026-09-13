@@ -70,8 +70,8 @@
 :root {
   --radius: 0.75rem;
 
-  --font-sans: "Inter", "Segoe UI", system-ui, sans-serif;
-  --font-display: "Space Grotesk", "Inter", system-ui, sans-serif;
+  --font-sans: "DM Sans", "Segoe UI", system-ui, sans-serif;
+  --font-display: "Space Grotesk", "DM Sans", system-ui, sans-serif;
   --font-mono: "JetBrains Mono", "SF Mono", ui-monospace, monospace;
 
   /* Dark-first canvas — deeper, slightly cooler for premium feel */
@@ -358,6 +358,32 @@
     transform: translateY(0);
   }
 
+  .home-hero-media video {
+    animation: home-hero-drift 18s ease-in-out infinite alternate;
+    transform-origin: 60% 50%;
+  }
+  .home-image-reveal::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    background: var(--background);
+    transform-origin: right center;
+    transition: transform 1.1s cubic-bezier(.2,.7,.2,1) .12s;
+    pointer-events: none;
+  }
+  .reveal-on-scroll.is-visible .home-image-reveal::after,
+  .home-image-reveal.reveal-on-scroll.is-visible::after {
+    transform: scaleX(0);
+  }
+  .home-machine-image {
+    transform: scale(1.035);
+    transition: transform 1.1s cubic-bezier(.2,.7,.2,1), filter .5s ease;
+  }
+  .is-visible .home-machine-image { transform: scale(1); }
+  .group:hover .home-machine-image { transform: scale(1.055); }
+  .home-marquee { animation: marquee 48s linear infinite; }
+
   /* Animated underline for nav links */
   .nav-link {
     position: relative;
@@ -639,7 +665,7 @@
 
   @media (prefers-reduced-motion: reduce) {
     .scanline, .float-y, .pulse-glow, .spin-slow, .spin-rev, .marquee, .blink-dot, .reveal,
-    .reveal-on-scroll, .parallax-slow, .parallax-mid, .parallax-fast {
+    .reveal-on-scroll, .parallax-slow, .parallax-mid, .parallax-fast, .home-marquee, .home-hero-media video {
       animation: none !important;
       transition: none !important;
       transform: none !important;
@@ -647,7 +673,13 @@
     }
     .cat-card, .cap-tile, .news-card { transition: none !important; animation: none !important; }
     .cap-tile::before, .cap-tile::after { display: none; }
+    .home-image-reveal::after { display: none; }
   }
+}
+
+@keyframes home-hero-drift {
+  from { transform: scale(1.03) translate3d(0, 0, 0); }
+  to { transform: scale(1.09) translate3d(-1.5%, 1%, 0); }
 }
 
 @keyframes scanline {
