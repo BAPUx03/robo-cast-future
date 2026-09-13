@@ -1,265 +1,310 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ArrowRight, ArrowUpRight, Award, BadgeCheck, Mail, MapPin, Phone, ShieldCheck, Trophy } from "lucide-react";
+import { ArrowRight, ArrowUpRight, Check, Factory, Globe2, Mail, MapPin, Wrench } from "lucide-react";
 import { PageShell } from "@/components/page-shell";
 import { EnquiryForm } from "@/components/enquiry-form";
+import { Button } from "@/components/ui/button";
 import { useRevealOnScroll } from "@/hooks/use-reveal-on-scroll";
-import { divisions, categoryMeta, stats, industries } from "@/content/site-data";
-import machineHeroImg from "@/assets/machine-hero.jpg";
-import heroBgLoop from "@/assets/hero-bg-loop.mp4.asset.json";
+import { stats } from "@/content/site-data";
+import {
+  automationCustomers,
+  automationIndustries,
+  automationPartners,
+  automationSolutions,
+  companyContact,
+} from "@/content/automation-data";
+import castingImage from "@/assets/m-wax-injector.jpg";
+import roboticsImage from "@/assets/case-packer.png.asset.json";
+import heroVideo from "@/assets/hero-bg-loop.mp4.asset.json";
+import heroPoster from "@/assets/machine-hero.jpg";
 
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Modtech Machinery — Robotics Automation & Investment Casting Systems" },
-      { name: "description", content: "Modtech Machinery engineers robotic automation cells and investment casting machinery. Two divisions, one engineering ecosystem." },
-      { property: "og:title", content: "Modtech Machinery — Robotics & Casting Automation" },
-      { property: "og:description", content: "Two divisions, one engineering ecosystem. Robotic automation and investment casting machinery for modern manufacturers." },
+      { title: "Modtech | Casting Machinery & Robotic Automation" },
+      {
+        name: "description",
+        content: "Modtech engineers investment casting machinery and customised robotic automation systems for manufacturers worldwide.",
+      },
+      { property: "og:title", content: "Modtech | Casting Machinery & Robotic Automation" },
+      {
+        property: "og:description",
+        content: "Investment casting machinery and customised robotic automation systems, engineered and built in India.",
+      },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
   component: HomePage,
 });
 
-const CERTS = [
-  { title: "ISO 9001:2015",       desc: "Quality Management System certified.",          Icon: ShieldCheck },
-  { title: "CE Marked",           desc: "Conformance with EU machinery directives.",     Icon: BadgeCheck  },
-  { title: "Make in India",       desc: "Government of India recognised manufacturer.",  Icon: Award       },
-  { title: "Industry Excellence", desc: "Recognised by India's leading foundry forums.", Icon: Trophy     },
+const featuredSolutions = automationSolutions.slice(0, 5);
+
+const advantages = [
+  {
+    Icon: Factory,
+    title: "Indigenous development",
+    text: "Machines, robot cells, controls and custom tooling developed by Modtech's engineering team in India.",
+  },
+  {
+    Icon: Wrench,
+    title: "Customised turnkey systems",
+    text: "Complete solutions configured around the product, plant layout, throughput and safety requirements.",
+  },
+  {
+    Icon: Globe2,
+    title: "Worldwide support",
+    text: "Ethernet-enabled remote support and service capability for installations across more than 45 countries.",
+  },
 ];
 
 function HomePage() {
   useRevealOnScroll();
+
   return (
     <PageShell>
-      <section className="on-dark relative isolate -mt-28 overflow-hidden bg-carbon pt-28 sm:-mt-32 sm:pt-32">
-        <div className="pointer-events-none absolute inset-0 -z-10">
-          <img src={machineHeroImg} alt="" aria-hidden="true" className="absolute inset-0 h-full w-full object-cover" />
-          <video src={heroBgLoop.url} poster={machineHeroImg} autoPlay muted loop playsInline preload="metadata" disablePictureInPicture className="absolute inset-0 h-full w-full object-cover" />
-          <div className="absolute inset-0 bg-gradient-to-b from-carbon/92 via-carbon/60 to-carbon" />
+      <section className="home-hero on-dark relative isolate -mt-28 min-h-[calc(100svh-1rem)] overflow-hidden bg-carbon pt-28 sm:-mt-32 sm:pt-32">
+        <div className="home-hero-media pointer-events-none absolute inset-0 -z-10">
+          <video
+            src={heroVideo.url}
+            poster={heroPoster}
+            autoPlay
+            muted
+            loop
+            playsInline
+            preload="metadata"
+            disablePictureInPicture
+            aria-hidden="true"
+            className="h-full w-full object-cover"
+          />
+          <div className="absolute inset-0 bg-gradient-to-r from-carbon via-carbon/80 to-carbon/20" />
+          <div className="absolute inset-0 bg-gradient-to-t from-carbon via-transparent to-carbon/40" />
         </div>
-        <div className="pointer-events-none absolute inset-0 -z-10 bg-grid bg-grid-fade opacity-25" />
+        <div className="pointer-events-none absolute inset-0 -z-10 bg-grid opacity-20" />
 
-        <div className="relative z-10 mx-auto flex min-h-[58vh] max-w-7xl flex-col justify-center px-5 pb-16 pt-10 text-center sm:min-h-[64vh] sm:px-8 sm:pb-20">
-          <div className="reveal mx-auto inline-flex items-center gap-2 rounded-full border border-brand/40 bg-carbon/60 px-3 py-1.5 font-mono text-[11px] uppercase tracking-[0.25em] text-brand backdrop-blur">
-            <span className="h-1.5 w-1.5 rounded-full bg-brand blink-dot" />
-            Engineered in India · Deployed Worldwide
-          </div>
-          <h1 className="reveal mx-auto mt-6 max-w-5xl font-display text-[clamp(2.3rem,5.8vw,5.2rem)] font-bold tracking-[-0.03em]" style={{ animationDelay: "90ms" }}>
-            Investment Casting &amp; Robotics
-            <br />
-            <span className="text-gradient-brand">that delivers value!</span>
-          </h1>
-          <p className="reveal mx-auto mt-6 max-w-2xl text-base leading-relaxed text-foreground/80 sm:text-lg" style={{ animationDelay: "180ms" }}>
-            From <span className="text-brand">wax injectors</span> and <span className="text-brand">slurry systems</span> to fully
-            <span className="text-brand"> automated shelling cells</span> — engineered, built and integrated under one roof.
-          </p>
-          <div className="reveal mx-auto mt-9 flex flex-wrap items-center justify-center gap-3" style={{ animationDelay: "270ms" }}>
-            <Link to="/divisions" className="group inline-flex items-center gap-3 rounded-full bg-brand px-7 py-3.5 font-mono text-xs font-semibold uppercase tracking-wider text-brand-foreground shadow-glow transition hover:translate-y-[-2px]">
-              Explore Divisions
-              <ArrowRight className="h-4 w-4 transition group-hover:translate-x-0.5" />
-            </Link>
-            <Link to="/contact" className="inline-flex items-center gap-3 rounded-full border border-brand/40 bg-carbon/60 px-7 py-3.5 font-mono text-xs font-semibold uppercase tracking-wider text-foreground backdrop-blur transition hover:border-brand hover:text-brand">
-              Talk to Engineering
-              <ArrowUpRight className="h-4 w-4" />
-            </Link>
-          </div>
-        </div>
-      </section>
-
-      <section aria-label="Industries we serve" className="relative overflow-hidden border-y border-border bg-carbon-2/60">
-        <div className="flex items-center gap-6 px-5 py-4 sm:px-8">
-          <span className="hidden shrink-0 font-mono text-[10px] uppercase tracking-[0.3em] text-brand sm:inline">/ industries we serve</span>
-          <div className="relative flex-1 overflow-hidden [mask-image:linear-gradient(to_right,transparent,black_8%,black_92%,transparent)]">
-            <div className="marquee flex w-max items-center gap-10">
-              {[...industries, ...industries].map((label, i) => (
-                <span key={`${label}-${i}`} className="inline-flex items-center gap-3 font-display text-sm font-semibold tracking-wide text-foreground/80">
-                  <span className="h-1.5 w-1.5 rounded-full bg-brand" />
-                  {label}
-                </span>
-              ))}
+        <div className="mx-auto grid min-h-[calc(100svh-8rem)] max-w-7xl content-center gap-10 px-5 pb-20 pt-12 sm:px-8 lg:grid-cols-[minmax(0,1fr)_18rem] lg:items-end lg:pb-16">
+          <div className="max-w-4xl">
+            <div className="reveal inline-flex items-center gap-2 border-l-2 border-brand pl-3 font-mono text-[10px] uppercase tracking-[0.24em] text-brand sm:text-xs">
+              Engineering manufacturing systems since 1994
+            </div>
+            <h1 className="reveal mt-6 max-w-4xl font-display text-[clamp(2.6rem,7vw,6.4rem)] font-bold leading-[0.95]" data-reveal-delay="80">
+              Investment casting.
+              <span className="mt-2 block text-brand">Robotic automation.</span>
+            </h1>
+            <p className="reveal mt-7 max-w-2xl text-base leading-relaxed text-foreground/80 sm:text-lg" data-reveal-delay="160">
+              Modtech designs and builds investment casting machinery and customised turnkey automation—from robotic case handling and palletizing to machine tending and vision-guided cells.
+            </p>
+            <div className="reveal mt-8 flex flex-wrap gap-3" data-reveal-delay="240">
+              <Button asChild size="lg" className="h-12 px-6 font-mono text-xs uppercase tracking-wider">
+                <Link to="/machines">Explore machines <ArrowRight /></Link>
+              </Button>
+              <Button asChild size="lg" variant="outline" className="h-12 border-foreground/30 bg-carbon/50 px-6 font-mono text-xs uppercase tracking-wider backdrop-blur hover:border-brand hover:bg-carbon/80 hover:text-brand">
+                <Link to="/automation">Automation systems <ArrowUpRight /></Link>
+              </Button>
             </div>
           </div>
-        </div>
-      </section>
 
-      <section className="relative bg-carbon px-5 py-16 sm:px-8 sm:py-20">
-        <div className="absolute inset-0 bg-grid bg-grid-fade opacity-50" />
-        <div className="relative mx-auto max-w-7xl">
-          <div className="reveal-on-scroll text-center">
-            <div className="font-mono text-[11px] uppercase tracking-[0.3em] text-brand">/ at a glance</div>
-            <h2 className="mt-3 font-display text-3xl font-bold leading-[1.1] tracking-tight sm:text-5xl">
-              Two divisions. <span className="text-gradient-brand">One team.</span>
-            </h2>
-            <p className="mx-auto mt-4 max-w-xl text-muted-foreground">
-              Side by side — Investment Casting machinery first, Robotics & Automation cells alongside.
-            </p>
-          </div>
-          <div className="mt-12 grid gap-6 lg:grid-cols-2">
-            {divisions.map((d) => (
-              <article key={d.code} className="reveal-on-scroll corner-tl group relative overflow-hidden rounded-2xl border border-border bg-card shadow-card">
-                <div className="relative aspect-[16/10] overflow-hidden">
-                  <img src={d.image} alt={d.title} loading="lazy" className="h-full w-full object-cover transition duration-700 group-hover:scale-105" />
-                  <div className="absolute inset-0 bg-gradient-to-t from-card via-card/40 to-transparent" />
-                  <div className="absolute left-4 top-4 flex items-center gap-2">
-                    <span className="rounded-md bg-card/80 px-2.5 py-1 font-mono text-[10px] uppercase tracking-widest text-brand backdrop-blur">{d.code}</span>
-                    <span className="rounded-md border border-border bg-card/80 px-2.5 py-1 font-mono text-[10px] uppercase tracking-widest text-muted-foreground backdrop-blur">{categoryMeta[d.category].label}</span>
-                  </div>
-                </div>
-                <div className="p-7">
-                  <div className="font-mono text-[11px] uppercase tracking-widest text-muted-foreground">{d.tag}</div>
-                  <h3 className="mt-2 font-display text-2xl font-bold tracking-tight">{d.title}</h3>
-                  <p className="mt-3 text-sm leading-relaxed text-muted-foreground">{d.description}</p>
-                  <Link to="/divisions" className="mt-5 inline-flex items-center gap-2 font-mono text-xs font-semibold uppercase tracking-wider text-brand transition hover:gap-3">
-                    See full division <ArrowRight className="h-4 w-4" />
-                  </Link>
-                </div>
-              </article>
-            ))}
-          </div>
-
-          <dl className="reveal-on-scroll mt-14 grid grid-cols-2 gap-px overflow-hidden rounded-xl border border-border bg-border sm:grid-cols-4">
-            {stats.map((s) => (
-              <div key={s.label} className="bg-card px-4 py-5 text-center sm:py-6">
-                <dd className="font-display text-2xl font-bold leading-none text-gradient-brand sm:text-3xl">{s.value}</dd>
-                <dt className="mt-2 font-mono text-[10px] uppercase tracking-[0.18em] text-muted-foreground">{s.label}</dt>
+          <dl className="reveal grid grid-cols-2 border border-foreground/15 bg-carbon/65 backdrop-blur-md lg:grid-cols-1" data-reveal-delay="320">
+            {stats.slice(0, 3).map((item) => (
+              <div key={item.label} className="border-b border-r border-foreground/15 p-4 last:border-b-0 sm:p-5 lg:border-r-0">
+                <dd className="font-display text-2xl font-bold text-brand sm:text-3xl">{item.value}</dd>
+                <dt className="mt-1 font-mono text-[9px] uppercase tracking-[0.18em] text-foreground/60">{item.label}</dt>
               </div>
             ))}
           </dl>
         </div>
       </section>
 
-      <section className="relative bg-background px-5 py-16 sm:px-8 sm:py-20">
+      <section aria-label="Industries served" className="overflow-hidden border-y border-border bg-carbon-2 py-4">
+        <div className="home-marquee flex w-max items-center gap-10">
+          {[...automationIndustries, ...automationIndustries].map((industry, index) => (
+            <span key={`${industry}-${index}`} className="inline-flex items-center gap-3 whitespace-nowrap font-mono text-[10px] uppercase tracking-[0.18em] text-muted-foreground">
+              <span className="h-1.5 w-1.5 bg-brand" />{industry}
+            </span>
+          ))}
+        </div>
+      </section>
+
+      <section className="bg-background px-5 py-20 sm:px-8 sm:py-28">
         <div className="mx-auto max-w-7xl">
-          <div className="reveal-on-scroll text-center">
-            <div className="font-mono to-foreground text-[11px] uppercase tracking-[0.3em] text-brand">/ where to next</div>
-            <h2 className="mt-3 font-display text-3xl font-bold leading-[1.1] tracking-tight sm:text-5xl">
-              Pick a path. <span className="text-gradient-brand">We&apos;ll guide you.</span>
-            </h2>
-            <p className="mx-auto mt-4 max-w-xl text-muted-foreground">
-              A clear, page-by-page tour of who we are and what we build.
+          <header className="reveal-on-scroll grid gap-6 border-b border-border pb-10 lg:grid-cols-[0.8fr_1.2fr] lg:items-end">
+            <div>
+              <p className="font-mono text-[10px] uppercase tracking-[0.28em] text-brand">Two engineering divisions</p>
+              <h2 className="mt-4 font-display text-4xl font-bold sm:text-6xl">One team.<br />Two disciplines.</h2>
+            </div>
+            <p className="max-w-xl text-base leading-relaxed text-muted-foreground lg:justify-self-end">
+              Dedicated expertise for precision foundry equipment and factory automation, backed by in-house design, manufacturing, integration and service.
             </p>
+          </header>
+
+          <div className="mt-12 space-y-20 sm:mt-16 sm:space-y-28">
+            <DivisionChapter
+              number="01"
+              title="Investment Casting Machinery"
+              description="Equipment for wax preparation and injection, ceramic shell building and foundry processing—engineered for repeatable production and dependable uptime."
+              image={castingImage}
+              alt="Modtech wax injection machinery"
+              to="/machines"
+              linkLabel="View casting machines"
+              points={["Wax injectors", "Wax conditioning systems", "Slurry equipment", "Rain sanders & shelling cells"]}
+            />
+            <DivisionChapter
+              number="02"
+              title="Robotics & Automation"
+              description="Custom robot cells for packaging, material handling and machine tending, built around each product, process and factory layout."
+              image={roboticsImage.url}
+              alt="Modtech robotic case packing system"
+              to="/automation"
+              linkLabel="Explore automation"
+              points={["Robotic case erecting & packing", "Robotic palletizing", "Pick & place", "Machine tending & vision systems"]}
+              reverse
+            />
+          </div>
+        </div>
+      </section>
+
+      <section className="on-dark bg-carbon px-5 py-20 sm:px-8 sm:py-28">
+        <div className="mx-auto max-w-7xl">
+          <div className="reveal-on-scroll flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
+            <div>
+              <p className="font-mono text-[10px] uppercase tracking-[0.28em] text-brand">Automation portfolio</p>
+              <h2 className="mt-4 max-w-3xl font-display text-4xl font-bold sm:text-6xl">Built around the work your line needs done.</h2>
+            </div>
+            <Button asChild variant="outline" className="w-fit border-foreground/25 bg-transparent font-mono text-xs uppercase tracking-wider hover:border-brand hover:bg-brand hover:text-brand-foreground">
+              <Link to="/automation">See all systems <ArrowRight /></Link>
+            </Button>
           </div>
 
-          <div className="reveal-on-scroll mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-            {[
-              { to: "/divisions"  as const, kicker: "01", title: "Our Two Divisions",    desc: "Robotics & Automation, and Investment Casting — explained side by side." },
-              { to: "/machines"   as const, kicker: "02", title: "Products & Machines",  desc: "Browse the full catalogue of equipment we design, build and integrate." },
-              { to: "/solutions"  as const, kicker: "03", title: "Services",             desc: "What we deliver and how each engineering capability works for you." },
-              { to: "/industries" as const, kicker: "04", title: "Industries Served",    desc: "From aerospace to railways — sectors where Modtech machines run." },
-              { to: "/about"      as const, kicker: "05", title: "About Modtech",        desc: "20+ years of engineering for India's leading manufacturers." },
-              { to: "/contact"    as const, kicker: "06", title: "Talk to Us",           desc: "Tell us about your line. We'll come back with a system blueprint." },
-            ].map((card) => (
+          <div className="mt-12 grid gap-px overflow-hidden border border-border bg-border sm:grid-cols-2 lg:grid-cols-12">
+            {featuredSolutions.map((solution, index) => (
               <Link
-                key={card.to}
-                to={card.to}
-                className="group relative flex flex-col overflow-hidden rounded-2xl border border-border bg-card p-7 shadow-card transition hover:-translate-y-1 hover:border-brand/60 hover:shadow-deep"
+                key={solution.slug}
+                to="/automation"
+                className={`home-solution reveal-on-scroll group relative min-h-[24rem] overflow-hidden bg-card ${index < 2 ? "lg:col-span-6" : "lg:col-span-4"}`}
+                data-reveal-delay={(index % 3) * 90}
               >
-                <div className="font-mono text-[11px] uppercase tracking-[0.3em] text-brand">/ {card.kicker}</div>
-                <h3 className="mt-3 font-display text-2xl font-bold tracking-tight">{card.title}</h3>
-                <p className="mt-3 text-sm leading-relaxed text-muted-foreground">{card.desc}</p>
-                <div className="mt-6 inline-flex items-center gap-2 font-mono text-[11px] font-semibold uppercase tracking-wider text-brand transition group-hover:gap-3">
-                  Open page <ArrowRight className="h-3.5 w-3.5" />
+                <img src={solution.image} alt={solution.title} loading="lazy" className="home-machine-image absolute inset-0 h-full w-full object-cover" />
+                <div className="absolute inset-0 bg-gradient-to-t from-carbon via-carbon/25 to-transparent" />
+                <div className="absolute inset-x-0 bottom-0 p-6 sm:p-8">
+                  <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-brand">System {String(index + 1).padStart(2, "0")}</span>
+                  <h3 className="mt-2 max-w-sm font-display text-2xl font-bold sm:text-3xl">{solution.title}</h3>
+                  <p className="mt-3 line-clamp-2 max-w-md text-sm leading-relaxed text-foreground/70">{solution.summary}</p>
+                  <span className="mt-5 inline-flex items-center gap-2 font-mono text-[10px] uppercase tracking-wider text-brand">View system <ArrowUpRight className="h-4 w-4 transition group-hover:translate-x-1 group-hover:-translate-y-1" /></span>
                 </div>
-                <span className="pointer-events-none absolute right-5 top-5 opacity-0 transition group-hover:opacity-100">
-                  <ArrowUpRight className="h-5 w-5 text-brand" />
-                </span>
               </Link>
             ))}
           </div>
         </div>
       </section>
 
-      <section className="relative bg-carbon px-5 py-16 sm:px-8 sm:py-20">
-        <div className="absolute inset-0 bg-grid bg-grid-fade opacity-40" />
-        <div className="relative mx-auto max-w-7xl">
-          <div className="reveal-on-scroll text-center">
-            <div className="font-mono text-[11px] uppercase tracking-[0.3em] text-brand">/ awards & certifications</div>
-            <h2 className="mt-3 font-display text-3xl font-bold leading-[1.1] tracking-tight sm:text-5xl">
-              Built to the <span className="text-gradient-brand">highest standards</span>.
-            </h2>
-            <p className="mx-auto mt-4 max-w-xl text-muted-foreground">
-              Recognised, certified and trusted across India and global markets.
-            </p>
-          </div>
-          <ul className="reveal-on-scroll mt-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-            {CERTS.map((c) => (
-              <li key={c.title} className="group rounded-2xl border border-border bg-card p-6 text-center shadow-card transition hover:-translate-y-1 hover:border-brand/60">
-                <span className="mx-auto grid h-14 w-14 place-items-center rounded-full border border-border bg-secondary/40 text-brand transition group-hover:bg-brand/10 group-hover:scale-110">
-                  <c.Icon className="h-7 w-7" />
-                </span>
-                <div className="mt-4 font-display text-base font-bold tracking-tight">{c.title}</div>
-                <p className="mt-2 text-xs leading-relaxed text-muted-foreground">{c.desc}</p>
-              </li>
-            ))}
-          </ul>
-        </div>
-      </section>
-
-      <section id="contact" className="relative bg-background px-5 py-16 sm:px-8 sm:py-20">
-        <div className="mx-auto max-w-6xl">
-          <div className="reveal-on-scroll text-center">
-            <div className="font-mono text-[11px] uppercase tracking-[0.3em] text-brand">/ get in touch</div>
-            <h2 className="mt-3 font-display text-3xl font-bold leading-[1.1] tracking-tight sm:text-5xl">
-              Tell us about <span className="text-gradient-brand">your line</span>.
-            </h2>
-            <p className="mx-auto mt-4 max-w-xl text-muted-foreground">
-              Send an enquiry and our engineering team will reply with a system blueprint.
-            </p>
-          </div>
-          <div className="mt-12 grid gap-8 lg:grid-cols-[1fr_1.2fr]">
-            <div className="reveal-on-scroll space-y-4">
-              <a href="mailto:info@modtechworld.com" className="group flex items-start gap-4 rounded-2xl border border-border bg-card p-6 transition hover:-translate-y-1 hover:border-brand/60">
-                <span className="grid h-11 w-11 shrink-0 place-items-center rounded-xl border border-border bg-secondary/40 text-brand">
-                  <Mail className="h-5 w-5" />
-                </span>
-                <div>
-                  <div className="font-mono text-[10px] uppercase tracking-[0.25em] text-muted-foreground">Email</div>
-                  <div className="mt-1 font-display text-base font-semibold text-foreground transition group-hover:text-brand">info@modtechworld.com</div>
-                </div>
-              </a>
-              <a href="tel:+910000000000" className="group flex items-start gap-4 rounded-2xl border border-border bg-card p-6 transition hover:-translate-y-1 hover:border-brand/60">
-                <span className="grid h-11 w-11 shrink-0 place-items-center rounded-xl border border-border bg-secondary/40 text-brand">
-                  <Phone className="h-5 w-5" />
-                </span>
-                <div>
-                  <div className="font-mono text-[10px] uppercase tracking-[0.25em] text-muted-foreground">Phone</div>
-                  <div className="mt-1 font-display text-base font-semibold text-foreground transition group-hover:text-brand">+91 00000 00000</div>
-                </div>
-              </a>
-              <div className="flex items-start gap-4 rounded-2xl border border-border bg-card p-6">
-                <span className="grid h-11 w-11 shrink-0 place-items-center rounded-xl border border-border bg-secondary/40 text-brand">
-                  <MapPin className="h-5 w-5" />
-                </span>
-                <div>
-                  <div className="font-mono text-[10px] uppercase tracking-[0.25em] text-muted-foreground">Workshop</div>
-                  <div className="mt-1 font-display text-base font-semibold text-foreground">India · Global delivery</div>
-                </div>
-              </div>
+      <section className="bg-background px-5 py-20 sm:px-8 sm:py-28">
+        <div className="mx-auto max-w-7xl">
+          <div className="reveal-on-scroll grid gap-10 lg:grid-cols-[0.8fr_1.2fr]">
+            <div className="lg:sticky lg:top-32 lg:self-start">
+              <p className="font-mono text-[10px] uppercase tracking-[0.28em] text-brand">Why Modtech</p>
+              <h2 className="mt-4 font-display text-4xl font-bold sm:text-6xl">Engineering that stays accountable.</h2>
+              <p className="mt-5 max-w-lg leading-relaxed text-muted-foreground">From the first layout to commissioning and after-sales support, one engineering partner owns the complete system.</p>
             </div>
-            <EnquiryForm heading="Request a quote" />
+            <ol className="border-t border-border">
+              {advantages.map(({ Icon, title, text }, index) => (
+                <li key={title} className="grid gap-4 border-b border-border py-7 sm:grid-cols-[4rem_1fr] sm:py-9">
+                  <div className="flex items-center gap-3 sm:block">
+                    <span className="font-mono text-xs text-brand">0{index + 1}</span>
+                    <Icon className="mt-0 h-5 w-5 text-brand sm:mt-5" />
+                  </div>
+                  <div>
+                    <h3 className="font-display text-2xl font-bold">{title}</h3>
+                    <p className="mt-2 max-w-xl text-sm leading-relaxed text-muted-foreground sm:text-base">{text}</p>
+                  </div>
+                </li>
+              ))}
+            </ol>
           </div>
         </div>
       </section>
 
-      <section className="relative overflow-hidden bg-background px-5 py-16 sm:px-8 sm:py-20">
-
-        <div className="pointer-events-none absolute left-1/2 top-1/2 h-[500px] w-[500px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-brand/15 blur-[140px]" />
-        <div className="reveal-on-scroll relative mx-auto max-w-4xl text-center">
-          <h2 className="font-display text-3xl font-bold leading-[1.1] tracking-tight sm:text-5xl">
-            Ready to <span className="text-gradient-brand">engineer your line?</span>
-          </h2>
-          <p className="mx-auto mt-5 max-w-xl text-muted-foreground">
-            Tell us about the part, the volume, and the cycle time. We&apos;ll come back with a system blueprint.
-          </p>
-          <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
-            <Link to="/contact" className="inline-flex items-center gap-3 rounded-full bg-brand px-7 py-3.5 font-mono text-xs font-semibold uppercase tracking-wider text-brand-foreground shadow-glow transition hover:translate-y-[-2px]">
-              Contact us <ArrowRight className="h-4 w-4" />
-            </Link>
-            <Link to="/machines" className="inline-flex items-center gap-3 rounded-full border border-border bg-card/40 px-7 py-3.5 font-mono text-xs font-semibold uppercase tracking-wider text-foreground transition hover:border-brand/50 hover:text-brand">
-              Browse machines <ArrowUpRight className="h-4 w-4" />
-            </Link>
+      <section className="border-y border-border bg-carbon-2 px-5 py-16 sm:px-8 sm:py-20">
+        <div className="reveal-on-scroll mx-auto max-w-7xl">
+          <div className="grid gap-10 lg:grid-cols-[0.7fr_1.3fr] lg:items-start">
+            <div>
+              <p className="font-mono text-[10px] uppercase tracking-[0.28em] text-brand">Trusted ecosystem</p>
+              <h2 className="mt-4 font-display text-3xl font-bold sm:text-5xl">Global production experience.</h2>
+              <p className="mt-4 text-sm leading-relaxed text-muted-foreground">More than 1,000 projects delivered across 45+ countries, including work with 10+ Fortune 500 customers.</p>
+            </div>
+            <div className="space-y-8">
+              <ProofRow label="Robot partners" items={automationPartners} />
+              <ProofRow label="Selected customers" items={automationCustomers.slice(0, 10)} />
+            </div>
           </div>
+        </div>
+      </section>
+
+      <section id="contact" className="bg-background px-5 py-20 sm:px-8 sm:py-28">
+        <div className="mx-auto grid max-w-7xl gap-10 lg:grid-cols-[0.8fr_1.2fr] lg:gap-16">
+          <div className="reveal-on-scroll lg:pt-4">
+            <p className="font-mono text-[10px] uppercase tracking-[0.28em] text-brand">Start a project</p>
+            <h2 className="mt-4 font-display text-4xl font-bold sm:text-6xl">Tell us what your line needs to achieve.</h2>
+            <p className="mt-5 max-w-lg leading-relaxed text-muted-foreground">Share the product, process, output target and available space. Modtech's engineering team will review the requirement.</p>
+            <div className="mt-8 space-y-5 border-t border-border pt-7 text-sm">
+              <a href={`mailto:${companyContact.email}`} className="flex items-center gap-3 text-foreground transition hover:text-brand"><Mail className="h-4 w-4 text-brand" />{companyContact.email}</a>
+              <div className="flex items-start gap-3 text-muted-foreground"><MapPin className="mt-0.5 h-4 w-4 shrink-0 text-brand" /><span>{companyContact.address}</span></div>
+            </div>
+          </div>
+          <EnquiryForm heading="Request an engineering consultation" />
         </div>
       </section>
     </PageShell>
+  );
+}
+
+function DivisionChapter({
+  number,
+  title,
+  description,
+  image,
+  alt,
+  to,
+  linkLabel,
+  points,
+  reverse = false,
+}: {
+  number: string;
+  title: string;
+  description: string;
+  image: string;
+  alt: string;
+  to: "/machines" | "/automation";
+  linkLabel: string;
+  points: string[];
+  reverse?: boolean;
+}) {
+  return (
+    <article className="reveal-on-scroll grid gap-8 lg:grid-cols-12 lg:items-center">
+      <div className={`home-image-reveal relative min-h-[22rem] overflow-hidden sm:min-h-[32rem] lg:col-span-7 ${reverse ? "lg:order-2" : ""}`}>
+        <img src={image} alt={alt} loading="lazy" className="home-machine-image absolute inset-0 h-full w-full object-cover" />
+        <span className="absolute left-4 top-4 bg-carbon/80 px-3 py-2 font-mono text-xs text-brand backdrop-blur">DIV.{number}</span>
+      </div>
+      <div className={`lg:col-span-5 ${reverse ? "lg:order-1 lg:pr-10" : "lg:pl-10"}`}>
+        <p className="font-mono text-[10px] uppercase tracking-[0.26em] text-brand">Division {number}</p>
+        <h3 className="mt-4 font-display text-3xl font-bold sm:text-5xl">{title}</h3>
+        <p className="mt-5 leading-relaxed text-muted-foreground">{description}</p>
+        <ul className="mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-1">
+          {points.map((point) => <li key={point} className="flex items-center gap-3 text-sm"><Check className="h-4 w-4 shrink-0 text-brand" />{point}</li>)}
+        </ul>
+        <Button asChild variant="link" className="mt-7 h-auto p-0 font-mono text-xs uppercase tracking-wider">
+          <Link to={to}>{linkLabel} <ArrowRight /></Link>
+        </Button>
+      </div>
+    </article>
+  );
+}
+
+function ProofRow({ label, items }: { label: string; items: string[] }) {
+  return (
+    <div>
+      <p className="font-mono text-[9px] uppercase tracking-[0.22em] text-muted-foreground">{label}</p>
+      <div className="mt-3 flex flex-wrap gap-x-6 gap-y-3">
+        {items.map((item) => <span key={item} className="font-display text-sm font-semibold text-foreground/80 sm:text-base">{item}</span>)}
+      </div>
+    </div>
   );
 }
