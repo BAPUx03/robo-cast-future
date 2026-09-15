@@ -52,7 +52,7 @@ export function PageHero({
 
 function FloatingActions() {
   return (
-    <div className="floating-actions fixed bottom-5 right-5 z-40 flex flex-col gap-3 transition-opacity duration-300 sm:bottom-7 sm:right-7">
+    <div className="floating-actions fixed bottom-7 right-7 z-40 hidden flex-col gap-3 transition-opacity duration-300 sm:flex">
       <a
         href={`https://wa.me/${WHATSAPP_INTL}`}
         target="_blank"

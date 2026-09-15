@@ -1,0 +1,1 @@
+- [ ] Move the main navigation into a clear dedicated menu bar above the homepage hero
