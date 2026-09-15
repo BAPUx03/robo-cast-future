@@ -3,7 +3,7 @@ import { ArrowRight, ArrowUpRight } from "lucide-react";
 import { PageShell, PageHero } from "@/components/page-shell";
 import { useRevealOnScroll } from "@/hooks/use-reveal-on-scroll";
 import { modeData, type Mode } from "@/content/site-data";
-import heroImg from "@/assets/casting-visual.jpg";
+import { automationImages } from "@/content/automation-data";
 import { useState } from "react";
 
 export const Route = createFileRoute("/solutions")({
@@ -26,7 +26,7 @@ function SolutionsPage() {
     <PageShell>
       <PageHero
         kicker="/ solutions"
-        image={heroImg}
+        image={automationImages.casePacker}
         title={<>Two worlds. <span className="text-gradient-brand">One switch.</span></>}
         subtitle="Toggle between our two engineering divisions to see what we build, how it works, and where it ships."
       />

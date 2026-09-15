@@ -1,29 +1,22 @@
 import { MessagesSquare, PencilRuler, Hammer, Bot, Headphones } from "lucide-react";
-import roboticsImg from "@/assets/robotics-visual.jpg";
-import castingImg from "@/assets/casting-visual.jpg";
-import mWaxInjector from "@/assets/m-wax-injector.jpg";
-import mMeltingTank from "@/assets/m-melting-tank.jpg";
-import mInjectionCell from "@/assets/m-injection-cell.jpg";
-import mShearMixer from "@/assets/m-shear-mixer.jpg";
-import mRainSander from "@/assets/m-rain-sander.jpg";
-import mSlurryTank from "@/assets/m-slurry-tank.jpg";
-import mShellingCell from "@/assets/m-shelling-cell.jpg";
-import mCeramicInjector from "@/assets/m-ceramic-injector.jpg";
-import newsRoboticImg from "@/assets/news-robotic-cell.jpg";
-import newsRoboticWebp from "@/assets/news-robotic-cell.webp";
-import newsAutomationImg from "@/assets/news-automation-line.jpg";
-import newsAutomationWebp from "@/assets/news-automation-line.webp";
-import newsCastingImg from "@/assets/news-casting-pour.jpg";
-import newsCastingWebp from "@/assets/news-casting-pour.webp";
-import divCastingReal from "@/assets/tending-wax-1.jpg.asset.json";
-import divRoboticsReal from "@/assets/robot-6-axis.jpg.asset.json";
+import { automationImages } from "@/content/automation-data";
 
-export type Mode = "casting" | "robotic";
-export type Category = "casting" | "robotic" | "automation";
+const castingImg = automationImages.casting;
+const mWaxInjector = automationImages.casting;
+const mMeltingTank = automationImages.casting;
+const mInjectionCell = automationImages.casting;
+const mShearMixer = automationImages.casting;
+const mRainSander = automationImages.casting;
+const mSlurryTank = automationImages.casting;
+const mShellingCell = automationImages.casting;
+const mCeramicInjector = automationImages.casting;
+
+export type Mode = "casting" | "robotics";
+export type Category = "casting" | "robotics" | "automation";
 
 export const categoryMeta: Record<Category, { label: string; accent: string }> = {
   casting:    { label: "Investment Casting", accent: "from-copper to-brand" },
-  robotic:    { label: "Robotics",           accent: "from-brand to-cyan" },
+  robotics:   { label: "Robotics",           accent: "from-brand to-cyan" },
   automation: { label: "Automation",         accent: "from-cyan to-brand" },
 };
 
@@ -35,11 +28,7 @@ export const stats = [
   { value: "250+",  label: "Talent Pool" },
 ];
 
-export const clients = [
-  "SCHOTT KAISHA", "SRF", "UNILEVER", "PERFETTI VAN MELLE", "L&T TECHNOLOGY SERVICES",
-  "HINDUSTAN UNILEVER", "WIPRO", "UPL", "USV", "PIDILITE", "ASTRAL PIPES",
-  "ITC LIMITED", "PARAGON", "MITSU", "ATLAS PLASTIC",
-];
+export const partnerCapabilities = ["Robot integration", "PLC & HMI controls", "Vision systems", "Custom end-of-arm tooling", "Safety integration"];
 
 // Industries Modtech serves — used by the marquee strip under the hero.
 export const industries = [
@@ -68,13 +57,13 @@ export const modeData: Record<Mode, {
     primaryCta: "Explore machines",
     secondaryCta: "Request a quote",
   },
-  robotic: {
+  robotics: {
     label: "Robotics & Automation",
-    kicker: "Autonomous production cells",
-    title: "Robots, vision & PLC logic engineered as one cell.",
+    kicker: "Turnkey production cells",
+    title: "Robots, vision and controls engineered as one line.",
     description:
       "Six-axis robot integration, shelling automation, wax-room robotics and PLC-driven process control — built and validated under one roof.",
-    image: roboticsImg,
+    image: automationImages.robot6Axis,
     features: [
       { title: "Robot cell integration", desc: "Custom EOAT, fencing, safety I/O and HMI." },
       { title: "Shelling automation",    desc: "Hands-off dip · drain · stucco cycles." },
@@ -94,7 +83,7 @@ export const divisions: Array<{
     code: "DIV.01",
     title: "Investment Casting",
     tag: "Precision foundry machinery",
-    image: divCastingReal.url,
+    image: castingImg,
     category: "casting",
     description:
       "End-to-end casting line equipment — wax injectors, conditioning tanks, slurry machines, rain sanders, and ceramic injectors built for industrial reliability.",
@@ -104,11 +93,11 @@ export const divisions: Array<{
     code: "DIV.02",
     title: "Robotics & Automation",
     tag: "Autonomous production cells",
-    image: divRoboticsReal.url,
-    category: "robotic",
+    image: automationImages.casePacker,
+    category: "robotics",
     description:
       "Six-axis robot integration, shelling cells, wax-room automation and PLC-driven process control engineered for repeatable factory output.",
-    points: ["Robot cell integration","Shelling automation","Wax room robotics","PLC + HMI control","Vision & sensors","Safety systems"],
+    points: ["Case erection & packing","Palletizing","Machine tending","PLC + HMI control","Vision systems","Safety integration"],
   },
 ];
 
@@ -121,7 +110,7 @@ export type Machine = {
 };
 
 // Full product catalogue — mirrors modtechworld.com product taxonomy.
-export const functionalities: Machine[] = [
+const castingMachines: Machine[] = [
   // ---------- Wax Injectors (IGT special-purpose, up to 300T) ----------
   { code: "WI.01", slug: "4-pillar-wax-injector", title: "4-Pillar Wax Injector", image: mWaxInjector, category: "casting", group: "wax-injector",
     tagline: "Heavy-duty 4-pillar construction for large patterns.",
@@ -285,7 +274,7 @@ export const functionalities: Machine[] = [
       { label: "Body", value: "SS-304" },
     ],
   },
-  { code: "SH.06", slug: "automated-shelling-solution", title: "Automated Shelling Solution", image: mShellingCell, category: "robotic", group: "robotic",
+  { code: "SH.06", slug: "automated-shelling-solution", title: "Automated Shelling Solution", image: mShellingCell, category: "robotics", group: "robotic",
     tagline: "Full-line automation: dip · drain · stucco · dry.",
     desc: "Six-axis robotic shelling cell automating the full dip, drain, stucco and dry cycle with multi-station layout and SCADA traceability.",
     highlights: ["6-axis robot", "Up to 6 stations", "Recipe per part", "Production traceability"],
@@ -351,6 +340,18 @@ export const functionalities: Machine[] = [
   },
 ];
 
+const automationMachines: Machine[] = [
+  { code: "RA.01", slug: "robotic-case-erector", title: "Robotic Case Erector", image: automationImages.caseErector, category: "automation", group: "robotic", tagline: "Automate corrugated case erection and bottom sealing.", desc: "A six-axis robotic cell that handles multiple case magazines, forms bottom flaps and seals cases for a dependable start-of-line operation.", highlights: ["Multi-SKU recipe control", "Compact cell layout", "Remote-support-ready controls", "Custom end-of-arm tooling"], applications: ["FMCG", "Food & beverage", "Pharmaceutical", "Consumer goods"], specs: [{ label: "Configuration", value: "Custom by case format" }, { label: "Control", value: "PLC + touchscreen HMI" }, { label: "Support", value: "Ethernet enabled" }] },
+  { code: "RA.02", slug: "robotic-case-packer", title: "Robotic Case Packer", image: automationImages.casePacker, category: "automation", group: "robotic", tagline: "Flexible robotic packing for multiple products and cases.", desc: "A turnkey box-filling cell with six-axis handling, product infeed, case sealing and optional labelling or coding peripherals.", highlights: ["Multi-product handling", "Automatic tool changes", "Recipe management", "Servo-controlled robot"], applications: ["Food & beverage", "Pharmaceutical", "Personal care", "Household products"], specs: [{ label: "Robot", value: "6-axis, application selected" }, { label: "Formats", value: "Multi-SKU capable" }, { label: "Integration", value: "Sealing, labelling & coding" }] },
+  { code: "RA.03", slug: "robotic-palletizing", title: "Robotic Palletizing", image: automationImages.palletizer, category: "automation", group: "robotic", tagline: "Automatic pallet feeding, stacking and finished-stack output.", desc: "A configurable palletizing system designed around product geometry, cycle time, plant layout and required pallet pattern.", highlights: ["Automatic pallet feeder", "Multiple pallet patterns", "Reduced manual lifting", "Production monitoring"], applications: ["Cases", "Bags", "Tins", "Bales & sacks"], specs: [{ label: "Layout", value: "Custom cell design" }, { label: "Feeding", value: "Automatic pallet feeder" }, { label: "Control", value: "PLC + HMI" }] },
+  { code: "RA.04", slug: "robotic-pick-and-place", title: "Robotic Pick & Place", image: automationImages.pickPlaceRobotCell, category: "robotics", group: "robotic", tagline: "Vision-ready high-speed picking, sorting and handling.", desc: "Flexible robotic handling for picking, packing, sorting, defect removal, inspection and assembly across variable product flows.", highlights: ["Vision-guided handling", "High repeatability", "Custom grippers", "Conveyor tracking"], applications: ["Bin picking", "Sorting", "Assembly", "Inspection"], specs: [{ label: "Vision", value: "Optional camera & lighting" }, { label: "Handling", value: "Custom end-of-arm tooling" }, { label: "Control", value: "PLC + robot controller" }] },
+  { code: "RA.05", slug: "machine-tending", title: "Machine Tending", image: automationImages.machineTending, category: "robotics", group: "robotic", tagline: "Reliable loading and unloading for machines and presses.", desc: "Robotic machine tending for CNC equipment, injection moulding, wax injection and press operations, improving uptime and reducing repetitive manual work.", highlights: ["Machine interface integration", "Part presentation", "Safety-rated cells", "Cycle-time consistency"], applications: ["CNC machining", "Plastic injection", "Wax injection", "Press tending"], specs: [{ label: "Cell", value: "Single or multi-machine" }, { label: "Robot", value: "Payload selected by part" }, { label: "Interface", value: "Machine I/O integration" }] },
+  { code: "RA.06", slug: "robotic-vision-system", title: "Robotic Vision System", image: automationImages.visionInspectionCell, category: "robotics", group: "robotic", tagline: "Give production cells reliable eyes and real-time decisions.", desc: "Vision systems combine cameras, purpose-built lighting and software to guide robots, inspect product quality and track parts in motion.", highlights: ["OCR & barcode checking", "Orientation detection", "Defect inspection", "Conveyor tracking"], applications: ["Packaging", "Traceability", "Quality inspection", "Assembly"], specs: [{ label: "Camera", value: "Fixed or robot mounted" }, { label: "Lighting", value: "Application specific" }, { label: "Tracking", value: "Encoder integrated" }] },
+];
+
+// The public catalogue is sourced solely from the supplied Robotics & Automation ZIP.
+export const functionalities: Machine[] = automationMachines;
+
 export const processSteps = [
   { code: "01", name: "Consult",  desc: "Map your line, throughput and constraints with our engineering team.", Icon: MessagesSquare },
   { code: "02", name: "Engineer", desc: "Custom mechanical, electrical and control design tailored to your part.", Icon: PencilRuler },
@@ -363,21 +364,21 @@ export const news: Array<{
   tag: string; date: string; title: string; excerpt: string;
   image: string; imageWebp: string; category: Category;
 }> = [
-  { tag: "Casting",    date: "JAN 2025", title: "Inside the MTW-300 wax injector & pour cell",            excerpt: "Servo clamp control, integrated conditioning tanks and a robotic pour cell engineered for repeatable quality.", image: newsCastingImg,    imageWebp: newsCastingWebp,    category: "casting" },
-  { tag: "Robotic",    date: "MAR 2025", title: "Six-axis welding cell deployed for a Tier-1 supplier",   excerpt: "How a robotic welding cell raised yield by 28% and cut cycle time across the wax-to-shell process.", image: newsRoboticImg,    imageWebp: newsRoboticWebp,    category: "robotic" },
-  { tag: "Automation", date: "FEB 2025", title: "PLC-driven shelling line with vision-based QC",          excerpt: "Modular conveyor + vision pipeline delivers hands-off shell building with closed-loop process control.", image: newsAutomationImg, imageWebp: newsAutomationWebp, category: "automation" },
+  { tag: "Casting",    date: "JAN 2025", title: "Investment casting process engineering",                 excerpt: "A look at the controlled pouring and process discipline that support consistent investment-casting quality.", image: automationImages.casting, imageWebp: automationImages.casting, category: "casting" },
+  { tag: "Robotics",   date: "MAR 2025", title: "Six-axis welding cell deployed for a Tier-1 supplier",   excerpt: "How a robotic welding cell raised yield by 28% and cut cycle time across the wax-to-shell process.", image: automationImages.machineTendingCnc, imageWebp: automationImages.machineTendingCnc, category: "robotics" },
+  { tag: "Automation", date: "FEB 2025", title: "PLC-driven shelling line with vision-based QC",          excerpt: "Modular conveyor + vision pipeline delivers hands-off shell building with closed-loop process control.", image: automationImages.visionInspection, imageWebp: automationImages.visionInspection, category: "automation" },
 ];
 
 // Exhibitions & events — sourced from modtechworld.com (rights confirmed by owner).
 export const exhibitions: Array<{ title: string; date: string; location: string; image: string }> = [
   { title: "ICI 71st Technical Conference & Equipment Expo", date: "Oct 2024", location: "Covington, KY · USA",
-    image: "https://www.modtechworld.com/storage/exhibitions/May2025/vQYP3JHX80GSroJGgtEo.jpg" },
+    image: automationImages.facility },
   { title: "International Foundry Trade Fair",              date: "Mar 2025", location: "Düsseldorf · Germany",
-    image: "https://www.modtechworld.com/storage/exhibitions/May2025/2mIAsEaS12gbw0p6BlrS.JPG" },
+    image: automationImages.casePackerLine },
   { title: "Investment Casting Institute Expo",             date: "May 2025", location: "Atlanta, GA · USA",
-    image: "https://www.modtechworld.com/storage/exhibitions/May2025/Ja9xzivUV0GVe6ITg6zS.jpg" },
+    image: automationImages.palletizingLine },
   { title: "IFEX — India Foundry Congress",                 date: "Feb 2025", location: "Greater Noida · India",
-    image: "https://www.modtechworld.com/storage/exhibitions/May2025/OQu3Z5bMVPEuE6aW7Eo9.png" },
+    image: automationImages.machineTendingCnc },
   { title: "EUROGUSS Foundry Show",                          date: "Jul 2025", location: "Nuremberg · Germany",
-    image: "https://www.modtechworld.com/storage/exhibitions/July2025/42mZaBVQsgrHVTXpAXb3.jpg" },
+    image: automationImages.robot6Axis },
 ];

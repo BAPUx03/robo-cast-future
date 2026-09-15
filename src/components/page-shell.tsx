@@ -1,10 +1,8 @@
 import { Link } from "@tanstack/react-router";
-import { Phone, Mail, MapPin, Linkedin, Facebook, Instagram, Youtube, Twitter, MessageCircle } from "lucide-react";
+import { Mail, MapPin, Linkedin, Facebook, Instagram, Youtube, Twitter } from "lucide-react";
 import { SiteHeader } from "@/components/site-header";
 import { BrandLogo } from "@/components/brand-logo";
 
-const PHONE_INTL = "+910000000000";
-const WHATSAPP_INTL = "910000000000";
 
 export function PageShell({ children }: { children: React.ReactNode }) {
   return (
@@ -54,25 +52,13 @@ function FloatingActions() {
   return (
     <div className="floating-actions fixed bottom-7 right-7 z-40 hidden flex-col gap-3 transition-opacity duration-300 sm:flex">
       <a
-        href={`https://wa.me/${WHATSAPP_INTL}`}
-        target="_blank"
-        rel="noopener noreferrer"
-        aria-label="Chat on WhatsApp"
-        className="group grid h-14 w-14 place-items-center rounded-full bg-[#25D366] text-white shadow-deep ring-2 ring-white/20 transition hover:scale-110"
-      >
-        <MessageCircle className="h-6 w-6" />
-        <span className="pointer-events-none absolute right-full mr-3 hidden whitespace-nowrap rounded-md bg-carbon px-3 py-1.5 font-mono text-[10px] uppercase tracking-wider text-foreground shadow-deep group-hover:block">
-          WhatsApp
-        </span>
-      </a>
-      <a
-        href={`tel:${PHONE_INTL}`}
-        aria-label="Call us"
+        href="mailto:sales.automation@modtechworld.com"
+        aria-label="Email Modtech"
         className="group grid h-14 w-14 place-items-center rounded-full bg-brand text-brand-foreground shadow-glow ring-2 ring-white/10 transition hover:scale-110"
       >
-        <Phone className="h-6 w-6" />
+        <Mail className="h-6 w-6" />
         <span className="pointer-events-none absolute right-full mr-3 hidden whitespace-nowrap rounded-md bg-carbon px-3 py-1.5 font-mono text-[10px] uppercase tracking-wider text-foreground shadow-deep group-hover:block">
-          Call us
+          Email Modtech
         </span>
       </a>
     </div>
@@ -96,7 +82,6 @@ function SiteFooter() {
     { href: "https://www.instagram.com/", Icon: Instagram, label: "Instagram" },
     { href: "https://www.youtube.com/",   Icon: Youtube,   label: "YouTube"   },
     { href: "https://twitter.com/",       Icon: Twitter,   label: "Twitter / X" },
-    { href: `https://wa.me/${WHATSAPP_INTL}`, Icon: MessageCircle, label: "WhatsApp" },
   ];
   return (
     <footer className="relative border-t border-border bg-carbon-2 px-5 py-14 sm:px-8">
@@ -139,11 +124,6 @@ function SiteFooter() {
         <div>
           <div className="font-mono text-[10px] uppercase tracking-[0.25em] text-brand">/ reach us</div>
           <ul className="mt-4 space-y-3 text-sm text-muted-foreground">
-            <li>
-              <a href={`tel:${PHONE_INTL}`} className="inline-flex items-center gap-2 transition hover:text-brand">
-                <Phone className="h-4 w-4 text-brand" /> +91 00000 00000
-              </a>
-            </li>
             <li>
               <a href="mailto:info@modtechworld.com" className="inline-flex items-center gap-2 transition hover:text-brand">
                 <Mail className="h-4 w-4 text-brand" /> info@modtechworld.com

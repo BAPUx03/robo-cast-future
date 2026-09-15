@@ -1,278 +1,89 @@
-import caseErector from "@/assets/case-erector.png.asset.json";
-import casePacker from "@/assets/case-packer.png.asset.json";
-import machineTending from "@/assets/machine-tending.png.asset.json";
-import palletizer from "@/assets/palletizer.png.asset.json";
-import robot6Axis from "@/assets/robot-6-axis.jpg.asset.json";
-import robotAmr from "@/assets/robot-amr.jpg.asset.json";
-import robotCobot from "@/assets/robot-cobot.png.asset.json";
-import robotLinear from "@/assets/robot-linear.jpg.asset.json";
-import robotPalletizer from "@/assets/robot-palletizer.jpg.asset.json";
-import robotScara from "@/assets/robot-scara.jpg.asset.json";
-import caseErectorLine1 from "@/assets/case-erector-line-1.png.asset.json";
-import caseErectorLine2 from "@/assets/case-erector-line-2.png.asset.json";
-import casePackerLine1 from "@/assets/case-packer-line-1.png.asset.json";
-import casePackerLine2 from "@/assets/case-packer-line-2.png.asset.json";
-import palletizerLine1 from "@/assets/palletizer-line-1.png.asset.json";
-import palletizerLine2 from "@/assets/palletizer-line-2.png.asset.json";
-import pickPlaceLine1 from "@/assets/pick-place-line-1.png.asset.json";
-import tendingInjection1 from "@/assets/tending-injection-1.jpg.asset.json";
-import tendingInjection2 from "@/assets/tending-injection-2.jpg.asset.json";
-import tendingCnc1 from "@/assets/tending-cnc-1.jpg.asset.json";
-import tendingCnc2 from "@/assets/tending-cnc-2.jpg.asset.json";
-import tendingWax1 from "@/assets/tending-wax-1.jpg.asset.json";
-import tendingWax2 from "@/assets/tending-wax-2.jpg.asset.json";
-import tendingLaminates1 from "@/assets/tending-laminates-1.jpg.asset.json";
-import tendingLaminates2 from "@/assets/tending-laminates-2.jpg.asset.json";
+const caseErector = "/productsimg/products/case-erector.png";
+const casePacker = "/productsimg/products/case-packer-robot-cell.png";
+const machineTending = "/productsimg/products/machine-tending-cnc-cell.png";
+const palletizer = "/productsimg/products/palletizing-robot-cell.png";
+const pickPlaceRobotCell = "/productsimg/products/pick-place-robot-cell.png";
+const visionInspectionCell = "/productsimg/products/vision-inspection-cell.png";
+const robot6Axis = "/productsimg/robots/robot-6-axis.jpg";
+const robotAmr = "/productsimg/robots/robot-amr.jpeg";
+const robotCobot = "/productsimg/robots/robot-cobot.png";
+const robotLinear = "/productsimg/robots/robot-linear.jpg";
+const robotPalletizer = "/productsimg/robots/robot-palletizer.jpg";
+const robotScara = "/productsimg/robots/robot-scara.jpg";
+import caseErectorFloor from "@/assets/automation/installations/case-erector-floor.png";
+import palletizingFloor from "@/assets/automation/installations/palletizing-floor.png";
+import pickPlaceFloor from "@/assets/automation/installations/pick-place-floor.png";
+import machineTendingFloor from "@/assets/automation/installations/machine-tending-floor.png";
+import casePackerLine from "@/assets/automation/applications/case-packer-line.png";
+import palletizingLine from "@/assets/automation/applications/palletizing-line.png";
+import palletizingCell from "@/assets/automation/applications/palletizing-cell.png";
+import pickPlaceBottles from "@/assets/automation/applications/pick-place-bottles.png";
+import machineTendingCnc from "@/assets/automation/applications/machine-tending-cnc.png";
+import visionInspection from "@/assets/automation/applications/vision-inspection.png";
+import facility from "@/assets/automation/company/facility.png";
+import casting from "@/assets/automation/industries/casting.png";
+import epson from "@/assets/automation/partners/epson-robots.png";
+import fanuc from "@/assets/automation/partners/fanuc.png";
+import kawasaki from "@/assets/automation/partners/kawasaki.png";
+import omron from "@/assets/automation/partners/omron.png";
+import abb from "@/assets/automation/partners/abb-robotics.jpeg";
 
-// Sourced from the official Modtech "Robotics & Automation" company deck.
-export const automationImages = {
-  caseErector: caseErector.url,
-  casePacker: casePacker.url,
-  machineTending: machineTending.url,
-  palletizer: palletizer.url,
-  robot6Axis: robot6Axis.url,
-  robotAmr: robotAmr.url,
-  robotCobot: robotCobot.url,
-  robotLinear: robotLinear.url,
-  robotPalletizer: robotPalletizer.url,
-  robotScara: robotScara.url,
-  caseErectorLine1: caseErectorLine1.url,
-  caseErectorLine2: caseErectorLine2.url,
-  casePackerLine1: casePackerLine1.url,
-  casePackerLine2: casePackerLine2.url,
-  palletizerLine1: palletizerLine1.url,
-  palletizerLine2: palletizerLine2.url,
-  pickPlaceLine1: pickPlaceLine1.url,
-  tendingInjection1: tendingInjection1.url,
-  tendingInjection2: tendingInjection2.url,
-  tendingCnc1: tendingCnc1.url,
-  tendingCnc2: tendingCnc2.url,
-  tendingWax1: tendingWax1.url,
-  tendingWax2: tendingWax2.url,
-  tendingLaminates1: tendingLaminates1.url,
-  tendingLaminates2: tendingLaminates2.url,
-};
+// Curated from Modtech's approved Robotics & Automation brochure and image pack.
+export const automationImages = { caseErector, casePacker, machineTending, palletizer, pickPlaceRobotCell, visionInspectionCell, robot6Axis, robotAmr, robotCobot, robotLinear, robotPalletizer, robotScara, caseErectorFloor, palletizingFloor, pickPlaceFloor, machineTendingFloor, casePackerLine, palletizingLine, palletizingCell, pickPlaceBottles, machineTendingCnc, visionInspection, facility, casting };
 
 export const automationStats = [
-  { value: "1994", label: "Founded" },
-  { value: "1000+", label: "Projects in 45+ Countries" },
-  { value: "10+", label: "Fortune 500 Customers" },
-  { value: "250+", label: "Talent Pool" },
-  { value: "25+", label: "Std. & As-built Modules" },
-  { value: "2", label: "Manufacturing Facilities" },
+  { value: "1994", label: "Founded" }, { value: "2", label: "Facilities" },
+  { value: "1000+", label: "Projects in 45+ countries" }, { value: "25+", label: "Standard & custom modules" },
+  { value: "10+", label: "Fortune 500 customers" }, { value: "250+", label: "Engineering talent" },
 ];
 
-export type AutomationSolution = {
-  slug: string;
-  title: string;
-  image: string;
-  gallery?: string[];
-  summary: string;
-  valueAdds: string[];
-  includes: string[];
-};
+export type AutomationSolution = { slug: string; title: string; image: string; gallery?: string[]; summary: string; valueAdds: string[]; includes: string[]; applications: string[] };
 
 export const automationSolutions: AutomationSolution[] = [
-  {
-    slug: "robotic-case-erector",
-    title: "Robotic Case Erector",
-    image: automationImages.caseErector,
-    gallery: [automationImages.caseErectorLine1, automationImages.caseErectorLine2],
-    summary:
-      "An automated end-of-line packaging solution for erecting corrugated boxes and bottom sealing. The cell combines a 6-axis robot handling multiple case magazines with a bottom flap folder and case sealing head — a fast, efficient way to fully automate the start of your packaging line.",
-    valueAdds: [
-      "Eliminates error, delivering repeatability and reliability",
-      "Repeatable operation throughout the batch, minimal SKU changeover",
-      "Small footprint, high uptime, very low maintenance",
-      "Rugged design for any production environment",
-      "Easy to integrate with an existing line",
-      "Recipe function for running different SKUs",
-      "Industry 4.0 enabled",
-    ],
-    includes: [
-      "Robotic box erector system",
-      "Top & bottom taping machine",
-      "Box handling conveyors",
-      "Infeed conveyor integrated with your production output",
-      "Touch-screen control with remote logging and monitoring capacity",
-      "Guarding and interlocked safety doors",
-      "Custom-built robot gripper (vacuum or mechanical)",
-      "Ethernet connectivity for remote support",
-    ],
-  },
-  {
-    slug: "robotic-case-packer",
-    title: "Robotic Case Packer",
-    image: automationImages.casePacker,
-    gallery: [automationImages.casePackerLine1, automationImages.casePackerLine2],
-    summary:
-      "A complete box filling and packaging line where a precise 6-axis robot fills the case, with sealing, labelling and inkjet printing available as peripherals. Capable of handling multiple SKUs and product sizes on the same line.",
-    valueAdds: [
-      "Eliminates error and increases line reliability",
-      "Maintains repeatable operation throughout the batch",
-      "Automatic tool changers, very low maintenance",
-      "Tooling adjustable across a wide range of product sizes",
-      "Operator pendant for recipes, error reporting and diagnostics",
-      "Precise 6-axis robot with servo-controlled system",
-      "Remote support module for worldwide service",
-      "Industry 4.0 enabled",
-    ],
-    includes: [
-      "Robotic box filling system",
-      "Top & bottom taping machine",
-      "Box handling conveyors",
-      "Infeed conveyor integrated with your production output",
-      "Touch-screen control system with recipe management",
-      "Guarding and interlocked safety doors",
-      "Ethernet connectivity for remote support",
-    ],
-  },
-  {
-    slug: "robotic-palletizing",
-    title: "Robotic Palletizing",
-    image: automationImages.palletizer,
-    gallery: [automationImages.palletizerLine1, automationImages.palletizerLine2],
-    summary:
-      "A fully automatic palletizing system with pallet feeder, configurable for many product types and plant layouts. It runs without operator input beyond loading a stack of pallets and removing finished ones.",
-    valueAdds: [
-      "Reduces severe injury and fatigue to workers",
-      "Increases throughput, productivity and efficiency",
-      "Very low maintenance",
-      "Eliminates errors, adding repeatability and reliability",
-      "Industry 4.0 enabled",
-    ],
-    includes: [
-      "Robotic palletizer",
-      "Automatic pallet feeding system",
-      "Pallet feeding conveyors",
-      "Infeed conveyor integrated with your production output",
-      "Touch-screen control with production logging and monitoring",
-      "Guarding doors with interlocks and safety as required",
-      "Custom-built robot gripper",
-      "Ethernet connectivity for remote support",
-    ],
-  },
-  {
-    slug: "robotic-pick-and-place",
-    title: "Robotic Pick & Place",
-    image: automationImages.robot6Axis,
-    gallery: [automationImages.pickPlaceLine1],
-    summary:
-      "A robotic handling system configurable for multiple product types and plant layouts, running without operator input while picking and placing parts from one process into another — reducing repetitive strain and fatigue while lifting throughput.",
-    valueAdds: [
-      "High picking accuracy and repeatable work",
-      "Extremely high-speed output",
-      "Vision-guided sorting, packing and defect separation",
-      "Ideal for bin picking, sorting, assembly, packaging and inspection",
-      "Industry 4.0 enabled",
-    ],
-    includes: [
-      "Pick & place robot",
-      "Touch-screen control system with monitoring capacity",
-      "Vision camera for fill level, orientation and scanning",
-      "Guarding and interlocked safety doors",
-      "Bespoke robot gripper",
-      "Conveyor and product station as required",
-    ],
-  },
-  {
-    slug: "machine-tending",
-    title: "Machine Tending",
-    image: automationImages.machineTending,
-    gallery: [
-      automationImages.tendingInjection1,
-      automationImages.tendingCnc1,
-      automationImages.tendingWax1,
-      automationImages.tendingLaminates1,
-    ],
-    summary:
-      "Robotic loading and unloading of components on CNC machines, plastic injection moulding, wax injection cells and laminate presses. Robots handle raw material and finished parts accurately, ensuring consistent cycle times and repeatable quality on every operation.",
-    valueAdds: [
-      "Increased productivity and machine uptime",
-      "Consistent and repeatable part handling",
-      "Reduced labour costs and operator fatigue",
-      "Improved workplace safety",
-      "Scalable and flexible automation",
-    ],
-    includes: [
-      "Plastic injection part take-out",
-      "CNC machine loading and unloading",
-      "Wax injection cell with pre & post processing",
-      "Laminate and copper clad laminate press tending",
-    ],
-  },
-  {
-    slug: "vision-system",
-    title: "Vision System",
-    image: automationImages.robotScara,
-    summary:
-      "Robotic vision combines cameras, purpose-built lighting and software so the robot knows exactly where a part is and how it is oriented. Conveyor tracking lets the robot pick products while they are still moving, simplifying cell design and lowering cost.",
-    valueAdds: [
-      "Checking orientation and fill level",
-      "Barcode print checking and OCR / OCV label verification",
-      "Dent, scratch and defect detection",
-      "Part detection and volume calculation on the conveyor",
-      "Product quality monitoring in-process",
-      "Accurate part alignment for assembly and pick & place",
-    ],
-    includes: [
-      "Fixed or robot-mounted cameras",
-      "Special purpose lighting",
-      "Inspection software and calibration",
-      "Belt encoder conveyor tracking",
-    ],
-  },
+  { slug: "robotic-case-erector", title: "Robotic Case Erector", image: caseErector, gallery: [caseErectorFloor, casePackerLine],
+    summary: "A compact start-of-line cell that erects corrugated cases and seals their bottoms. A six-axis robot handles multiple case magazines while the flap folder and sealing head keep the line moving.",
+    valueAdds: ["Repeatable case quality across every batch", "Minimal SKU changeover with recipe control", "Small footprint and low-maintenance operation", "Easy integration with an existing line", "Industry 4.0-ready controls"],
+    includes: ["Robotic box erector", "Bottom flap folder and taping head", "Case handling and infeed conveyors", "Touchscreen HMI with logging capacity", "Safety guarding and custom vacuum or mechanical gripper"], applications: ["FMCG", "Food & beverage", "Pharmaceutical", "Consumer goods"] },
+  { slug: "robotic-case-packer", title: "Robotic Case Packer", image: casePacker, gallery: [casePackerLine, pickPlaceFloor],
+    summary: "A complete box-filling line in which a precise six-axis robot loads products into cases. Sealing, labelling and inkjet coding can be integrated around the product and case format.",
+    valueAdds: ["Reliable packing across multiple SKUs", "Adjustable tooling and automatic tool changes", "Recipe, diagnostics and error reporting at the operator pendant", "Servo-controlled six-axis handling", "Remote-support-ready connectivity"],
+    includes: ["Robotic box filling system", "Top and bottom case sealing", "Product and case conveyors", "Recipe-based touchscreen controls", "Safety guarding and bespoke gripper"], applications: ["Food & beverage", "Pharmaceutical", "Personal care", "Household products"] },
+  { slug: "robotic-palletizing", title: "Robotic Palletizing", image: palletizer, gallery: [palletizingFloor, palletizingCell],
+    summary: "A fully automatic palletizing system with pallet feeding, product infeed and finished-stack output. Each cell is configured around the product, achievable cycle time and available floor space.",
+    valueAdds: ["Less repetitive lifting and worker fatigue", "Higher throughput and stack consistency", "Multiple SKU and line configurations", "Very low maintenance", "Industry 4.0-ready monitoring"],
+    includes: ["Palletizing robot", "Automatic pallet feeder", "Pallet and product conveyors", "Production logging touchscreen controls", "Interlocked guarding and custom end-of-arm tooling"], applications: ["Cases", "Bags", "Tins", "Bales and sacks"] },
+  { slug: "robotic-pick-and-place", title: "Robotic Pick & Place", image: pickPlaceRobotCell, gallery: [pickPlaceFloor, pickPlaceBottles],
+    summary: "High-speed robotic handling for picking, sorting, packing, assembly and inspection. Vision guidance can identify orientation, separate defects and adapt picks while products move through the cell.",
+    valueAdds: ["High picking accuracy and repeatable work", "Fast handling for mixed product flows", "Vision-guided sorting and defect separation", "Less repetitive strain for operators", "Flexible layouts for changing products"],
+    includes: ["Pick-and-place robot", "Vision camera and lighting as required", "Recipe-based controls", "Bespoke gripper", "Conveyor, product station and safety guarding"], applications: ["Bin picking", "Sorting", "Assembly", "Inspection"] },
+  { slug: "machine-tending", title: "Machine Tending", image: machineTending, gallery: [machineTendingFloor, machineTendingCnc],
+    summary: "Robots load raw material and unload finished parts from CNC machines, injection presses, wax injection cells and laminate presses for consistent cycle times and safer production.",
+    valueAdds: ["Improved machine uptime", "Consistent part handling", "Reduced operator fatigue", "Safer workstation design", "Scalable single- or multi-machine cells"],
+    includes: ["Industrial robot and end-of-arm tooling", "Machine interface and safety controls", "Part presentation or conveyor", "Recipe and diagnostics HMI", "Installation and operator training"], applications: ["CNC machining", "Plastic injection", "Wax injection", "Laminates and press tending"] },
+  { slug: "vision-system", title: "Robotic Vision System", image: visionInspectionCell, gallery: [visionInspection],
+    summary: "Cameras, lighting, software and robot controls work together to locate, inspect and handle parts. Conveyor tracking lets the robot calculate moving-part positions without stopping the line.",
+    valueAdds: ["Orientation and fill-level checks", "Barcode, OCR and OCV verification", "Dent, scratch and defect detection", "In-process quality monitoring", "Accurate assembly alignment"],
+    includes: ["Fixed or robot-mounted camera", "Purpose-built lighting", "Inspection software and calibration", "Conveyor encoder integration", "Robot and PLC interface"], applications: ["Inspection", "Traceability", "Packaging", "Conveyor tracking"] },
 ];
 
-export const tendingCells: Array<{ name: string; images: string[]; video?: string }> = [
-  {
-    name: "Plastic Injection — Part Take-Out",
-    images: [automationImages.tendingInjection1, automationImages.tendingInjection2],
-    video: "https://youtu.be/QEIFrphd8FY",
-  },
-  {
-    name: "CNC Machine Tending",
-    images: [automationImages.tendingCnc1, automationImages.tendingCnc2],
-    video: "https://youtu.be/6-B0KG4wOtc",
-  },
-  {
-    name: "Wax Injection — Complete Cell with Pre & Post Processing",
-    images: [automationImages.tendingWax1, automationImages.tendingWax2],
-    video: "https://youtu.be/yUD12phHkuM",
-  },
-  {
-    name: "Laminates & Copper Clad Laminate — Assembly & Press Tending",
-    images: [automationImages.tendingLaminates1, automationImages.tendingLaminates2],
-  },
+export const tendingCells = [
+  { name: "Plastic Injection Part Take-Out", images: [machineTendingFloor], video: "https://youtu.be/QEIFrphd8FY" },
+  { name: "CNC Machine Tending", images: [machineTending, machineTendingFloor], video: "https://youtu.be/6-B0KG4wOtc" },
+  { name: "Wax Injection Cell", images: [robot6Axis, machineTendingFloor], video: "https://youtu.be/yUD12phHkuM" },
+  { name: "Laminate & Press Tending", images: [robotLinear, machineTendingFloor] },
 ];
 
-export const robotTypes: Array<{ name: string; image: string; desc: string }> = [
-  { name: "Articulated Robot (5/6-Axis)", image: automationImages.robot6Axis, desc: "The workhorse for packing, palletizing and machine tending." },
-  { name: "Collaborative Robot (Cobot)", image: automationImages.robotCobot, desc: "Safe alongside operators for light handling and inspection." },
-  { name: "SCARA Robot (4-Axis)", image: automationImages.robotScara, desc: "High-speed pick, place and assembly in a compact footprint." },
-  { name: "Palletizing Robot", image: automationImages.robotPalletizer, desc: "High-payload stacking for cases, bags, tins and bales." },
-  { name: "Multi-Axis Linear Robot", image: automationImages.robotLinear, desc: "Long-reach gantry handling across large work envelopes." },
-  { name: "AMR / AGV", image: automationImages.robotAmr, desc: "Autonomous in-plant material movement between stations." },
+export const robotTypes = [
+  { name: "Articulated Robot (5/6-Axis)", image: robot6Axis, desc: "Flexible industrial handling for packaging, palletizing and machine tending." },
+  { name: "Collaborative Robot", image: robotCobot, desc: "Compact, collaborative handling for assisted production and inspection tasks." },
+  { name: "SCARA Robot (4-Axis)", image: robotScara, desc: "High-speed pick, place and assembly in a compact footprint." },
+  { name: "Autonomous Mobile Robot", image: robotAmr, desc: "Autonomous in-plant movement between workstations and material stores." },
+  { name: "Multi-Axis Linear Robot", image: robotLinear, desc: "Long-reach gantry handling across larger work envelopes." },
+  { name: "Palletizing Robot", image: robotPalletizer, desc: "High-payload case, bag, tin and bale stacking." },
 ];
 
-export const automationIndustries = [
-  "FMCG", "Food & Beverages", "Pharmaceutical", "Dairy", "Electronics",
-  "PCB Manufacturing", "Silicon Wafer Processing", "Plastic", "Chemical",
-  "Investment Casting", "Foundry", "Machine Tools",
+export const automationIndustries = ["FMCG", "Food & beverages", "Pharmaceutical", "Dairy", "Electronics", "PCB manufacturing", "Silicon wafer processing", "Plastics", "Chemical", "E-commerce", "Investment casting", "Machine tools"];
+export const automationPartners = [
+  { name: "Epson Robots", image: epson }, { name: "FANUC", image: fanuc }, { name: "Kawasaki Robotics", image: kawasaki }, { name: "Omron", image: omron }, { name: "ABB Robotics", image: abb },
 ];
-
-export const automationPartners = ["OMRON", "EPSON Robots", "Kawasaki Robotics", "ABB Robotics", "KUKA"];
-
-export const automationCustomers = [
-  "SCHOTT KAISHA", "SRF", "UNILEVER", "PERFETTI VAN MELLE", "L&T TECHNOLOGY SERVICES",
-  "ATLAS PLASTIC", "HINDUSTAN UNILEVER", "WIPRO", "UPL", "USV", "PIDILITE",
-  "ASTRAL PIPES", "ITC LIMITED", "PARAGON", "MITSU",
-];
-
-export const companyContact = {
-  name: "Modtech Machines Pvt Ltd",
-  address:
-    "Survey No. 396, Plot No. 73P, New Ahmedabad Industrial Estate, B/h Zydus Research Center, NH 8A, Moraiya (Dist. Sanand), Ahmedabad 382 213, Gujarat, India.",
-  email: "sales.automation@modtechworld.com",
-  web: "www.modtechworld.com",
-};
+export const companyContact = { name: "Modtech Machines Pvt. Ltd.", address: "Survey No. 396, Plot No. 73P, New Ahmedabad Industrial Estate, behind Zydus Research Centre, NH 8A, Moraiya, Sanand, Ahmedabad 382 213, Gujarat, India.", email: "sales.automation@modtechworld.com", web: "www.modtechworld.com" };

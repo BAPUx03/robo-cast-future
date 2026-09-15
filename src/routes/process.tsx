@@ -3,7 +3,7 @@ import { ArrowRight } from "lucide-react";
 import { PageShell, PageHero } from "@/components/page-shell";
 import { useRevealOnScroll } from "@/hooks/use-reveal-on-scroll";
 import { processSteps } from "@/content/site-data";
-import heroImg from "@/assets/m-injection-cell.jpg";
+import { automationImages } from "@/content/automation-data";
 
 export const Route = createFileRoute("/process")({
   head: () => ({
@@ -23,7 +23,7 @@ function ProcessPage() {
     <PageShell>
       <PageHero
         kicker="/ process"
-        image={heroImg}
+        image={automationImages.facility}
         title={<>A <span className="text-gradient-brand">transparent path</span> from concept to production.</>}
         subtitle="Five clear steps. One accountable engineering team. Total visibility from first call to live production."
       />

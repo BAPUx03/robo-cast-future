@@ -7,7 +7,6 @@ import {
   automationStats,
   automationIndustries,
   automationPartners,
-  automationCustomers,
   automationImages,
   robotTypes,
   tendingCells,
@@ -87,6 +86,11 @@ function AutomationPage() {
                         ))}
                       </ul>
                     </div>
+                  </div>
+                  <div className="mt-6 flex flex-wrap gap-2">
+                    {s.applications.map((application) => (
+                      <span key={application} className="rounded-full border border-border bg-secondary/40 px-3 py-1 font-mono text-[9px] uppercase tracking-wider text-muted-foreground">{application}</span>
+                    ))}
                   </div>
                 </div>
                 {s.gallery && s.gallery.length > 0 && (
@@ -176,22 +180,14 @@ function AutomationPage() {
             </div>
           </div>
 
-          <div className="reveal-on-scroll grid gap-6 lg:grid-cols-2">
-            <div className="rounded-2xl border border-border bg-card/60 px-6 py-8">
-              <div className="font-mono text-[10px] uppercase tracking-[0.3em] text-brand">/ official integrators & partners</div>
-              <div className="mt-5 flex flex-wrap gap-x-8 gap-y-3">
-                {automationPartners.map((p) => (
-                  <span key={p} className="font-display text-base font-bold tracking-wider text-muted-foreground/85">{p}</span>
-                ))}
-              </div>
-            </div>
-            <div className="rounded-2xl border border-border bg-card/60 px-6 py-8">
-              <div className="font-mono text-[10px] uppercase tracking-[0.3em] text-brand">/ our valued customers</div>
-              <div className="mt-5 flex flex-wrap gap-x-6 gap-y-2">
-                {automationCustomers.map((c) => (
-                  <span key={c} className="font-display text-sm font-bold tracking-wider text-muted-foreground/80 transition hover:text-brand">{c}</span>
-                ))}
-              </div>
+          <div className="reveal-on-scroll rounded-2xl border border-border bg-card/60 px-6 py-8 sm:px-10">
+            <div className="font-mono text-[10px] uppercase tracking-[0.3em] text-brand">/ official integrators & partners</div>
+            <div className="mt-7 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-5">
+              {automationPartners.map((partner) => (
+                <div key={partner.name} className="grid min-h-24 place-items-center rounded-xl border border-border bg-background p-5">
+                  <img src={partner.image} alt={partner.name} loading="lazy" className="max-h-10 max-w-[8rem] object-contain" />
+                </div>
+              ))}
             </div>
           </div>
 

@@ -3,7 +3,7 @@ import { ArrowRight, ArrowUpRight, CalendarDays, MapPin } from "lucide-react";
 import { PageShell, PageHero } from "@/components/page-shell";
 import { useRevealOnScroll } from "@/hooks/use-reveal-on-scroll";
 import { news, exhibitions, categoryMeta, type Category } from "@/content/site-data";
-import heroImg from "@/assets/news-automation-line.jpg";
+import { automationImages } from "@/content/automation-data";
 import { useState } from "react";
 
 export const Route = createFileRoute("/news")({
@@ -26,9 +26,9 @@ function NewsPage() {
     <PageShell>
       <PageHero
         kicker="/ latest @ modtech"
-        image={heroImg}
+        image={automationImages.palletizingLine}
         title={<>News, case studies & <span className="text-gradient-brand">factory stories.</span></>}
-        subtitle="Filter by robotic, automation or casting to dive into recent deployments and engineering deep-dives."
+        subtitle="Filter by robotics, automation or casting to dive into recent deployments and engineering deep-dives."
       />
 
       <section className="relative bg-background px-5 py-12 sm:px-8 sm:py-16">

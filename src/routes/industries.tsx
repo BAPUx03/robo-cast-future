@@ -2,7 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { ArrowRight, Plane, Car, Shield, Zap, Droplets, Hammer, Settings2, HeartPulse, TrainFront, Wrench, Anchor, Sprout } from "lucide-react";
 import { PageShell, PageHero } from "@/components/page-shell";
 import { useRevealOnScroll } from "@/hooks/use-reveal-on-scroll";
-import heroImg from "@/assets/robotics-visual.jpg";
+import { automationImages } from "@/content/automation-data";
 
 export const Route = createFileRoute("/industries")({
   head: () => ({
@@ -37,7 +37,7 @@ function IndustriesPage() {
     <PageShell>
       <PageHero
         kicker="/ industries served"
-        image={heroImg}
+        image={automationImages.robotCobot}
         title={<>Engineered for the <span className="text-gradient-brand">industries that build the world</span>.</>}
         subtitle="From precision aerospace cores to high-volume automotive lines — Modtech machines run inside every major manufacturing sector."
       />

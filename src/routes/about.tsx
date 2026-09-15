@@ -14,10 +14,8 @@ import {
 import { PageShell } from "@/components/page-shell";
 import { Button } from "@/components/ui/button";
 import { useRevealOnScroll } from "@/hooks/use-reveal-on-scroll";
-import { stats, clients } from "@/content/site-data";
-import heroImg from "@/assets/machine-hero.jpg";
-import castingImg from "@/assets/tending-wax-1.jpg.asset.json";
-import roboticsImg from "@/assets/robot-6-axis.jpg.asset.json";
+import { stats, partnerCapabilities } from "@/content/site-data";
+import { automationImages, automationPartners } from "@/content/automation-data";
 
 export const Route = createFileRoute("/about")({
   head: () => ({
@@ -76,7 +74,7 @@ function AboutPage() {
   return (
     <PageShell>
       <section className="on-dark relative isolate min-h-[620px] overflow-hidden border-b border-border bg-carbon px-5 pb-10 pt-14 sm:px-8 sm:pb-14 lg:min-h-[720px] lg:pt-20">
-        <img src={heroImg} alt="Modtech industrial machinery inside the manufacturing facility" className="absolute inset-0 -z-20 h-full w-full object-cover object-center" />
+        <img src={automationImages.casePacker} alt="Modtech robotic case packing system" className="absolute inset-0 -z-20 h-full w-full object-cover object-center" />
         <div className="absolute inset-0 -z-10 bg-gradient-to-r from-carbon via-carbon/90 to-carbon/20" />
         <div className="absolute inset-0 -z-10 bg-gradient-to-t from-carbon via-transparent to-carbon/40" />
         <div className="mx-auto flex min-h-[520px] max-w-7xl flex-col justify-between lg:min-h-[610px]">
@@ -130,7 +128,7 @@ function AboutPage() {
         <div className="mx-auto max-w-[1600px]">
           <article className="reveal-on-scroll grid lg:grid-cols-2">
             <div className="min-h-[340px] overflow-hidden lg:min-h-[560px]">
-              <img src={castingImg.url} alt="Modtech investment casting automation cell" loading="lazy" className="h-full w-full object-cover transition duration-700 hover:scale-[1.02]" />
+              <img src={automationImages.casting} alt="Investment casting production" loading="lazy" className="h-full w-full object-cover transition duration-700 hover:scale-[1.02]" />
             </div>
             <div className="flex flex-col justify-center px-6 py-12 sm:px-12 lg:px-16">
               <div className="font-mono text-[10px] uppercase tracking-[0.26em] text-copper">Division 01 / Investment Casting</div>
@@ -144,7 +142,7 @@ function AboutPage() {
 
           <article className="reveal-on-scroll grid border-t border-border lg:grid-cols-2">
             <div className="min-h-[340px] overflow-hidden lg:order-2 lg:min-h-[560px]">
-              <img src={roboticsImg.url} alt="Six-axis industrial robot used in Modtech automation systems" loading="lazy" className="h-full w-full object-cover transition duration-700 hover:scale-[1.02]" />
+              <img src={automationImages.casePacker} alt="Modtech robotic case packing system" loading="lazy" className="h-full w-full object-cover transition duration-700 hover:scale-[1.02]" />
             </div>
             <div className="flex flex-col justify-center px-6 py-12 sm:px-12 lg:px-16">
               <div className="font-mono text-[10px] uppercase tracking-[0.26em] text-cyan">Division 02 / Robotics & Automation</div>
@@ -204,10 +202,21 @@ function AboutPage() {
                 <h2 className="mt-3 font-display text-2xl font-bold">Chosen by leading manufacturers.</h2>
               </div>
               <div className="flex max-w-4xl flex-wrap gap-x-7 gap-y-4 lg:justify-end">
-                {clients.map((client) => (
-                  <span key={client} className="font-mono text-[10px] font-semibold uppercase tracking-[0.12em] text-muted-foreground transition hover:text-foreground">{client}</span>
+                {partnerCapabilities.map((capability) => (
+                  <span key={capability} className="font-mono text-[10px] font-semibold uppercase tracking-[0.12em] text-muted-foreground transition hover:text-foreground">{capability}</span>
                 ))}
               </div>
+            </div>
+          </div>
+
+          <div className="reveal-on-scroll mt-10 border-y border-border py-8">
+            <p className="font-mono text-[10px] uppercase tracking-[0.26em] text-brand">/ integration partners</p>
+            <div className="mt-5 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-5">
+              {automationPartners.map((partner) => (
+                <div key={partner.name} className="grid min-h-20 place-items-center rounded-xl border border-border bg-card p-4">
+                  <img src={partner.image} alt={partner.name} loading="lazy" className="max-h-8 max-w-[7rem] object-contain" />
+                </div>
+              ))}
             </div>
           </div>
 

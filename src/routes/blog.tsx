@@ -4,8 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import { Search, Pin, Clock, ArrowRight } from "lucide-react";
 import { PageShell, PageHero } from "@/components/page-shell";
 import { CATEGORY_LABELS, KIND_LABELS, fetchPublishedPosts, formatDate } from "@/lib/cms";
-import heroImg from "@/assets/casting-visual.jpg";
-import fallbackImg from "@/assets/news-foundry-insight.jpg";
+import { automationImages } from "@/content/automation-data";
 
 export const Route = createFileRoute("/blog")({
   ssr: false,
@@ -47,7 +46,7 @@ function BlogIndex() {
     <PageShell>
       <PageHero
         kicker="/ insights"
-        image={heroImg}
+        image={automationImages.casting}
         title={<>Notes from the <span className="text-gradient-brand">shop floor</span>.</>}
         subtitle="Articles, case studies and announcements on investment casting, robotics and automation."
       />
@@ -136,7 +135,7 @@ function PostCard({ post, index, featured = false }: { post: import("@/lib/cms")
     >
       <div className={`relative overflow-hidden ${featured ? "aspect-[16/9]" : "aspect-[4/3]"}`}>
         <img
-          src={post.cover_url || fallbackImg}
+          src={post.cover_url || automationImages.casting}
           alt={post.title}
           loading="lazy"
           className="h-full w-full object-cover transition duration-700 group-hover:scale-105"

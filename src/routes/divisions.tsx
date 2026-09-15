@@ -3,7 +3,7 @@ import { ArrowRight } from "lucide-react";
 import { PageShell, PageHero } from "@/components/page-shell";
 import { useRevealOnScroll } from "@/hooks/use-reveal-on-scroll";
 import { divisions, categoryMeta } from "@/content/site-data";
-import heroImg from "@/assets/robotics-visual.jpg";
+import { automationImages } from "@/content/automation-data";
 import { useState } from "react";
 
 export const Route = createFileRoute("/divisions")({
@@ -25,7 +25,7 @@ function DivisionsPage() {
     <PageShell>
       <PageHero
         kicker="/ divisions"
-        image={heroImg}
+        image={automationImages.robot6Axis}
         title={<>Two divisions. <span className="text-gradient-brand">One engineering team.</span></>}
         subtitle="Each division ships a complete portfolio of machines, robots and process tooling — engineered, built and integrated under one roof."
       />

@@ -6,16 +6,12 @@ import { Button } from "@/components/ui/button";
 import { useRevealOnScroll } from "@/hooks/use-reveal-on-scroll";
 import { stats } from "@/content/site-data";
 import {
-  automationCustomers,
   automationIndustries,
   automationPartners,
   automationSolutions,
+  automationImages,
   companyContact,
 } from "@/content/automation-data";
-import castingImage from "@/assets/m-wax-injector.jpg";
-import roboticsImage from "@/assets/case-packer.png.asset.json";
-import heroVideo from "@/assets/hero-bg-loop.mp4.asset.json";
-import heroPoster from "@/assets/machine-hero.jpg";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -65,8 +61,8 @@ function HomePage() {
       <section className="home-hero on-dark relative isolate -mt-28 min-h-[calc(100svh-1rem)] overflow-hidden bg-carbon pt-28 sm:-mt-32 sm:pt-32">
         <div className="home-hero-media pointer-events-none absolute inset-0 -z-10">
           <video
-            src={heroVideo.url}
-            poster={heroPoster}
+            src="/modtech-automation-hero.mp4"
+            poster={automationImages.palletizer}
             autoPlay
             muted
             loop
@@ -141,7 +137,7 @@ function HomePage() {
               number="01"
               title="Investment Casting Machinery"
               description="Equipment for wax preparation and injection, ceramic shell building and foundry processing—engineered for repeatable production and dependable uptime."
-              image={castingImage}
+                image={automationImages.casting}
               alt="Modtech wax injection machinery"
               to="/machines"
               linkLabel="View casting machines"
@@ -151,7 +147,7 @@ function HomePage() {
               number="02"
               title="Robotics & Automation"
               description="Custom robot cells for packaging, material handling and machine tending, built around each product, process and factory layout."
-              image={roboticsImage.url}
+              image={automationImages.casePacker}
               alt="Modtech robotic case packing system"
               to="/automation"
               linkLabel="Explore automation"
@@ -231,8 +227,8 @@ function HomePage() {
               <p className="mt-4 text-sm leading-relaxed text-muted-foreground">More than 1,000 projects delivered across 45+ countries, including work with 10+ Fortune 500 customers.</p>
             </div>
             <div className="space-y-8">
-              <ProofRow label="Robot partners" items={automationPartners} />
-              <ProofRow label="Selected customers" items={automationCustomers.slice(0, 10)} />
+              <ProofRow label="Official integration partners" items={automationPartners.map((partner) => partner.name)} />
+              <p className="max-w-xl text-sm leading-relaxed text-muted-foreground">Every solution is engineered around your product, line layout, throughput and operating environment—from first concept through commissioning and lifecycle support.</p>
             </div>
           </div>
         </div>

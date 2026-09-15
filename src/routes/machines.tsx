@@ -3,16 +3,16 @@ import { ArrowRight } from "lucide-react";
 import { PageShell, PageHero } from "@/components/page-shell";
 import { useRevealOnScroll } from "@/hooks/use-reveal-on-scroll";
 import { functionalities, categoryMeta, type Category } from "@/content/site-data";
-import heroImg from "@/assets/m-shelling-cell.jpg";
+import { automationImages } from "@/content/automation-data";
 import { useState } from "react";
 
 export const Route = createFileRoute("/machines")({
   head: () => ({
     meta: [
       { title: "Machines & Cells — Modtech Machinery" },
-      { name: "description", content: "Browse Modtech Machinery's full catalogue of investment casting machinery and robotic cells." },
+      { name: "description", content: "Browse Modtech's investment-casting equipment, robotic packaging systems, machine tending cells and vision solutions." },
       { property: "og:title", content: "Modtech Machines & Cells" },
-      { property: "og:description", content: "Wax injectors, slurry tanks, rain sanders, robotic shelling cells and more." },
+      { property: "og:description", content: "Wax injectors, shell-room systems, case handling, palletizing, machine tending and vision solutions." },
     ],
   }),
   component: MachinesPage,
@@ -26,7 +26,7 @@ function MachinesPage() {
     <PageShell>
       <PageHero
         kicker="/ machines"
-        image={heroImg}
+        image={automationImages.palletizer}
         title={<>Solutions across the <span className="text-gradient-brand">production line.</span></>}
         subtitle="Pick a category to filter the catalogue, then open any machine for full specifications."
       />
@@ -44,7 +44,7 @@ function MachinesPage() {
             >
               All machines
             </button>
-            {(Object.keys(categoryMeta) as Category[]).map((c) => (
+            {([...new Set(functionalities.map((machine) => machine.category))] as Category[]).map((c) => (
               <button
                 key={c}
                 type="button"

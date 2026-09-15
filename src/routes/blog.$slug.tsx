@@ -3,7 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { ArrowLeft, Clock, User, ArrowRight } from "lucide-react";
 import { PageShell } from "@/components/page-shell";
 import { CATEGORY_LABELS, KIND_LABELS, fetchPostBySlug, fetchPublishedPosts, formatDate } from "@/lib/cms";
-import fallbackImg from "@/assets/news-foundry-insight.jpg";
+import { automationImages } from "@/content/automation-data";
 
 export const Route = createFileRoute("/blog/$slug")({
   ssr: false,
@@ -55,7 +55,7 @@ function BlogArticle() {
       <article>
         <header className="relative isolate overflow-hidden bg-carbon px-5 py-16 sm:px-8 sm:py-20">
           <div className="pointer-events-none absolute inset-0 -z-10">
-            <img src={post.cover_url || fallbackImg} alt="" aria-hidden className="h-full w-full object-cover opacity-25" />
+            <img src={post.cover_url || automationImages.casting} alt="" aria-hidden className="h-full w-full object-cover opacity-25" />
             <div className="absolute inset-0 bg-gradient-to-b from-carbon/85 via-carbon/90 to-carbon" />
           </div>
           <div className="mx-auto max-w-3xl">
@@ -79,7 +79,7 @@ function BlogArticle() {
 
         <div className="bg-background px-5 py-14 sm:px-8 sm:py-16">
           <div className="mx-auto max-w-3xl">
-            <img src={post.cover_url || fallbackImg} alt={post.title} className="aspect-[16/9] w-full rounded-2xl border border-border object-cover" />
+            <img src={post.cover_url || automationImages.casting} alt={post.title} className="aspect-[16/9] w-full rounded-2xl border border-border object-cover" />
             <div className="mt-10 space-y-5 text-[15px] leading-[1.85] text-muted-foreground">
               {post.body.split(/\n{2,}/).map((para, i) => {
                 const text = para.trim();
@@ -128,7 +128,7 @@ function BlogArticle() {
               <div className="mt-5 grid gap-6 sm:grid-cols-3">
                 {related.map((p) => (
                   <Link key={p.id} to="/blog/$slug" params={{ slug: p.slug }} className="group overflow-hidden rounded-2xl border border-border bg-card transition hover:-translate-y-1 hover:border-brand/60">
-                    <img src={p.cover_url || fallbackImg} alt={p.title} loading="lazy" className="aspect-[4/3] w-full object-cover transition duration-700 group-hover:scale-105" />
+                    <img src={p.cover_url || automationImages.casting} alt={p.title} loading="lazy" className="aspect-[4/3] w-full object-cover transition duration-700 group-hover:scale-105" />
                     <div className="p-5">
                       <div className="font-mono text-[10px] uppercase tracking-[0.18em] text-muted-foreground">{formatDate(p.published_at)}</div>
                       <h3 className="mt-2 font-display text-base font-semibold leading-tight transition group-hover:text-brand">{p.title}</h3>

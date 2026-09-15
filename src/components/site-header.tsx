@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Phone, Mail, Menu, X } from "lucide-react";
+import { Mail, Menu, X } from "lucide-react";
 import { Link, useLocation } from "@tanstack/react-router";
 import { BrandLogo } from "@/components/brand-logo";
 import { ThemeToggle } from "@/components/theme-toggle";
@@ -54,11 +54,8 @@ export function SiteHeader() {
             <span>24/7 Engineering Support</span>
           </div>
           <div className="flex items-center gap-4 font-mono text-[10.5px] uppercase tracking-[0.18em] text-muted-foreground">
-            <a href="tel:+910000000000" className="inline-flex items-center gap-1.5 transition hover:text-brand">
-              <Phone className="h-3 w-3" /> +91 00000 00000
-            </a>
-            <a href="mailto:info@modtechworld.com" className="inline-flex items-center gap-1.5 transition hover:text-brand">
-              <Mail className="h-3 w-3" /> info@modtechworld.com
+            <a href="mailto:sales.automation@modtechworld.com" className="inline-flex items-center gap-1.5 transition hover:text-brand">
+              <Mail className="h-3 w-3" /> sales.automation@modtechworld.com
             </a>
           </div>
         </div>
@@ -125,11 +122,8 @@ export function SiteHeader() {
               </Link>
             ))}
             <div className="mt-3 flex flex-col gap-2 border-t border-border pt-3">
-              <a href="tel:+910000000000" className="inline-flex items-center gap-2 px-4 font-mono text-[11px] uppercase tracking-[0.18em] text-muted-foreground">
-                <Phone className="h-3.5 w-3.5 text-brand" /> +91 00000 00000
-              </a>
-              <a href="mailto:info@modtechworld.com" className="inline-flex items-center gap-2 px-4 font-mono text-[11px] uppercase tracking-[0.18em] text-muted-foreground">
-                <Mail className="h-3.5 w-3.5 text-brand" /> info@modtechworld.com
+              <a href="mailto:sales.automation@modtechworld.com" className="inline-flex items-center gap-2 px-4 font-mono text-[11px] uppercase tracking-[0.18em] text-muted-foreground">
+                <Mail className="h-3.5 w-3.5 text-brand" /> sales.automation@modtechworld.com
               </a>
               <Link
                 to="/contact"
