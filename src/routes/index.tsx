@@ -81,12 +81,12 @@ function HomePage() {
         </div>
         <div className="pointer-events-none absolute inset-0 -z-10 bg-grid opacity-20" />
 
-        <div className="mx-auto grid min-h-[calc(100svh-8rem)] max-w-7xl content-center gap-10 px-5 pb-20 pt-12 sm:px-8 lg:grid-cols-[minmax(0,1fr)_18rem] lg:items-end lg:pb-16">
-          <div className="max-w-4xl">
+        <div className="mx-auto grid min-h-[calc(100svh-8rem)] max-w-7xl content-center gap-10 px-5 pb-16 pt-12 sm:px-8 sm:pb-20 lg:grid-cols-[minmax(0,1fr)_16rem] lg:items-end lg:pb-16 xl:grid-cols-[minmax(0,1fr)_18rem]">
+          <div className="min-w-0 max-w-4xl">
             <div className="reveal inline-flex items-center gap-2 border-l-2 border-brand pl-3 font-mono text-[10px] uppercase tracking-[0.24em] text-brand sm:text-xs">
               Engineering manufacturing systems since 1994
             </div>
-            <h1 className="reveal mt-6 max-w-4xl font-display text-[clamp(2.6rem,7vw,6.4rem)] font-bold leading-[0.95]" data-reveal-delay="80">
+            <h1 className="reveal mt-6 max-w-4xl font-display text-[clamp(2.5rem,6.4vw,6rem)] font-bold leading-[0.98]" data-reveal-delay="80">
               Investment casting.
               <span className="mt-2 block text-brand">Robotic automation.</span>
             </h1>
@@ -103,11 +103,11 @@ function HomePage() {
             </div>
           </div>
 
-          <dl className="reveal grid grid-cols-2 border border-foreground/15 bg-carbon/65 backdrop-blur-md lg:grid-cols-1" data-reveal-delay="320">
+          <dl className="reveal grid grid-cols-3 border border-foreground/15 bg-carbon/65 backdrop-blur-md lg:grid-cols-1" data-reveal-delay="320">
             {stats.slice(0, 3).map((item) => (
-              <div key={item.label} className="border-b border-r border-foreground/15 p-4 last:border-b-0 sm:p-5 lg:border-r-0">
-                <dd className="font-display text-2xl font-bold text-brand sm:text-3xl">{item.value}</dd>
-                <dt className="mt-1 font-mono text-[9px] uppercase tracking-[0.18em] text-foreground/60">{item.label}</dt>
+              <div key={item.label} className="min-w-0 border-r border-foreground/15 p-3 last:border-r-0 sm:p-5 lg:border-b lg:border-r-0 lg:last:border-b-0">
+                <dd className="font-display text-xl font-bold text-brand sm:text-3xl">{item.value}</dd>
+                <dt className="mt-1 break-words font-mono text-[7px] uppercase tracking-[0.12em] text-foreground/60 sm:text-[9px] sm:tracking-[0.18em]">{item.label}</dt>
               </div>
             ))}
           </dl>

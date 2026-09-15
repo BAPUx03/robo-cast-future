@@ -43,8 +43,8 @@ export function SiteHeader() {
       data-scrolled={scrolled}
       className="nav-shell fixed inset-x-0 top-0 z-40 border-b border-transparent"
     >
-      <div className="hidden border-b border-border/40 bg-carbon-2/40 lg:block">
-        <div className="mx-auto flex max-w-7xl items-center justify-between gap-6 whitespace-nowrap px-5 py-1.5 sm:px-8">
+      <div className="hidden border-b border-border/40 bg-carbon-2/40 xl:block">
+        <div className="mx-auto flex max-w-[90rem] items-center justify-between gap-6 whitespace-nowrap px-5 py-1.5 sm:px-8">
           <div className="flex min-w-0 items-center gap-5 font-mono text-[10.5px] uppercase tracking-[0.22em] text-muted-foreground">
             <span className="inline-flex items-center gap-1.5">
               <span className="h-1 w-1 rounded-full bg-brand" />
@@ -64,35 +64,35 @@ export function SiteHeader() {
         </div>
       </div>
 
-      <div className={`mx-auto flex max-w-7xl items-center justify-between gap-4 px-5 sm:px-8 ${scrolled ? "py-3" : "py-4"} transition-[padding] duration-300`}>
-        <Link to="/" className="group inline-flex min-w-0 items-center gap-3.5" aria-label="Modtech Machinery — home">
+      <div className={`mx-auto grid max-w-[90rem] grid-cols-[minmax(0,1fr)_auto] items-center gap-4 px-5 sm:px-8 xl:grid-cols-[auto_minmax(0,1fr)_auto] ${scrolled ? "py-3" : "py-4"} transition-[padding] duration-300`}>
+        <Link to="/" className="group inline-flex min-w-0 items-center gap-3.5 justify-self-start" aria-label="Modtech Machinery — home">
           <BrandLogo className="h-9 text-foreground transition-colors group-hover:text-brand sm:h-10" />
-          <span className="hidden h-9 w-px bg-border sm:block" />
-          <span className="hidden font-mono text-[10px] uppercase leading-relaxed tracking-[0.2em] text-muted-foreground sm:block">
+          <span className="hidden h-9 w-px bg-border 2xl:block" />
+          <span className="hidden font-mono text-[9px] uppercase leading-relaxed tracking-[0.16em] text-muted-foreground 2xl:block">
             Investment Casting
             <span className="block text-brand">Robotics &amp; Automation</span>
           </span>
         </Link>
 
-        <nav className="hidden items-center gap-0.5 font-display text-[13.5px] font-medium lg:flex">
+        <nav className="hidden min-w-0 items-center justify-center gap-0 font-display text-[12px] font-medium xl:flex 2xl:text-[13px]">
           {NAV_ITEMS.map((item) => (
             <Link
               key={item.to}
               to={item.to}
               activeOptions={{ exact: item.to === "/" }}
-              activeProps={{ className: "nav-link whitespace-nowrap rounded-md px-2.5 py-2 text-brand" }}
-              inactiveProps={{ className: "nav-link whitespace-nowrap rounded-md px-2.5 py-2 text-foreground/75 hover:text-brand" }}
+              activeProps={{ className: "nav-link whitespace-nowrap rounded-md px-2 py-2 text-brand 2xl:px-2.5" }}
+              inactiveProps={{ className: "nav-link whitespace-nowrap rounded-md px-2 py-2 text-foreground/75 hover:text-brand 2xl:px-2.5" }}
             >
               {item.label}
             </Link>
           ))}
         </nav>
 
-        <div className="flex items-center gap-2">
+        <div className="flex shrink-0 items-center gap-2 justify-self-end">
           <ThemeToggle />
           <Link
             to="/contact"
-            className="hidden shrink-0 items-center gap-2 whitespace-nowrap rounded-full bg-brand px-5 py-2.5 font-mono text-[11px] font-semibold uppercase tracking-wider text-brand-foreground shadow-glow transition hover:translate-y-[-1px] xl:inline-flex"
+            className="hidden shrink-0 items-center gap-2 whitespace-nowrap rounded-full bg-brand px-4 py-2.5 font-mono text-[10px] font-semibold uppercase tracking-wider text-brand-foreground shadow-glow transition hover:translate-y-[-1px] 2xl:inline-flex"
           >
             Contact Us
             <span className="h-1.5 w-1.5 rounded-full bg-brand-foreground/70 blink-dot" />
@@ -102,7 +102,7 @@ export function SiteHeader() {
             aria-label={open ? "Close menu" : "Open menu"}
             aria-expanded={open}
             onClick={() => setOpen((v) => !v)}
-            className="grid h-10 w-10 place-items-center rounded-md border border-border text-foreground transition hover:border-brand/50 hover:text-brand lg:hidden"
+            className="grid h-10 w-10 place-items-center rounded-md border border-border text-foreground transition hover:border-brand/50 hover:text-brand xl:hidden"
           >
             {open ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
           </button>
@@ -110,7 +110,7 @@ export function SiteHeader() {
       </div>
 
       {open && (
-        <div className="max-h-[calc(100dvh-4.5rem)] overflow-y-auto overscroll-contain border-t border-border bg-card/95 backdrop-blur-xl lg:hidden">
+        <div className="max-h-[calc(100dvh-4.5rem)] overflow-y-auto overscroll-contain border-t border-border bg-card/95 backdrop-blur-xl xl:hidden">
           <nav className="mx-auto flex max-w-7xl flex-col gap-1 px-5 py-4 sm:px-8">
             {NAV_ITEMS.map((item) => (
               <Link
