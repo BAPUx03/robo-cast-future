@@ -83,7 +83,7 @@ function HomePage() {
 
         <div className="mx-auto grid min-h-[calc(100svh-8rem)] max-w-7xl content-center gap-10 px-5 pb-16 pt-12 sm:px-8 sm:pb-20 lg:grid-cols-[minmax(0,1fr)_16rem] lg:items-end lg:pb-16 xl:grid-cols-[minmax(0,1fr)_18rem]">
           <div className="min-w-0 max-w-4xl">
-            <div className="reveal inline-flex items-center gap-2 border-l-2 border-brand pl-3 font-mono text-[10px] uppercase tracking-[0.24em] text-brand sm:text-xs">
+            <div className="reveal inline-flex max-w-full items-center gap-2 border-l-2 border-brand pl-3 font-mono text-[9px] uppercase leading-relaxed tracking-[0.16em] text-brand sm:text-xs sm:tracking-[0.24em]">
               Engineering manufacturing systems since 1994
             </div>
             <h1 className="reveal mt-6 max-w-4xl font-display text-[clamp(2.5rem,6.4vw,6rem)] font-bold leading-[0.98]" data-reveal-delay="80">
