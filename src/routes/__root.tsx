@@ -39,14 +39,12 @@ export const Route = createRootRoute({
       { property: "og:description", content: "Modern robotics, automation, and investment casting machinery from Modtech Machinery." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
-      { name: "twitter:site", content: "@Lovable" },
       { name: "twitter:title", content: "Modtech Machinery | Robotics & Casting Automation" },
       { name: "twitter:description", content: "Modern robotics, automation, and investment casting machinery from Modtech Machinery." },
-      { property: "og:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/287feda9-fd9c-4936-ad26-9f550c48ffdf/id-preview-d4aa1074--308556a4-5b8e-4b2c-a6f1-1692b3c8298a.lovable.app-1778132368792.png" },
-      { name: "twitter:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/287feda9-fd9c-4936-ad26-9f550c48ffdf/id-preview-d4aa1074--308556a4-5b8e-4b2c-a6f1-1692b3c8298a.lovable.app-1778132368792.png" },
     ],
     links: [
       { rel: "stylesheet", href: appCss },
+      { rel: "icon", type: "image/svg+xml", href: "/favicon.svg" },
       { rel: "preconnect", href: "https://fonts.googleapis.com" },
       { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
       {
