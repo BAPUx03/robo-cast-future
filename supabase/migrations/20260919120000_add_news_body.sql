@@ -1,0 +1,2 @@
+ALTER TABLE public.news_items
+ADD COLUMN IF NOT EXISTS body text NOT NULL DEFAULT '';

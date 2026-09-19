@@ -50,6 +50,7 @@ function MachineDetail() {
   useRevealOnScroll();
   const { machine: m } = Route.useLoaderData() as { machine: Machine };
   const related = functionalities.filter((x) => x.slug !== m.slug && x.category === m.category).slice(0, 3);
+  const isOfficialCastingImage = m.image.includes("/productsimg/casting/");
 
   return (
     <PageShell>
@@ -84,8 +85,8 @@ function MachineDetail() {
           </div>
 
           <div className="reveal-on-scroll relative overflow-hidden rounded-2xl border border-border bg-card shadow-deep" data-reveal-delay="120">
-            <div className="relative aspect-[4/3] overflow-hidden">
-              <img src={m.image} alt={m.title} className="h-full w-full object-cover" />
+            <div className={`relative aspect-[4/3] overflow-hidden ${isOfficialCastingImage ? "bg-[#eef0f1]" : ""}`}>
+              <img src={m.image} alt={m.title} className={`h-full w-full ${isOfficialCastingImage ? "object-contain p-6" : "object-cover"}`} />
               <div className="absolute inset-0 bg-gradient-to-t from-card/40 via-transparent to-transparent" />
             </div>
           </div>
@@ -154,8 +155,8 @@ function MachineDetail() {
             <div className="mt-8 grid gap-5 md:grid-cols-3">
               {related.map((r) => (
                 <Link key={r.slug} to="/machines/$slug" params={{ slug: r.slug }} className="group overflow-hidden rounded-2xl border border-border bg-card shadow-card transition hover:-translate-y-1 hover:border-brand/60">
-                  <div className="relative aspect-[16/10] overflow-hidden">
-                    <img src={r.image} alt={r.title} loading="lazy" className="h-full w-full object-cover transition duration-700 group-hover:scale-105" />
+                  <div className={`relative aspect-[16/10] overflow-hidden ${r.image.includes("/productsimg/casting/") ? "bg-[#eef0f1]" : ""}`}>
+                    <img src={r.image} alt={r.title} loading="lazy" className={`h-full w-full transition duration-700 group-hover:scale-105 ${r.image.includes("/productsimg/casting/") ? "object-contain p-4" : "object-cover"}`} />
                     <div className="absolute inset-0 bg-gradient-to-t from-card/70 to-transparent" />
                   </div>
                   <div className="p-5">

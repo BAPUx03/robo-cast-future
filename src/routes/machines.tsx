@@ -5,14 +5,23 @@ import { useRevealOnScroll } from "@/hooks/use-reveal-on-scroll";
 import { functionalities, categoryMeta, type Category } from "@/content/site-data";
 import { automationImages } from "@/content/automation-data";
 import { useState } from "react";
+import { useSiteContent } from "@/lib/site-content";
 
 export const Route = createFileRoute("/machines")({
   head: () => ({
     meta: [
       { title: "Machines & Cells — Modtech Machinery" },
-      { name: "description", content: "Browse Modtech's investment-casting equipment, robotic packaging systems, machine tending cells and vision solutions." },
+      {
+        name: "description",
+        content:
+          "Browse Modtech's investment-casting equipment, robotic packaging systems, machine tending cells and vision solutions.",
+      },
       { property: "og:title", content: "Modtech Machines & Cells" },
-      { property: "og:description", content: "Wax injectors, shell-room systems, case handling, palletizing, machine tending and vision solutions." },
+      {
+        property: "og:description",
+        content:
+          "Wax injectors, shell-room systems, case handling, palletizing, machine tending and vision solutions.",
+      },
     ],
   }),
   component: MachinesPage,
@@ -20,15 +29,22 @@ export const Route = createFileRoute("/machines")({
 
 function MachinesPage() {
   useRevealOnScroll();
+  const content = useSiteContent("machines");
   const [hoverCat, setHoverCat] = useState<Category | null>(null);
-  const visible = hoverCat ? functionalities.filter((f) => f.category === hoverCat) : functionalities;
+  const visible = hoverCat
+    ? functionalities.filter((f) => f.category === hoverCat)
+    : functionalities;
   return (
     <PageShell>
       <PageHero
-        kicker="/ machines"
+        kicker={content.eyebrow}
         image={automationImages.palletizer}
-        title={<>Solutions across the <span className="text-gradient-brand">production line.</span></>}
-        subtitle="Pick a category to filter the catalogue, then open any machine for full specifications."
+        title={
+          <>
+            {content.title} <span className="text-gradient-brand">{content.accent}</span>
+          </>
+        }
+        subtitle={content.description}
       />
 
       <section className="relative bg-background py-12 sm:py-16">
@@ -39,31 +55,40 @@ function MachinesPage() {
               onClick={() => setHoverCat(null)}
               aria-pressed={hoverCat === null}
               className={`rounded-full border px-4 py-1.5 font-mono text-[10px] uppercase tracking-[0.2em] transition ${
-                hoverCat === null ? "border-brand bg-brand text-brand-foreground shadow-glow" : "border-border bg-card/60 text-muted-foreground hover:border-brand/60 hover:text-brand"
+                hoverCat === null
+                  ? "border-brand bg-brand text-brand-foreground shadow-glow"
+                  : "border-border bg-card/60 text-muted-foreground hover:border-brand/60 hover:text-brand"
               }`}
             >
               All machines
             </button>
-            {([...new Set(functionalities.map((machine) => machine.category))] as Category[]).map((c) => (
-              <button
-                key={c}
-                type="button"
-                onClick={() => setHoverCat(hoverCat === c ? null : c)}
-                aria-pressed={hoverCat === c}
-                className={`rounded-full border px-4 py-1.5 font-mono text-[10px] uppercase tracking-[0.2em] transition ${
-                  hoverCat === c ? "border-brand bg-brand text-brand-foreground shadow-glow" : "border-border bg-card/60 text-muted-foreground hover:border-brand/60 hover:text-brand"
-                }`}
-              >
-                {categoryMeta[c].label}
-              </button>
-            ))}
+            {([...new Set(functionalities.map((machine) => machine.category))] as Category[]).map(
+              (c) => (
+                <button
+                  key={c}
+                  type="button"
+                  onClick={() => setHoverCat(hoverCat === c ? null : c)}
+                  aria-pressed={hoverCat === c}
+                  className={`rounded-full border px-4 py-1.5 font-mono text-[10px] uppercase tracking-[0.2em] transition ${
+                    hoverCat === c
+                      ? "border-brand bg-brand text-brand-foreground shadow-glow"
+                      : "border-border bg-card/60 text-muted-foreground hover:border-brand/60 hover:text-brand"
+                  }`}
+                >
+                  {categoryMeta[c].label}
+                </button>
+              ),
+            )}
             <span className="ml-auto hidden items-center gap-2 font-mono text-[10px] uppercase tracking-[0.3em] text-muted-foreground sm:flex">
               {visible.length} machines
             </span>
           </div>
         </div>
 
-        <div className="cat-group relative mx-auto max-w-7xl px-5 sm:px-8" data-hover={hoverCat ? "true" : "false"}>
+        <div
+          className="cat-group relative mx-auto max-w-7xl px-5 sm:px-8"
+          data-hover={hoverCat ? "true" : "false"}
+        >
           <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {visible.map((f, idx) => (
               <Link
@@ -74,19 +99,34 @@ function MachinesPage() {
                 style={{ animationDelay: `${(idx % 6) * 60}ms` }}
                 data-active={hoverCat === f.category ? "true" : "false"}
               >
-                <div className="relative aspect-[4/3] overflow-hidden">
-                  <img src={f.image} alt={f.title} loading="lazy" className="h-full w-full object-cover transition duration-700 group-hover:scale-105" />
+                <div
+                  className={`relative aspect-[4/3] overflow-hidden ${f.image.includes("/productsimg/casting/") ? "bg-[#eef0f1]" : ""}`}
+                >
+                  <img
+                    src={f.image}
+                    alt={f.title}
+                    loading="lazy"
+                    className={`h-full w-full transition duration-700 group-hover:scale-105 ${f.image.includes("/productsimg/casting/") ? "object-contain p-4" : "object-cover"}`}
+                  />
                   <div className="absolute inset-0 bg-gradient-to-t from-card via-card/30 to-transparent" />
                   <div className="absolute left-4 top-4 flex items-center gap-2">
-                    <span className="rounded-md bg-card/80 px-2.5 py-1 font-mono text-[10px] uppercase tracking-widest text-brand backdrop-blur">{f.code}</span>
-                    <span className="cat-tag rounded-md border border-border bg-card/80 px-2.5 py-1 font-mono text-[10px] uppercase tracking-widest text-muted-foreground backdrop-blur transition">{categoryMeta[f.category].label}</span>
+                    <span className="rounded-md bg-card/80 px-2.5 py-1 font-mono text-[10px] uppercase tracking-widest text-brand backdrop-blur">
+                      {f.code}
+                    </span>
+                    <span className="cat-tag rounded-md border border-border bg-card/80 px-2.5 py-1 font-mono text-[10px] uppercase tracking-widest text-muted-foreground backdrop-blur transition">
+                      {categoryMeta[f.category].label}
+                    </span>
                   </div>
                   <div className="absolute bottom-5 left-5 right-5">
-                    <h3 className="line-clamp-2 font-display text-xl font-bold tracking-tight text-foreground sm:text-[1.35rem]">{f.title}</h3>
+                    <h3 className="line-clamp-2 font-display text-xl font-bold tracking-tight text-foreground sm:text-[1.35rem]">
+                      {f.title}
+                    </h3>
                   </div>
                 </div>
                 <div className="flex flex-1 flex-col p-5 sm:p-6">
-                  <p className="line-clamp-3 text-sm leading-relaxed text-muted-foreground">{f.desc}</p>
+                  <p className="line-clamp-3 text-sm leading-relaxed text-muted-foreground">
+                    {f.desc}
+                  </p>
                   <span className="mt-auto pt-5 inline-flex items-center gap-2 font-mono text-[11px] font-semibold uppercase tracking-wider text-brand transition group-hover:gap-3">
                     Know more <ArrowRight className="h-3.5 w-3.5" />
                   </span>

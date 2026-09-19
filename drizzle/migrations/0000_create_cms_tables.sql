@@ -116,6 +116,7 @@ CREATE TABLE public.news_items (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   title text NOT NULL,
   excerpt text NOT NULL DEFAULT '',
+  body text NOT NULL DEFAULT '',
   tag text NOT NULL DEFAULT 'News',
   category text NOT NULL DEFAULT 'casting',
   date_label text NOT NULL DEFAULT '',

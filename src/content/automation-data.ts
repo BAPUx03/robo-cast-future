@@ -32,7 +32,7 @@ import abb from "@/assets/automation/partners/abb-robotics.jpeg";
 export const automationImages = { caseErector, casePacker, machineTending, palletizer, pickPlaceRobotCell, visionInspectionCell, robot6Axis, robotAmr, robotCobot, robotLinear, robotPalletizer, robotScara, caseErectorFloor, palletizingFloor, pickPlaceFloor, machineTendingFloor, casePackerLine, palletizingLine, palletizingCell, pickPlaceBottles, machineTendingCnc, visionInspection, facility, casting };
 
 export const automationStats = [
-  { value: "1994", label: "Founded" }, { value: "2", label: "Facilities" },
+  { value: "1990", label: "Founded" }, { value: "2", label: "Facilities" },
   { value: "1000+", label: "Projects in 45+ countries" }, { value: "25+", label: "Standard & custom modules" },
   { value: "10+", label: "Fortune 500 customers" }, { value: "250+", label: "Engineering talent" },
 ];
@@ -86,4 +86,17 @@ export const automationIndustries = ["FMCG", "Food & beverages", "Pharmaceutical
 export const automationPartners = [
   { name: "Epson Robots", image: epson }, { name: "FANUC", image: fanuc }, { name: "Kawasaki Robotics", image: kawasaki }, { name: "Omron", image: omron }, { name: "ABB Robotics", image: abb },
 ];
-export const companyContact = { name: "Modtech Machines Pvt. Ltd.", address: "Survey No. 396, Plot No. 73P, New Ahmedabad Industrial Estate, behind Zydus Research Centre, NH 8A, Moraiya, Sanand, Ahmedabad 382 213, Gujarat, India.", email: "sales.automation@modtechworld.com", web: "www.modtechworld.com" };
+export const companyContact = {
+  name: "Modtech Machines Pvt. Ltd.",
+  address: "Survey No. 396, Plot No. 73P, New Ahmedabad Industrial Estate, behind Zydus Research Centre, NH 8A, Moraiya, Sanand, Ahmedabad 382 213, Gujarat, India.",
+  email: "info@modtechworld.com",
+  phone: "+91 97234 56251",
+  automationEmail: "sales.automation@modtechworld.com",
+  automationPhone: "+91 98988 73558",
+  supportEmail: "customercare@modtechworld.com",
+  supportPhone: "+91 87359 15913",
+  sparesEmail: "spares@modtechworld.com",
+  vendorEmail: "purchase@modtechworld.com",
+  vendorPhone: "+91 97234 56252",
+  web: "www.modtechworld.com",
+};

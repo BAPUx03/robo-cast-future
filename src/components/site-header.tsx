@@ -8,13 +8,13 @@ const NAV_ITEMS = [
   { to: "/",           label: "Home" },
   { to: "/about",      label: "About Us" },
   { to: "/divisions",  label: "Divisions" },
-  { to: "/machines",   label: "Products" },
-  { to: "/automation", label: "Robotics & Automation" },
-  { to: "/solutions",  label: "Services" },
-  { to: "/industries", label: "Industries Served" },
-  { to: "/news",       label: "Resources" },
+  { to: "/machines",   label: "Machines" },
+  { to: "/solutions",  label: "Solutions" },
+  { to: "/industries", label: "Industries" },
+  { to: "/process",    label: "Process" },
+  { to: "/news",       label: "News" },
   { to: "/blog",       label: "Blog" },
-  { to: "/contact",    label: "Contact Us" },
+  { to: "/contact",    label: "Contact" },
 ] as const;
 
 export function SiteHeader() {

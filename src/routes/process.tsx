@@ -4,14 +4,22 @@ import { PageShell, PageHero } from "@/components/page-shell";
 import { useRevealOnScroll } from "@/hooks/use-reveal-on-scroll";
 import { processSteps } from "@/content/site-data";
 import { automationImages } from "@/content/automation-data";
+import { useSiteContent } from "@/lib/site-content";
 
 export const Route = createFileRoute("/process")({
   head: () => ({
     meta: [
       { title: "Process — From Concept to Production | Modtech Machinery" },
-      { name: "description", content: "A transparent five-step path from first call to commissioning — Consult, Engineer, Build, Automate, Support." },
+      {
+        name: "description",
+        content:
+          "A transparent five-step path from first call to commissioning — Consult, Engineer, Build, Automate, Support.",
+      },
       { property: "og:title", content: "Modtech Process" },
-      { property: "og:description", content: "Five clear steps from concept to fully commissioned production line." },
+      {
+        property: "og:description",
+        content: "Five clear steps from concept to fully commissioned production line.",
+      },
     ],
   }),
   component: ProcessPage,
@@ -19,13 +27,18 @@ export const Route = createFileRoute("/process")({
 
 function ProcessPage() {
   useRevealOnScroll();
+  const content = useSiteContent("process");
   return (
     <PageShell>
       <PageHero
-        kicker="/ process"
+        kicker={content.eyebrow}
         image={automationImages.facility}
-        title={<>A <span className="text-gradient-brand">transparent path</span> from concept to production.</>}
-        subtitle="Five clear steps. One accountable engineering team. Total visibility from first call to live production."
+        title={
+          <>
+            {content.title} <span className="text-gradient-brand">{content.accent}</span>
+          </>
+        }
+        subtitle={content.description}
       />
 
       <section className="relative bg-background px-5 py-16 sm:px-8 sm:py-20">
@@ -48,7 +61,9 @@ function ProcessPage() {
                   </span>
                 </div>
                 <h3 className="relative mt-5 font-display text-xl font-bold">{s.name}</h3>
-                <p className="relative mt-2 text-sm leading-relaxed text-muted-foreground">{s.desc}</p>
+                <p className="relative mt-2 text-sm leading-relaxed text-muted-foreground">
+                  {s.desc}
+                </p>
                 {i < processSteps.length - 1 && (
                   <span className="pointer-events-none absolute right-0 top-1/2 hidden -translate-y-1/2 translate-x-1/2 items-center justify-center md:flex">
                     <span className="grid h-7 w-7 place-items-center rounded-full border border-border bg-carbon text-brand">

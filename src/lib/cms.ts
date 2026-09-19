@@ -1,4 +1,5 @@
 import { supabase } from "@/integrations/supabase/client";
+import { getDemoRows } from "@/lib/demo-admin";
 
 export type BlogPost = {
   id: string;
@@ -32,6 +33,15 @@ export const KIND_LABELS: Record<string, string> = {
 };
 
 export async function fetchPublishedPosts() {
+  if (import.meta.env.DEV) {
+    return (getDemoRows("blog_posts") as BlogPost[])
+      .filter((post) => post.published)
+      .sort(
+        (a, b) =>
+          Number(b.pinned) - Number(a.pinned) ||
+          new Date(b.published_at).getTime() - new Date(a.published_at).getTime(),
+      );
+  }
   const { data, error } = await supabase
     .from("blog_posts")
     .select("*")
@@ -43,6 +53,13 @@ export async function fetchPublishedPosts() {
 }
 
 export async function fetchPostBySlug(slug: string) {
+  if (import.meta.env.DEV) {
+    return (
+      (getDemoRows("blog_posts") as BlogPost[]).find(
+        (post) => post.slug === slug && post.published,
+      ) ?? null
+    );
+  }
   const { data, error } = await supabase
     .from("blog_posts")
     .select("*")
@@ -54,6 +71,7 @@ export async function fetchPostBySlug(slug: string) {
 }
 
 export async function fetchAllPosts() {
+  if (import.meta.env.DEV) return getDemoRows("blog_posts") as BlogPost[];
   const { data, error } = await supabase
     .from("blog_posts")
     .select("*")

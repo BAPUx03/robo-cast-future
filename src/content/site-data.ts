@@ -2,14 +2,28 @@ import { MessagesSquare, PencilRuler, Hammer, Bot, Headphones } from "lucide-rea
 import { automationImages } from "@/content/automation-data";
 
 const castingImg = automationImages.casting;
-const mWaxInjector = automationImages.casting;
-const mMeltingTank = automationImages.casting;
-const mInjectionCell = automationImages.casting;
-const mShearMixer = automationImages.casting;
-const mRainSander = automationImages.casting;
-const mSlurryTank = automationImages.casting;
-const mShellingCell = automationImages.casting;
-const mCeramicInjector = automationImages.casting;
+const castingProductImage = (filename: string) => `/productsimg/casting/${filename}`;
+
+const castingProductImages = {
+  fourPillarWax: castingProductImage("4-pillar-wax-injector.png"),
+  cFrameWax: castingProductImage("c-frame-wax-injector.jpg"),
+  automodeWax: castingProductImage("automode-wax-injector.png"),
+  igtWax: castingProductImage("igt-wax-injector.png"),
+  waxMeltingTank: castingProductImage("wax-melting-tank.png"),
+  waxConditioningTank: castingProductImage("wax-conditioning-tank.png"),
+  waxInjectionCell: castingProductImage("wax-injection-cell.png"),
+  kawas: castingProductImage("kawas.png"),
+  highShearMixer: castingProductImage("high-shear-mixer.png"),
+  rainSander: castingProductImage("rain-sanders.png"),
+  fluidizedBed: castingProductImage("fluidized-bed.png"),
+  washRinseTanks: castingProductImage("wash-rinse-prewet-tanks.png"),
+  slurryTank: castingProductImage("slurry-tank.png"),
+  shellingSolution: castingProductImage("automated-shelling-solution.png"),
+  fourPillarCeramic: castingProductImage("4-pillar-ceramic-injector.png"),
+  cFrameCeramic: castingProductImage("c-frame-ceramic-injector.png"),
+  cutOff: castingProductImage("cut-off.png"),
+  shellKnockOff: castingProductImage("shell-knock-off.png"),
+};
 
 export type Mode = "casting" | "robotics";
 export type Category = "casting" | "robotics" | "automation";
@@ -22,7 +36,7 @@ export const categoryMeta: Record<Category, { label: string; accent: string }> =
 
 // Stats sourced from the official Modtech company deck.
 export const stats = [
-  { value: "1994",  label: "Founded" },
+  { value: "1990",  label: "Founded" },
   { value: "45+",   label: "Countries Served" },
   { value: "1000+", label: "Projects Delivered" },
   { value: "250+",  label: "Talent Pool" },
@@ -112,7 +126,7 @@ export type Machine = {
 // Full product catalogue — mirrors modtechworld.com product taxonomy.
 const castingMachines: Machine[] = [
   // ---------- Wax Injectors (IGT special-purpose, up to 300T) ----------
-  { code: "WI.01", slug: "4-pillar-wax-injector", title: "4-Pillar Wax Injector", image: mWaxInjector, category: "casting", group: "wax-injector",
+  { code: "WI.01", slug: "4-pillar-wax-injector", title: "4-Pillar Wax Injector", image: castingProductImages.fourPillarWax, category: "casting", group: "wax-injector",
     tagline: "Heavy-duty 4-pillar construction for large patterns.",
     desc: "Robust 4-pillar wax injection press engineered for large, deep-draw investment casting patterns with parallel platen control.",
     highlights: ["4-pillar rigid frame", "Parallel platen guidance", "Servo wax dosing", "Large mould window"],
@@ -124,7 +138,7 @@ const castingMachines: Machine[] = [
       { label: "Control", value: "PLC + 10\" HMI" },
     ],
   },
-  { code: "WI.02", slug: "c-frame-wax-injector", title: "C-Frame Wax Injector", image: mWaxInjector, category: "casting", group: "wax-injector",
+  { code: "WI.02", slug: "c-frame-wax-injector", title: "C-Frame Wax Injector", image: castingProductImages.cFrameWax, category: "casting", group: "wax-injector",
     tagline: "Open C-frame access for fast mould change.",
     desc: "C-frame wax injector built for accessibility and quick mould change-over on medium-tonnage investment patterns.",
     highlights: ["Open 3-side mould access", "Toolless clamp adjust", "Recipe storage", "Servo nozzle"],
@@ -136,7 +150,7 @@ const castingMachines: Machine[] = [
       { label: "Cycle", value: "Semi / fully auto" },
     ],
   },
-  { code: "WI.03", slug: "automode-wax-injector", title: "Automode Wax Injector", image: mInjectionCell, category: "casting", group: "wax-injector",
+  { code: "WI.03", slug: "automode-wax-injector", title: "Automode Wax Injector", image: castingProductImages.automodeWax, category: "casting", group: "wax-injector",
     tagline: "Fully automatic injection with auto pattern eject.",
     desc: "Automode wax injector with automatic mould close, inject, dwell, open and pattern eject — engineered for high-volume foundries.",
     highlights: ["Fully automatic cycle", "Auto pattern eject", "Cycle counter & traceability", "Multi-recipe HMI"],
@@ -148,7 +162,7 @@ const castingMachines: Machine[] = [
       { label: "Mode", value: "Manual / semi / auto" },
     ],
   },
-  { code: "WI.04", slug: "igt-wax-injector", title: "IGT Wax Injector (up to 300T)", image: mWaxInjector, category: "casting", group: "wax-injector",
+  { code: "WI.04", slug: "igt-wax-injector", title: "IGT Wax Injector (up to 300T)", image: castingProductImages.igtWax, category: "casting", group: "wax-injector",
     tagline: "Special-purpose IGT wax injector to 300T clamp.",
     desc: "IGT (Industrial Gas Turbine) class wax injector engineered for very large, complex aerospace and energy patterns up to 300T clamp force.",
     highlights: ["Up to 300T clamp", "Heavy platen rigidity", "Closed-loop temperature ±0.5°C", "High shot volume"],
@@ -162,7 +176,7 @@ const castingMachines: Machine[] = [
   },
 
   // ---------- Wax conditioning tanks ----------
-  { code: "TK.01", slug: "wax-melting-tank", title: "Wax Melting Tank", image: mMeltingTank, category: "casting", group: "tank",
+  { code: "TK.01", slug: "wax-melting-tank", title: "Wax Melting Tank", image: castingProductImages.waxMeltingTank, category: "casting", group: "tank",
     tagline: "Stable wax temperature, every shift, every shot.",
     desc: "Indirect water-jacket wax melting tank with PID control and continuous agitation for stable viscosity and uptime.",
     highlights: ["Twin-jacket heating", "Continuous agitation", "Auto top-up", "Insulated SS-304 body"],
@@ -174,7 +188,7 @@ const castingMachines: Machine[] = [
       { label: "Body", value: "SS-304 insulated" },
     ],
   },
-  { code: "TK.02", slug: "wax-conditioning-tank", title: "Wax Conditioning Tank", image: mMeltingTank, category: "casting", group: "tank",
+  { code: "TK.02", slug: "wax-conditioning-tank", title: "Wax Conditioning Tank", image: castingProductImages.waxConditioningTank, category: "casting", group: "tank",
     tagline: "Holds wax at injection-ready viscosity, 24/7.",
     desc: "Wax conditioning tank that holds molten wax at injection-ready viscosity with low-shear stirring and accurate temperature control.",
     highlights: ["Low-shear stirring", "PID temperature control", "Auto level sensor", "Hygienic SS body"],
@@ -188,7 +202,7 @@ const castingMachines: Machine[] = [
   },
 
   // ---------- Wax-room automation ----------
-  { code: "WA.01", slug: "wax-injection-cell", title: "Wax Injection Cell", image: mInjectionCell, category: "automation", group: "wax-automation",
+  { code: "WA.01", slug: "wax-injection-cell", title: "Wax Injection Cell", image: castingProductImages.waxInjectionCell, category: "automation", group: "wax-automation",
     tagline: "Robotic transfer for hands-off pattern production.",
     desc: "Robotic wax injection cell that pairs the injector with a 6-axis robot, conveyor and vision QC for hands-off pattern production.",
     highlights: ["6-axis robot loader", "Auto pattern eject", "Vision QC", "Safety-fenced cell"],
@@ -200,7 +214,7 @@ const castingMachines: Machine[] = [
       { label: "Safety", value: "PL-d / Cat-3" },
     ],
   },
-  { code: "WA.02", slug: "kawas", title: "KAWAS — Knock-out & Wax Recovery", image: mInjectionCell, category: "automation", group: "wax-automation",
+  { code: "WA.02", slug: "kawas", title: "KAWAS — Knock-out & Wax Recovery", image: castingProductImages.kawas, category: "automation", group: "wax-automation",
     tagline: "Automated wax recovery and assembly station.",
     desc: "KAWAS automation cell for tree assembly, wax recovery and re-circulation — reduces wax loss and manual handling.",
     highlights: ["Closed-loop wax recovery", "Auto tree assembly aids", "Reduced manual handling", "Integrated heating"],
@@ -214,7 +228,7 @@ const castingMachines: Machine[] = [
   },
 
   // ---------- Shelling solutions ----------
-  { code: "SH.01", slug: "high-shear-mixer", title: "High Shear Mixer", image: mShearMixer, category: "casting", group: "shelling",
+  { code: "SH.01", slug: "high-shear-mixer", title: "High Shear Mixer", image: castingProductImages.highShearMixer, category: "casting", group: "shelling",
     tagline: "Industrial slurry preparation for ceramic shells.",
     desc: "Industrial high-shear slurry preparation mixer for foundry-grade primary and back-up ceramic coatings.",
     highlights: ["Variable speed drive", "Stainless contact parts", "Toolless cleaning", "Heavy-duty bearings"],
@@ -226,7 +240,7 @@ const castingMachines: Machine[] = [
       { label: "Body", value: "SS-304" },
     ],
   },
-  { code: "SH.02", slug: "rain-sander", title: "Rain Sander", image: mRainSander, category: "casting", group: "shelling",
+  { code: "SH.02", slug: "rain-sander", title: "Rain Sander", image: castingProductImages.rainSander, category: "casting", group: "shelling",
     tagline: "Curtain stucco for uniform shells, every time.",
     desc: "Curtain stucco rain sander for uniform sand application across complex shell geometries.",
     highlights: ["Curtain-flow stucco", "Dust extraction port", "Adjustable flow rate", "Low-maintenance design"],
@@ -238,7 +252,7 @@ const castingMachines: Machine[] = [
       { label: "Power", value: "1.5 – 3 kW" },
     ],
   },
-  { code: "SH.03", slug: "fluidized-bed", title: "Fluidized Bed", image: mRainSander, category: "casting", group: "shelling",
+  { code: "SH.03", slug: "fluidized-bed", title: "Fluidized Bed", image: castingProductImages.fluidizedBed, category: "casting", group: "shelling",
     tagline: "Uniform stucco coating for fine ceramic shells.",
     desc: "Fluidized bed stucco unit delivering uniform, controllable sand coating for primary and back-up coats.",
     highlights: ["Uniform fluidization", "Adjustable air flow", "Even particle coverage", "Easy media change"],
@@ -250,7 +264,7 @@ const castingMachines: Machine[] = [
       { label: "Body", value: "SS-304" },
     ],
   },
-  { code: "SH.04", slug: "wash-rinse-prewet-tanks", title: "Wash, Rinse & Pre-Wet Tanks", image: mSlurryTank, category: "casting", group: "shelling",
+  { code: "SH.04", slug: "wash-rinse-prewet-tanks", title: "Wash, Rinse & Pre-Wet Tanks", image: castingProductImages.washRinseTanks, category: "casting", group: "shelling",
     tagline: "Tree preparation tanks for clean shell builds.",
     desc: "Wash, rinse and pre-wet tanks engineered to prepare wax trees and shells with consistent surface conditions.",
     highlights: ["Filtered recirculation", "Temperature control", "Drain & overflow", "Modular sizing"],
@@ -262,7 +276,7 @@ const castingMachines: Machine[] = [
       { label: "Control", value: "PLC optional" },
     ],
   },
-  { code: "SH.05", slug: "slurry-tank", title: "Slurry Tank", image: mSlurryTank, category: "casting", group: "shelling",
+  { code: "SH.05", slug: "slurry-tank", title: "Slurry Tank", image: castingProductImages.slurryTank, category: "casting", group: "shelling",
     tagline: "Closed-loop viscosity for consistent shell builds.",
     desc: "PLC-monitored slurry tank with closed-loop viscosity control for consistent primary and back-up shell builds.",
     highlights: ["Continuous low-shear stirring", "Inline viscosity sensor", "Auto binder top-up", "Recipe control"],
@@ -274,7 +288,7 @@ const castingMachines: Machine[] = [
       { label: "Body", value: "SS-304" },
     ],
   },
-  { code: "SH.06", slug: "automated-shelling-solution", title: "Automated Shelling Solution", image: mShellingCell, category: "robotics", group: "robotic",
+  { code: "SH.06", slug: "automated-shelling-solution", title: "Automated Shelling Solution", image: castingProductImages.shellingSolution, category: "robotics", group: "robotic",
     tagline: "Full-line automation: dip · drain · stucco · dry.",
     desc: "Six-axis robotic shelling cell automating the full dip, drain, stucco and dry cycle with multi-station layout and SCADA traceability.",
     highlights: ["6-axis robot", "Up to 6 stations", "Recipe per part", "Production traceability"],
@@ -288,7 +302,7 @@ const castingMachines: Machine[] = [
   },
 
   // ---------- Ceramic injectors ----------
-  { code: "CI.01", slug: "4-pillar-ceramic-injector", title: "4-Pillar Ceramic Injector", image: mCeramicInjector, category: "casting", group: "ceramic-injector",
+  { code: "CI.01", slug: "4-pillar-ceramic-injector", title: "4-Pillar Ceramic Injector", image: castingProductImages.fourPillarCeramic, category: "casting", group: "ceramic-injector",
     tagline: "Rigid 4-pillar press for high-pressure ceramic cores.",
     desc: "Heavy-duty 4-pillar ceramic core injector with high-pressure hydraulic clamp for precision aerospace cores.",
     highlights: ["4-pillar rigidity", "High-pressure hydraulic clamp", "Heated barrel", "Servo dosing"],
@@ -300,7 +314,7 @@ const castingMachines: Machine[] = [
       { label: "Mould change", value: "Quick-clamp system" },
     ],
   },
-  { code: "CI.02", slug: "c-frame-ceramic-injector", title: "C-Frame Ceramic Injector", image: mCeramicInjector, category: "casting", group: "ceramic-injector",
+  { code: "CI.02", slug: "c-frame-ceramic-injector", title: "C-Frame Ceramic Injector", image: castingProductImages.cFrameCeramic, category: "casting", group: "ceramic-injector",
     tagline: "Open-frame ceramic injector for accessibility.",
     desc: "C-frame ceramic core injector providing open access for fast mould changes on medium-tonnage runs.",
     highlights: ["Open mould access", "Toolless clamp", "Heated barrel", "Servo controls"],
@@ -314,7 +328,7 @@ const castingMachines: Machine[] = [
   },
 
   // ---------- Fettling ----------
-  { code: "FT.01", slug: "cut-off", title: "Cut-off Machine", image: mShellingCell, category: "casting", group: "fettling",
+  { code: "FT.01", slug: "cut-off", title: "Cut-off Machine", image: castingProductImages.cutOff, category: "casting", group: "fettling",
     tagline: "Precision gate cut-off for cast trees.",
     desc: "Industrial cut-off machine for separating castings from gates and runners with repeatable cut quality and operator safety.",
     highlights: ["Heavy-duty spindle", "Operator-safe enclosure", "Coolant management", "Adjustable fixturing"],
@@ -326,7 +340,7 @@ const castingMachines: Machine[] = [
       { label: "Safety", value: "Interlocked guard" },
     ],
   },
-  { code: "FT.02", slug: "shell-knock-off", title: "Shell Knock-off", image: mShellingCell, category: "casting", group: "fettling",
+  { code: "FT.02", slug: "shell-knock-off", title: "Shell Knock-off", image: castingProductImages.shellKnockOff, category: "casting", group: "fettling",
     tagline: "Pneumatic shell breaking after casting.",
     desc: "Shell knock-off station that quickly removes ceramic shell from cast trees with pneumatic chiselling and dust control.",
     highlights: ["Pneumatic chisel", "Dust extraction port", "Operator-safe cabin", "Adjustable fixturing"],
