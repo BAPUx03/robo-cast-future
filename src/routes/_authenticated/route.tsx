@@ -7,7 +7,11 @@ export const Route = createFileRoute("/_authenticated")({
   beforeLoad: async () => {
     if (import.meta.env.DEV) {
       if (hasDemoSession()) {
-        return { user: { email: DEMO_EMAIL }, role: "admin" as const, demo: true };
+        return {
+          user: { id: "demo-admin", email: DEMO_EMAIL },
+          role: "admin" as const,
+          demo: true,
+        };
       }
       throw redirect({ to: "/auth" });
     }
@@ -17,8 +21,14 @@ export const Route = createFileRoute("/_authenticated")({
       .from("user_roles")
       .select("role")
       .eq("user_id", data.user.id);
-    const role = roles?.find((item) => item.role === "admin" || item.role === "editor")?.role;
-    if (roleError || !role) {
+    const { data: profile, error: profileError } = await supabase
+      .from("profiles")
+      .select("active")
+      .eq("id", data.user.id)
+      .maybeSingle();
+    const allowedRoles = ["admin", "editor", "sales_manager", "sales"] as const;
+    const role = roles?.find((item) => allowedRoles.includes(item.role))?.role;
+    if (roleError || profileError || profile?.active === false || !role) {
       await supabase.auth.signOut();
       throw redirect({ to: "/auth" });
     }

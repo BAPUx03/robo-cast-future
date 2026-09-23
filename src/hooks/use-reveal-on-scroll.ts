@@ -6,9 +6,7 @@ import { useEffect } from "react";
  */
 export function useRevealOnScroll() {
   useEffect(() => {
-    const els = Array.from(
-      document.querySelectorAll<HTMLElement>(".reveal-on-scroll"),
-    );
+    const els = Array.from(document.querySelectorAll<HTMLElement>(".reveal-on-scroll"));
     if (!els.length) return;
 
     if (typeof IntersectionObserver === "undefined") {

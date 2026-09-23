@@ -4,10 +4,23 @@ import { ArrowRight, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { submitEnquiry } from "@/lib/enquiry.functions";
 
-function Field({ name, label, type = "text", required = false }: { name: string; label: string; type?: string; required?: boolean }) {
+function Field({
+  name,
+  label,
+  type = "text",
+  required = false,
+}: {
+  name: string;
+  label: string;
+  type?: string;
+  required?: boolean;
+}) {
   return (
     <div>
-      <label className="block font-mono text-[10px] uppercase tracking-[0.2em] text-muted-foreground" htmlFor={`f-${name}`}>
+      <label
+        className="block font-mono text-[10px] uppercase tracking-[0.2em] text-muted-foreground"
+        htmlFor={`f-${name}`}
+      >
         {label}
         {required && <span className="text-brand"> *</span>}
       </label>
@@ -52,7 +65,10 @@ export function EnquiryForm({ heading = "Send us a message" }: { heading?: strin
   }
 
   return (
-    <form className="reveal-on-scroll relative overflow-hidden rounded-2xl border border-border bg-card p-7 sm:p-8" onSubmit={handleSubmit}>
+    <form
+      className="reveal-on-scroll relative overflow-hidden rounded-2xl border border-border bg-card p-7 sm:p-8"
+      onSubmit={handleSubmit}
+    >
       <div className="font-mono text-[10px] uppercase tracking-[0.3em] text-brand">/ enquiry</div>
       <h2 className="mt-2 font-display text-2xl font-bold tracking-tight">{heading}</h2>
 
@@ -62,7 +78,10 @@ export function EnquiryForm({ heading = "Send us a message" }: { heading?: strin
         <Field name="email" type="email" label="Email" required />
         <Field name="phone" label="Phone" />
         <div className="sm:col-span-2">
-          <label className="block font-mono text-[10px] uppercase tracking-[0.2em] text-muted-foreground" htmlFor="f-message">
+          <label
+            className="block font-mono text-[10px] uppercase tracking-[0.2em] text-muted-foreground"
+            htmlFor="f-message"
+          >
             Message<span className="text-brand"> *</span>
           </label>
           <textarea

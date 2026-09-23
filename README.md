@@ -1,30 +1,38 @@
-# ModTech Robotics Hub 01
+# Modtech Machinery Website
 
-https://www.modtechworld.com/
+Independent website and administration platform for Modtech Machinery's Investment Casting and Robotics & Automation divisions.
 
-this is my website , i want to modify this website and want to develop in the modern way . so basically we have two part robotic & automation and investment casting 
-so i want to make a creative like want robotic arms showing the two side and need to create more easy to know every thing . user can easily get to know all the things and want very modern and give feel of the robotics automation website , add animations like that and make a modern most unique website . my brand color is this 
-#4DD091
+## Stack
 
-This project was built with [Lovable](https://lovable.dev).
+- React 19 and TanStack Start
+- TypeScript and Tailwind CSS
+- Supabase Postgres, Auth and Row Level Security
+- Brevo transactional email
+- Nitro/Cloudflare deployment output
 
-**Live app**: https://robo-cast-future.lovable.app
+## Local development
 
-## Build with Lovable
-
-Continue developing this project in the [Lovable editor](https://lovable.dev/projects/0521380a-56a7-47ba-b836-0dfcbd99de54).
-
-- **Ship faster**: describe what you want to build and Lovable handles the code.
-- **Stay in sync**: every change made in Lovable is committed straight to this repository.
-- **Full ownership**: this code is yours. Push to `main` on GitHub and your changes sync back into Lovable, ready for your next prompt.
-
-## Development
-
-Prefer working locally? You need Node.js and npm — [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating).
+1. Install Node.js 22 or later.
+2. Copy `.env.example` to `.env.local` and add your own credentials.
+3. Install dependencies and start the local server:
 
 ```sh
-git clone <this-repository-url>
-cd <repository-name>
-npm i
+npm install
 npm run dev
 ```
+
+The development server runs at `http://localhost:8080`.
+
+## Database
+
+Database changes live in `drizzle/migrations`. Apply them in numerical order to a Supabase project. `DATABASE_URL` is only used by migration tooling and must remain server-side.
+
+## Production
+
+```sh
+npm run build
+```
+
+The current Nitro preset creates Cloudflare-compatible output. Deployment accounts, domains, environment variables and infrastructure remain under the site owner's control.
+
+See `docs/CRM_SETUP.md` for the CRM, role, Supabase and Brevo configuration.

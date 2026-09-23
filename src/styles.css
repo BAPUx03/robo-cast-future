@@ -422,10 +422,10 @@
   }
   .nav-shell[data-scrolled="true"] {
     background: linear-gradient(180deg,
-      color-mix(in oklab, var(--background) 92%, transparent),
-      color-mix(in oklab, var(--background) 75%, transparent));
-    backdrop-filter: blur(18px) saturate(1.2);
-    -webkit-backdrop-filter: blur(18px) saturate(1.2);
+      color-mix(in oklab, var(--background) 99%, transparent),
+      color-mix(in oklab, var(--background) 96%, transparent));
+    backdrop-filter: blur(20px) saturate(1.15);
+    -webkit-backdrop-filter: blur(20px) saturate(1.15);
     border-bottom: 1px solid var(--line);
     box-shadow: 0 10px 30px -20px oklch(0 0 0 / 0.45);
   }

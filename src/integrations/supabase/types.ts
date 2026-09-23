@@ -67,36 +67,59 @@ export type Database = {
       };
       enquiries: {
         Row: {
+          assigned_to: string | null;
           company: string | null;
           created_at: string;
           email: string;
+          follow_up_at: string | null;
           id: string;
+          internal_notes: string;
           message: string;
           name: string;
           phone: string | null;
+          priority: string;
           status: string;
+          updated_at: string;
         };
         Insert: {
+          assigned_to?: string | null;
           company?: string | null;
           created_at?: string;
           email: string;
+          follow_up_at?: string | null;
           id?: string;
+          internal_notes?: string;
           message: string;
           name: string;
           phone?: string | null;
+          priority?: string;
           status?: string;
+          updated_at?: string;
         };
         Update: {
+          assigned_to?: string | null;
           company?: string | null;
           created_at?: string;
           email?: string;
+          follow_up_at?: string | null;
           id?: string;
+          internal_notes?: string;
           message?: string;
           name?: string;
           phone?: string | null;
+          priority?: string;
           status?: string;
+          updated_at?: string;
         };
-        Relationships: [];
+        Relationships: [
+          {
+            foreignKeyName: "enquiries_assigned_to_fkey";
+            columns: ["assigned_to"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+        ];
       };
       exhibitions: {
         Row: {
@@ -235,24 +258,69 @@ export type Database = {
       };
       profiles: {
         Row: {
+          active: boolean;
           created_at: string;
           email: string | null;
           full_name: string | null;
           id: string;
         };
         Insert: {
+          active?: boolean;
           created_at?: string;
           email?: string | null;
           full_name?: string | null;
           id: string;
         };
         Update: {
+          active?: boolean;
           created_at?: string;
           email?: string | null;
           full_name?: string | null;
           id?: string;
         };
         Relationships: [];
+      };
+      lead_activities: {
+        Row: {
+          action: string;
+          actor_id: string | null;
+          created_at: string;
+          details: Json;
+          enquiry_id: string;
+          id: string;
+        };
+        Insert: {
+          action: string;
+          actor_id?: string | null;
+          created_at?: string;
+          details?: Json;
+          enquiry_id: string;
+          id?: string;
+        };
+        Update: {
+          action?: string;
+          actor_id?: string | null;
+          created_at?: string;
+          details?: Json;
+          enquiry_id?: string;
+          id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "lead_activities_enquiry_id_fkey";
+            columns: ["enquiry_id"];
+            isOneToOne: false;
+            referencedRelation: "enquiries";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "lead_activities_actor_id_fkey";
+            columns: ["actor_id"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+        ];
       };
       site_settings: {
         Row: {
@@ -306,9 +374,13 @@ export type Database = {
         };
         Returns: boolean;
       };
+      has_role_name: {
+        Args: { _role: string; _user_id: string };
+        Returns: boolean;
+      };
     };
     Enums: {
-      app_role: "admin" | "editor";
+      app_role: "admin" | "editor" | "sales_manager" | "sales";
     };
     CompositeTypes: {
       [_ in never]: never;
@@ -434,7 +506,7 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
-      app_role: ["admin", "editor"],
+      app_role: ["admin", "editor", "sales_manager", "sales"],
     },
   },
 } as const;

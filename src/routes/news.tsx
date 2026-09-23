@@ -1,4 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { ArrowRight, ArrowUpRight, CalendarDays, MapPin, X } from "lucide-react";
 import { PageShell, PageHero } from "@/components/page-shell";
 import { useRevealOnScroll } from "@/hooks/use-reveal-on-scroll";
@@ -7,13 +8,22 @@ import { automationImages } from "@/content/automation-data";
 import { useEffect, useState } from "react";
 import { useSiteContent } from "@/lib/site-content";
 import { getDemoRows } from "@/lib/demo-admin";
+import { supabase } from "@/integrations/supabase/client";
 import { MarkdownContent } from "@/components/markdown-content";
 
 type PublicNewsItem = (typeof news)[number] & { body?: string };
+type PublicExhibition = (typeof exhibitions)[number];
 
-function loadNews(): PublicNewsItem[] {
-  if (!import.meta.env.DEV) return news;
-  const local = getDemoRows("news_items")
+function normalizeCategory(value: unknown): Category {
+  const category = String(value ?? "automation");
+  if (category === "robotic") return "robotics";
+  return category === "casting" || category === "robotics" || category === "automation"
+    ? category
+    : "automation";
+}
+
+function mapNewsRows(rows: Record<string, unknown>[]): PublicNewsItem[] {
+  return rows
     .filter((item) => item["published"] !== false)
     .map((item) => ({
       tag: String(item["tag"] ?? "News"),
@@ -23,12 +33,53 @@ function loadNews(): PublicNewsItem[] {
       body: String(item["body"] ?? ""),
       image: String(item["image_url"] || automationImages.palletizingLine),
       imageWebp: String(item["image_url"] || automationImages.palletizingLine),
-      category: String(item["category"] ?? "automation") as Category,
+      category: normalizeCategory(item["category"]),
     }));
-  return local.length > 0 ? local : news;
+}
+
+async function loadNews(): Promise<PublicNewsItem[]> {
+  if (import.meta.env.DEV) {
+    const local = mapNewsRows(getDemoRows("news_items"));
+    return local.length > 0 ? local : news;
+  }
+  const { data, error } = await supabase
+    .from("news_items")
+    .select("*")
+    .eq("published", true)
+    .order("sort_order", { ascending: true });
+  if (error) throw error;
+  const items = mapNewsRows((data ?? []) as Record<string, unknown>[]);
+  return items.length > 0 ? items : news;
+}
+
+function mapExhibitionRows(rows: Record<string, unknown>[]): PublicExhibition[] {
+  return rows
+    .filter((item) => item["published"] !== false)
+    .map((item) => ({
+      title: String(item["title"] ?? "Untitled event"),
+      date: String(item["date_label"] ?? ""),
+      location: String(item["location"] ?? ""),
+      image: String(item["image_url"] || automationImages.facility),
+    }));
+}
+
+async function loadExhibitions(): Promise<PublicExhibition[]> {
+  if (import.meta.env.DEV) {
+    const local = mapExhibitionRows(getDemoRows("exhibitions"));
+    return local.length > 0 ? local : exhibitions;
+  }
+  const { data, error } = await supabase
+    .from("exhibitions")
+    .select("*")
+    .eq("published", true)
+    .order("sort_order", { ascending: true });
+  if (error) throw error;
+  const items = mapExhibitionRows((data ?? []) as Record<string, unknown>[]);
+  return items.length > 0 ? items : exhibitions;
 }
 
 export const Route = createFileRoute("/news")({
+  ssr: false,
   head: () => ({
     meta: [
       { title: "News & Case Studies — Modtech Machinery" },
@@ -52,15 +103,25 @@ function NewsPage() {
   useRevealOnScroll();
   const content = useSiteContent("news");
   const [newsCat, setNewsCat] = useState<Category | null>(null);
-  const [items, setItems] = useState<PublicNewsItem[]>(loadNews);
   const [selected, setSelected] = useState<PublicNewsItem | null>(null);
+  const queryClient = useQueryClient();
+  const { data: loadedNews } = useQuery({ queryKey: ["public-news"], queryFn: loadNews });
+  const { data: loadedExhibitions } = useQuery({
+    queryKey: ["public-exhibitions"],
+    queryFn: loadExhibitions,
+  });
+  const items = loadedNews ?? news;
+  const eventItems = loadedExhibitions ?? exhibitions;
   const filtered = newsCat ? items.filter((item) => item.category === newsCat) : items;
 
   useEffect(() => {
-    const sync = () => setItems(loadNews());
+    const sync = () => {
+      void queryClient.invalidateQueries({ queryKey: ["public-news"] });
+      void queryClient.invalidateQueries({ queryKey: ["public-exhibitions"] });
+    };
     window.addEventListener("storage", sync);
     return () => window.removeEventListener("storage", sync);
-  }, []);
+  }, [queryClient]);
   return (
     <PageShell>
       <PageHero
@@ -177,7 +238,7 @@ function NewsPage() {
           </div>
 
           <div className="reveal-on-scroll mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-            {exhibitions.map((e, i) => (
+            {eventItems.map((e, i) => (
               <article
                 key={e.title}
                 className="group overflow-hidden rounded-2xl border border-border bg-card shadow-card transition hover:-translate-y-1 hover:border-brand/60"

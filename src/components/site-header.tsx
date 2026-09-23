@@ -5,16 +5,16 @@ import { BrandLogo } from "@/components/brand-logo";
 import { ThemeToggle } from "@/components/theme-toggle";
 
 const NAV_ITEMS = [
-  { to: "/",           label: "Home" },
-  { to: "/about",      label: "About Us" },
-  { to: "/divisions",  label: "Divisions" },
-  { to: "/machines",   label: "Machines" },
-  { to: "/solutions",  label: "Solutions" },
+  { to: "/", label: "Home" },
+  { to: "/about", label: "About Us" },
+  { to: "/divisions", label: "Divisions" },
+  { to: "/machines", label: "Machines" },
+  { to: "/solutions", label: "Solutions" },
   { to: "/industries", label: "Industries" },
-  { to: "/process",    label: "Process" },
-  { to: "/news",       label: "News" },
-  { to: "/blog",       label: "Blog" },
-  { to: "/contact",    label: "Contact" },
+  { to: "/process", label: "Process" },
+  { to: "/news", label: "News" },
+  { to: "/blog", label: "Blog" },
+  { to: "/contact", label: "Contact" },
 ] as const;
 
 export function SiteHeader() {
@@ -30,7 +30,9 @@ export function SiteHeader() {
   }, []);
 
   // Close mobile menu on route change
-  useEffect(() => { setOpen(false); }, [location.pathname]);
+  useEffect(() => {
+    setOpen(false);
+  }, [location.pathname]);
 
   // Lock the page behind the open menu so only the menu itself scrolls
   useEffect(() => {
@@ -54,15 +56,24 @@ export function SiteHeader() {
             <span>24/7 Engineering Support</span>
           </div>
           <div className="flex items-center gap-4 font-mono text-[10.5px] uppercase tracking-[0.18em] text-muted-foreground">
-            <a href="mailto:sales.automation@modtechworld.com" className="inline-flex items-center gap-1.5 transition hover:text-brand">
+            <a
+              href="mailto:sales.automation@modtechworld.com"
+              className="inline-flex items-center gap-1.5 transition hover:text-brand"
+            >
               <Mail className="h-3 w-3" /> sales.automation@modtechworld.com
             </a>
           </div>
         </div>
       </div>
 
-      <div className={`mx-auto grid max-w-[90rem] grid-cols-[minmax(0,1fr)_auto] items-center gap-4 px-5 sm:px-8 xl:grid-cols-[auto_minmax(0,1fr)_auto] ${scrolled ? "py-3" : "py-4"} transition-[padding] duration-300`}>
-        <Link to="/" className="group inline-flex min-w-0 items-center gap-3.5 justify-self-start" aria-label="Modtech Machinery — home">
+      <div
+        className={`mx-auto grid max-w-[90rem] grid-cols-[minmax(0,1fr)_auto] items-center gap-4 px-5 sm:px-8 xl:grid-cols-[auto_minmax(0,1fr)_auto] ${scrolled ? "py-3" : "py-4"} transition-[padding] duration-300`}
+      >
+        <Link
+          to="/"
+          className="group inline-flex min-w-0 items-center gap-3.5 justify-self-start"
+          aria-label="Modtech Machinery — home"
+        >
           <BrandLogo className="h-9 text-foreground transition-colors group-hover:text-brand sm:h-10" />
           <span className="hidden h-9 w-px bg-border 2xl:block" />
           <span className="hidden font-mono text-[9px] uppercase leading-relaxed tracking-[0.16em] text-muted-foreground 2xl:block">
@@ -77,8 +88,13 @@ export function SiteHeader() {
               key={item.to}
               to={item.to}
               activeOptions={{ exact: item.to === "/" }}
-              activeProps={{ className: "nav-link whitespace-nowrap rounded-md px-2 py-2 text-brand 2xl:px-2.5" }}
-              inactiveProps={{ className: "nav-link whitespace-nowrap rounded-md px-2 py-2 text-foreground/75 hover:text-brand 2xl:px-2.5" }}
+              activeProps={{
+                className: "nav-link whitespace-nowrap rounded-md px-2 py-2 text-brand 2xl:px-2.5",
+              }}
+              inactiveProps={{
+                className:
+                  "nav-link whitespace-nowrap rounded-md px-2 py-2 text-foreground/75 hover:text-brand 2xl:px-2.5",
+              }}
             >
               {item.label}
             </Link>
@@ -115,14 +131,23 @@ export function SiteHeader() {
                 to={item.to}
                 onClick={() => setOpen(false)}
                 activeOptions={{ exact: item.to === "/" }}
-                activeProps={{ className: "rounded-lg bg-brand/12 px-4 py-2.5 font-display text-[15px] font-semibold text-brand" }}
-                inactiveProps={{ className: "rounded-lg px-4 py-2.5 font-display text-[15px] font-medium text-foreground/85 transition hover:bg-secondary/40 hover:text-brand" }}
+                activeProps={{
+                  className:
+                    "rounded-lg bg-brand/12 px-4 py-2.5 font-display text-[15px] font-semibold text-brand",
+                }}
+                inactiveProps={{
+                  className:
+                    "rounded-lg px-4 py-2.5 font-display text-[15px] font-medium text-foreground/85 transition hover:bg-secondary/40 hover:text-brand",
+                }}
               >
                 {item.label}
               </Link>
             ))}
             <div className="mt-3 flex flex-col gap-2 border-t border-border pt-3">
-              <a href="mailto:sales.automation@modtechworld.com" className="inline-flex items-center gap-2 px-4 font-mono text-[11px] uppercase tracking-[0.18em] text-muted-foreground">
+              <a
+                href="mailto:sales.automation@modtechworld.com"
+                className="inline-flex items-center gap-2 px-4 font-mono text-[11px] uppercase tracking-[0.18em] text-muted-foreground"
+              >
                 <Mail className="h-3.5 w-3.5 text-brand" /> sales.automation@modtechworld.com
               </a>
               <Link

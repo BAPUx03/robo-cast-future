@@ -1,11 +1,13 @@
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   Activity,
+  AlertTriangle,
   ArrowRight,
   Bold,
   CalendarDays,
+  Download,
   Clock3,
   Eye,
   FileText,
@@ -29,11 +31,14 @@ import {
   Settings2,
   Trash2,
   Upload,
+  UserPlus,
+  Users,
   X,
 } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { slugify } from "@/lib/cms";
+import { assignLead, inviteTeamMember, updateTeamMember } from "@/lib/team.functions";
 import { BrandLogo } from "@/components/brand-logo";
 import { MarkdownContent } from "@/components/markdown-content";
 import {
@@ -44,9 +49,29 @@ import {
   saveDemoSettings,
   updateDemoRow,
 } from "@/lib/demo-admin";
-import { getSiteContent, saveSiteContent, SITE_CONTENT_PAGES } from "@/lib/site-content";
+import {
+  fetchSiteContent,
+  getSiteContent,
+  saveSiteContent,
+  SITE_CONTENT_PAGES,
+} from "@/lib/site-content";
 
 export const Route = createFileRoute("/_authenticated/admin")({
+  validateSearch: (search: Record<string, unknown>) => {
+    const section = typeof search.section === "string" ? search.section : undefined;
+    const validSections = [
+      "overview",
+      "website",
+      "posts",
+      "products",
+      "news",
+      "exhibitions",
+      "enquiries",
+      "team",
+      "settings",
+    ];
+    return { section: validSections.includes(section ?? "") ? (section as Tab) : undefined };
+  },
   head: () => ({
     meta: [
       { title: "Admin — Modtech Machinery" },
@@ -74,6 +99,7 @@ type Tab =
   | "news"
   | "exhibitions"
   | "enquiries"
+  | "team"
   | "settings";
 
 const TABS = [
@@ -84,20 +110,34 @@ const TABS = [
   { id: "news", label: "News", description: "Updates & resources", Icon: Newspaper },
   { id: "exhibitions", label: "Exhibitions", description: "Events calendar", Icon: CalendarDays },
   { id: "enquiries", label: "Enquiries", description: "Sales leads", Icon: Inbox },
+  { id: "team", label: "Sales Team", description: "People & access", Icon: Users },
   { id: "settings", label: "Email Settings", description: "Notifications", Icon: Settings2 },
 ] as const;
 
 type Row = Record<string, unknown> & { id?: string };
 
 type EnquiryRow = {
+  assigned_to: string | null;
   id: string;
   name: string;
   company: string | null;
   email: string;
   phone: string | null;
   message: string;
+  priority: string;
+  internal_notes: string;
+  follow_up_at: string | null;
   status: string;
   created_at: string;
+  updated_at: string;
+};
+
+type TeamMember = {
+  id: string;
+  email: string | null;
+  full_name: string | null;
+  active: boolean;
+  role: "admin" | "editor" | "sales_manager" | "sales";
 };
 
 function formatAdminDate(value: unknown) {
@@ -121,7 +161,7 @@ type FieldDef = {
   hint?: string;
 };
 
-type CollectionTab = Exclude<Tab, "overview" | "website" | "enquiries" | "settings">;
+type CollectionTab = Exclude<Tab, "overview" | "website" | "enquiries" | "team" | "settings">;
 
 const SCHEMAS: Record<
   CollectionTab,
@@ -189,7 +229,8 @@ const SCHEMAS: Record<
     order: "sort_order",
     asc: true,
     titleKey: "title",
-    description: "Manage machines and product information shown in the public catalogue.",
+    description:
+      "Add custom machines or override a built-in catalogue item by using the same URL slug.",
     fields: [
       { key: "title", label: "Machine name", full: true, required: true },
       { key: "code", label: "Code", required: true },
@@ -290,10 +331,37 @@ const SCHEMAS: Record<
 };
 
 function AdminPage() {
-  const [tab, setTab] = useState<Tab>("overview");
+  const { section } = Route.useSearch();
+  const tab = section ?? "overview";
   const { user, role, demo } = Route.useRouteContext();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
+  const permissions: Record<typeof role, readonly Tab[]> = {
+    admin: [
+      "overview",
+      "website",
+      "posts",
+      "products",
+      "news",
+      "exhibitions",
+      "enquiries",
+      "team",
+      "settings",
+    ],
+    editor: ["overview", "website", "posts", "products", "news", "exhibitions"],
+    sales_manager: ["overview", "enquiries", "team"],
+    sales: ["overview", "enquiries"],
+  };
+  const allowedTabs = permissions[role];
+  const visibleTabs = TABS.filter((item) => allowedTabs.includes(item.id));
+  const activeTab = allowedTabs.includes(tab) ? tab : "overview";
+
+  function setTab(nextTab: Tab) {
+    void navigate({
+      to: "/admin",
+      search: { section: nextTab === "overview" ? undefined : nextTab },
+    });
+  }
 
   async function signOut() {
     await queryClient.cancelQueries();
@@ -356,20 +424,20 @@ function AdminPage() {
             className="grid grid-cols-2 gap-2 sm:grid-cols-4 lg:sticky lg:top-24 lg:grid-cols-1"
             aria-label="Admin sections"
           >
-            {TABS.map(({ id, label, description, Icon }) => (
+            {visibleTabs.map(({ id, label, description, Icon }) => (
               <button
                 key={id}
                 type="button"
                 onClick={() => setTab(id)}
-                aria-current={tab === id ? "page" : undefined}
+                aria-current={activeTab === id ? "page" : undefined}
                 className={`flex min-w-0 items-center gap-3 rounded-xl border px-3 py-3 text-left transition ${
-                  tab === id
+                  activeTab === id
                     ? "border-brand/50 bg-brand/10 text-foreground shadow-card"
                     : "border-transparent text-muted-foreground hover:border-border hover:bg-card hover:text-foreground"
                 }`}
               >
                 <span
-                  className={`grid h-8 w-8 shrink-0 place-items-center rounded-lg ${tab === id ? "bg-brand text-brand-foreground" : "bg-secondary text-muted-foreground"}`}
+                  className={`grid h-8 w-8 shrink-0 place-items-center rounded-lg ${activeTab === id ? "bg-brand text-brand-foreground" : "bg-secondary text-muted-foreground"}`}
                 >
                   <Icon className="h-4 w-4" />
                 </span>
@@ -391,16 +459,18 @@ function AdminPage() {
         </aside>
 
         <section className="min-w-0 px-5 py-8 sm:px-8 sm:py-10 lg:px-10">
-          {tab === "overview" ? (
-            <DashboardOverview demo={demo} onNavigate={setTab} />
-          ) : tab === "website" ? (
-            <WebsiteContent />
-          ) : tab === "enquiries" ? (
-            <Enquiries demo={demo} />
-          ) : tab === "settings" ? (
+          {activeTab === "overview" ? (
+            <DashboardOverview demo={demo} onNavigate={setTab} role={role} />
+          ) : activeTab === "website" ? (
+            <WebsiteContent demo={demo} />
+          ) : activeTab === "enquiries" ? (
+            <Enquiries demo={demo} role={role} userId={user.id} />
+          ) : activeTab === "team" ? (
+            <Team demo={demo} role={role} />
+          ) : activeTab === "settings" ? (
             <Settings demo={demo} />
           ) : (
-            <Collection key={tab} demo={demo} tab={tab} />
+            <Collection key={activeTab} demo={demo} tab={activeTab} />
           )}
         </section>
       </div>
@@ -411,9 +481,11 @@ function AdminPage() {
 function DashboardOverview({
   demo,
   onNavigate,
+  role,
 }: {
   demo: boolean;
   onNavigate: (tab: Tab) => void;
+  role: "admin" | "editor" | "sales_manager" | "sales";
 }) {
   const { data, isLoading, error } = useQuery({
     queryKey: ["admin", "overview"],
@@ -426,6 +498,14 @@ function DashboardOverview({
           exhibitions: getDemoRows("exhibitions"),
           enquiries: getDemoRows("enquiries") as EnquiryRow[],
         };
+      }
+      if (role === "sales" || role === "sales_manager") {
+        const { data: enquiries, error } = await supabase
+          .from("enquiries")
+          .select("*")
+          .order("created_at", { ascending: false });
+        if (error) throw error;
+        return { posts: [], products: [], news: [], exhibitions: [], enquiries: enquiries ?? [] };
       }
       const [posts, products, news, exhibitions, enquiries] = await Promise.all([
         supabase.from("blog_posts").select("id, published, updated_at"),
@@ -451,36 +531,39 @@ function DashboardOverview({
     },
   });
 
-  const cards = [
-    {
-      tab: "posts" as const,
-      label: "Blog & articles",
-      value: data?.posts.length ?? 0,
-      published: data?.posts.filter((item) => item.published).length ?? 0,
-      Icon: FileText,
-    },
-    {
-      tab: "products" as const,
-      label: "Products",
-      value: data?.products.length ?? 0,
-      published: data?.products.filter((item) => item.published).length ?? 0,
-      Icon: Package,
-    },
-    {
-      tab: "news" as const,
-      label: "News items",
-      value: data?.news.length ?? 0,
-      published: data?.news.filter((item) => item.published).length ?? 0,
-      Icon: Newspaper,
-    },
-    {
-      tab: "exhibitions" as const,
-      label: "Exhibitions",
-      value: data?.exhibitions.length ?? 0,
-      published: data?.exhibitions.filter((item) => item.published).length ?? 0,
-      Icon: CalendarDays,
-    },
-  ];
+  const cards =
+    role === "sales" || role === "sales_manager"
+      ? []
+      : [
+          {
+            tab: "posts" as const,
+            label: "Blog & articles",
+            value: data?.posts.length ?? 0,
+            published: data?.posts.filter((item) => item.published).length ?? 0,
+            Icon: FileText,
+          },
+          {
+            tab: "products" as const,
+            label: "Products",
+            value: data?.products.length ?? 0,
+            published: data?.products.filter((item) => item.published).length ?? 0,
+            Icon: Package,
+          },
+          {
+            tab: "news" as const,
+            label: "News items",
+            value: data?.news.length ?? 0,
+            published: data?.news.filter((item) => item.published).length ?? 0,
+            Icon: Newspaper,
+          },
+          {
+            tab: "exhibitions" as const,
+            label: "Exhibitions",
+            value: data?.exhibitions.length ?? 0,
+            published: data?.exhibitions.filter((item) => item.published).length ?? 0,
+            Icon: CalendarDays,
+          },
+        ];
   const newEnquiries = data?.enquiries.filter((item) => item.status === "new") ?? [];
 
   return (
@@ -614,10 +697,16 @@ function DashboardOverview({
   );
 }
 
-function WebsiteContent() {
+function WebsiteContent({ demo }: { demo: boolean }) {
   const [pageId, setPageId] = useState(SITE_CONTENT_PAGES[0].id);
   const [values, setValues] = useState<Record<string, string>>(() => getSiteContent(pageId));
+  const [savedValues, setSavedValues] = useState<Record<string, string>>(() =>
+    getSiteContent(pageId),
+  );
+  const [loading, setLoading] = useState(false);
+  const [saving, setSaving] = useState(false);
   const page = SITE_CONTENT_PAGES.find((item) => item.id === pageId) ?? SITE_CONTENT_PAGES[0];
+  const dirty = JSON.stringify(values) !== JSON.stringify(savedValues);
   const previewPaths: Record<string, string> = {
     home: "/",
     about: "/about",
@@ -632,8 +721,42 @@ function WebsiteContent() {
   };
 
   useEffect(() => {
-    setValues(getSiteContent(pageId));
+    let active = true;
+    setLoading(true);
+    void fetchSiteContent(pageId)
+      .then((nextValues) => {
+        if (!active) return;
+        setValues(nextValues);
+        setSavedValues(nextValues);
+      })
+      .catch((error: unknown) => {
+        if (active)
+          toast.error(error instanceof Error ? error.message : "Could not load page content.");
+      })
+      .finally(() => {
+        if (active) setLoading(false);
+      });
+    return () => {
+      active = false;
+    };
   }, [pageId]);
+
+  useEffect(() => {
+    const protectRefresh = (event: BeforeUnloadEvent) => {
+      if (!dirty) return;
+      event.preventDefault();
+    };
+    window.addEventListener("beforeunload", protectRefresh);
+    return () => window.removeEventListener("beforeunload", protectRefresh);
+  }, [dirty]);
+
+  function selectPage(nextPageId: string) {
+    if (dirty) {
+      toast.error("Save or reset your changes before opening another page.");
+      return;
+    }
+    setPageId(nextPageId);
+  }
 
   return (
     <div>
@@ -644,8 +767,10 @@ function WebsiteContent() {
           </p>
           <h1 className="mt-2 font-display text-3xl font-bold tracking-tight">Website Content</h1>
           <p className="mt-2 max-w-2xl text-sm leading-relaxed text-muted-foreground">
-            Update key page copy and global contact information. Changes appear on the local website
-            immediately.
+            Update key page copy and global contact information.{" "}
+            {demo
+              ? "Local demo changes stay in this browser."
+              : "Published changes are shared across the live website."}
           </p>
         </div>
         <a
@@ -667,7 +792,7 @@ function WebsiteContent() {
             <button
               key={item.id}
               type="button"
-              onClick={() => setPageId(item.id)}
+              onClick={() => selectPage(item.id)}
               className={`rounded-xl border px-4 py-3 text-left transition ${
                 pageId === item.id
                   ? "border-brand/50 bg-brand/10"
@@ -684,17 +809,28 @@ function WebsiteContent() {
 
         <form
           className="overflow-hidden rounded-2xl border border-border bg-card shadow-card"
-          onSubmit={(event) => {
+          onSubmit={async (event) => {
             event.preventDefault();
-            saveSiteContent(pageId, values);
-            toast.success(`${page.label} updated.`);
+            setSaving(true);
+            try {
+              await saveSiteContent(pageId, values);
+              setSavedValues({ ...values });
+              toast.success(`${page.label} updated.`);
+            } catch (error) {
+              toast.error(error instanceof Error ? error.message : "Could not save page content.");
+            } finally {
+              setSaving(false);
+            }
           }}
         >
           <div className="border-b border-border px-5 py-4 sm:px-6">
             <h2 className="font-display text-lg font-bold">{page.label}</h2>
             <p className="mt-1 text-xs text-muted-foreground">{page.description}</p>
           </div>
-          <div className="grid gap-5 p-5 sm:p-6">
+          <fieldset
+            disabled={loading || saving}
+            className="grid gap-5 p-5 disabled:opacity-60 sm:p-6"
+          >
             {page.fields.map((field) => (
               <div key={field.key}>
                 <label
@@ -725,15 +861,41 @@ function WebsiteContent() {
                 )}
               </div>
             ))}
-          </div>
+          </fieldset>
           <div className="flex items-center justify-between border-t border-border bg-secondary/20 px-5 py-4 sm:px-6">
-            <span className="text-xs text-muted-foreground">Saved locally for this browser.</span>
-            <button
-              type="submit"
-              className="inline-flex items-center gap-2 rounded-full bg-brand px-5 py-2.5 font-mono text-[10px] font-semibold uppercase tracking-[0.18em] text-brand-foreground shadow-glow transition hover:-translate-y-0.5"
+            <span
+              className={`text-xs ${dirty ? "font-medium text-brand" : "text-muted-foreground"}`}
             >
-              <Save className="h-4 w-4" /> Save changes
-            </button>
+              {loading
+                ? "Loading content…"
+                : dirty
+                  ? "Unsaved changes"
+                  : demo
+                    ? "Saved in this browser"
+                    : "Published to the website"}
+            </span>
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                disabled={!dirty || loading || saving}
+                onClick={() => setValues({ ...savedValues })}
+                className="rounded-full border border-border px-4 py-2.5 font-mono text-[10px] uppercase tracking-[0.16em] text-muted-foreground transition hover:border-brand hover:text-foreground disabled:cursor-not-allowed disabled:opacity-40"
+              >
+                Reset
+              </button>
+              <button
+                type="submit"
+                disabled={!dirty || loading || saving}
+                className="inline-flex items-center gap-2 rounded-full bg-brand px-5 py-2.5 font-mono text-[10px] font-semibold uppercase tracking-[0.18em] text-brand-foreground shadow-glow transition hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:opacity-50"
+              >
+                {saving ? (
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                ) : (
+                  <Save className="h-4 w-4" />
+                )}{" "}
+                Save changes
+              </button>
+            </div>
           </div>
         </form>
       </div>
@@ -745,10 +907,11 @@ function Collection({ tab, demo }: { tab: CollectionTab; demo: boolean }) {
   const schema = SCHEMAS[tab];
   const queryClient = useQueryClient();
   const [editing, setEditing] = useState<Row | null>(null);
+  const [deleting, setDeleting] = useState<Row | null>(null);
   const [search, setSearch] = useState("");
   const [status, setStatus] = useState<"all" | "published" | "draft">("all");
 
-  const { data, isLoading, error } = useQuery({
+  const { data, isLoading, error, refetch } = useQuery({
     queryKey: ["admin", schema.table],
     queryFn: async () => {
       if (demo) return getDemoRows(schema.table) as Row[];
@@ -784,6 +947,10 @@ function Collection({ tab, demo }: { tab: CollectionTab; demo: boolean }) {
       queryClient.invalidateQueries({ queryKey: ["admin", schema.table] });
       queryClient.invalidateQueries({ queryKey: ["admin", "overview"] });
       queryClient.invalidateQueries({ queryKey: ["posts"] });
+      if (tab === "products") queryClient.invalidateQueries({ queryKey: ["public-machines"] });
+      if (tab === "news") queryClient.invalidateQueries({ queryKey: ["public-news"] });
+      if (tab === "exhibitions")
+        queryClient.invalidateQueries({ queryKey: ["public-exhibitions"] });
     },
     onError: (e: Error) => toast.error(e.message),
   });
@@ -801,10 +968,15 @@ function Collection({ tab, demo }: { tab: CollectionTab; demo: boolean }) {
       if (error) throw error;
     },
     onSuccess: () => {
-      toast.success("Deleted");
+      toast.success("Entry deleted");
+      setDeleting(null);
       queryClient.invalidateQueries({ queryKey: ["admin", schema.table] });
       queryClient.invalidateQueries({ queryKey: ["admin", "overview"] });
       queryClient.invalidateQueries({ queryKey: ["posts"] });
+      if (tab === "products") queryClient.invalidateQueries({ queryKey: ["public-machines"] });
+      if (tab === "news") queryClient.invalidateQueries({ queryKey: ["public-news"] });
+      if (tab === "exhibitions")
+        queryClient.invalidateQueries({ queryKey: ["public-exhibitions"] });
     },
     onError: (e: Error) => toast.error(e.message),
   });
@@ -886,7 +1058,14 @@ function Collection({ tab, demo }: { tab: CollectionTab; demo: boolean }) {
         </div>
       ) : error ? (
         <div className="mt-8 rounded-2xl border border-destructive/30 bg-destructive/5 p-6 text-sm text-destructive">
-          Could not load this collection. Please refresh.
+          Could not load this collection.
+          <button
+            type="button"
+            onClick={() => void refetch()}
+            className="ml-3 font-mono text-[10px] uppercase tracking-wider underline underline-offset-4"
+          >
+            Try again
+          </button>
         </div>
       ) : (
         <div className="mt-8 grid gap-3">
@@ -964,11 +1143,11 @@ function Collection({ tab, demo }: { tab: CollectionTab; demo: boolean }) {
                 Edit
               </button>
               <button
-                onClick={() => {
-                  if (confirm("Delete this entry?")) remove.mutate(String(row["id"]));
-                }}
+                type="button"
+                disabled={remove.isPending}
+                onClick={() => setDeleting(row)}
                 className="grid h-8 w-8 place-items-center rounded-full border border-border text-muted-foreground transition hover:border-destructive hover:text-destructive"
-                aria-label="Delete"
+                aria-label={`Delete ${String(row[schema.titleKey] ?? "entry")}`}
               >
                 <Trash2 className="h-3.5 w-3.5" />
               </button>
@@ -986,14 +1165,26 @@ function Collection({ tab, demo }: { tab: CollectionTab; demo: boolean }) {
           onClose={() => setEditing(null)}
           onSave={(row) => {
             const next = { ...row };
+            const missingField = schema.fields.find(
+              (field) => field.required && !String(next[field.key] ?? "").trim(),
+            );
+            if (missingField) {
+              toast.error(`${missingField.label} is required.`);
+              return;
+            }
             if ("slug" in next && !String(next["slug"] ?? "").trim())
               next["slug"] = slugify(String(next["title"] ?? ""));
+            if ("slug" in next && !/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(String(next["slug"]))) {
+              toast.error("URL slug can only contain lowercase letters, numbers and hyphens.");
+              return;
+            }
             for (const field of schema.fields.filter((item) => item.type === "json")) {
               if (typeof next[field.key] === "string") {
                 try {
                   next[field.key] = JSON.parse(next[field.key] as string);
+                  if (!Array.isArray(next[field.key])) throw new Error("Expected an array");
                 } catch {
-                  toast.error(`${field.label} contains invalid JSON.`);
+                  toast.error(`${field.label} must be a valid JSON array.`);
                   return;
                 }
               }
@@ -1002,6 +1193,70 @@ function Collection({ tab, demo }: { tab: CollectionTab; demo: boolean }) {
           }}
         />
       )}
+      {deleting && (
+        <DeleteConfirmation
+          title={String(deleting[schema.titleKey] ?? "Untitled entry")}
+          busy={remove.isPending}
+          onCancel={() => setDeleting(null)}
+          onConfirm={() => remove.mutate(String(deleting["id"]))}
+        />
+      )}
+    </div>
+  );
+}
+
+function DeleteConfirmation({
+  title,
+  busy,
+  onCancel,
+  onConfirm,
+}: {
+  title: string;
+  busy: boolean;
+  onCancel: () => void;
+  onConfirm: () => void;
+}) {
+  return (
+    <div
+      className="fixed inset-0 z-[60] grid place-items-center bg-carbon/80 p-5 backdrop-blur-sm"
+      role="alertdialog"
+      aria-modal="true"
+      aria-labelledby="delete-title"
+      aria-describedby="delete-description"
+      onMouseDown={(event) => {
+        if (event.currentTarget === event.target && !busy) onCancel();
+      }}
+    >
+      <div className="w-full max-w-md rounded-2xl border border-border bg-background p-6 shadow-deep">
+        <span className="grid h-11 w-11 place-items-center rounded-xl bg-destructive/10 text-destructive">
+          <AlertTriangle className="h-5 w-5" />
+        </span>
+        <h2 id="delete-title" className="mt-5 font-display text-xl font-bold">
+          Delete this entry?
+        </h2>
+        <p id="delete-description" className="mt-2 text-sm leading-relaxed text-muted-foreground">
+          “{title}” will be permanently removed. This action cannot be undone.
+        </p>
+        <div className="mt-6 flex justify-end gap-3">
+          <button
+            type="button"
+            disabled={busy}
+            onClick={onCancel}
+            className="rounded-full border border-border px-5 py-2.5 font-mono text-[10px] uppercase tracking-wider text-muted-foreground transition hover:border-brand hover:text-foreground disabled:opacity-50"
+          >
+            Cancel
+          </button>
+          <button
+            type="button"
+            disabled={busy}
+            onClick={onConfirm}
+            className="inline-flex items-center gap-2 rounded-full bg-destructive px-5 py-2.5 font-mono text-[10px] font-semibold uppercase tracking-wider text-white transition hover:brightness-110 disabled:opacity-50"
+          >
+            {busy ? <Loader2 className="h-4 w-4 animate-spin" /> : <Trash2 className="h-4 w-4" />}
+            Delete permanently
+          </button>
+        </div>
+      </div>
     </div>
   );
 }
@@ -1021,13 +1276,36 @@ function EditorDrawer({
   onClose: () => void;
   onSave: (row: Row) => void;
 }) {
+  const initialValue = useRef(JSON.stringify(row));
+  const [confirmDiscard, setConfirmDiscard] = useState(false);
+  const dirty = JSON.stringify(row) !== initialValue.current;
+
+  const requestClose = useCallback(() => {
+    if (busy) return;
+    if (dirty) setConfirmDiscard(true);
+    else onClose();
+  }, [busy, dirty, onClose]);
+
   useEffect(() => {
     const closeOnEscape = (event: KeyboardEvent) => {
-      if (event.key === "Escape" && !busy) onClose();
+      if (event.key === "Escape" && !busy) requestClose();
     };
     window.addEventListener("keydown", closeOnEscape);
     return () => window.removeEventListener("keydown", closeOnEscape);
-  }, [busy, onClose]);
+  }, [busy, requestClose]);
+
+  useEffect(() => {
+    document.documentElement.classList.add("nav-open");
+    const protectRefresh = (event: BeforeUnloadEvent) => {
+      if (!dirty) return;
+      event.preventDefault();
+    };
+    window.addEventListener("beforeunload", protectRefresh);
+    return () => {
+      document.documentElement.classList.remove("nav-open");
+      window.removeEventListener("beforeunload", protectRefresh);
+    };
+  }, [dirty]);
 
   function set(key: string, value: unknown) {
     const next = { ...row, [key]: value };
@@ -1043,6 +1321,9 @@ function EditorDrawer({
       role="dialog"
       aria-modal="true"
       aria-label={row["id"] ? "Edit entry" : "New entry"}
+      onMouseDown={(event) => {
+        if (event.currentTarget === event.target) requestClose();
+      }}
     >
       <div
         className={`h-full w-full overflow-y-auto border-l border-border bg-background px-6 shadow-deep sm:px-8 ${fields.some((field) => field.type === "richtext") ? "max-w-4xl" : "max-w-2xl"}`}
@@ -1057,9 +1338,11 @@ function EditorDrawer({
             </h2>
           </div>
           <button
-            onClick={onClose}
+            type="button"
+            disabled={busy}
+            onClick={requestClose}
             aria-label="Close"
-            className="grid h-9 w-9 place-items-center rounded-full border border-border transition hover:border-brand hover:text-brand"
+            className="grid h-9 w-9 place-items-center rounded-full border border-border transition hover:border-brand hover:text-brand disabled:opacity-50"
           >
             <X className="h-4 w-4" />
           </button>
@@ -1107,6 +1390,11 @@ function EditorDrawer({
                       className="block font-mono text-[10px] uppercase tracking-[0.2em] text-muted-foreground"
                     >
                       {f.label}
+                      {f.required && (
+                        <span className="ml-1 text-brand" aria-hidden="true">
+                          *
+                        </span>
+                      )}
                     </label>
                     {f.type === "richtext" ? (
                       <RichTextEditor
@@ -1205,6 +1493,37 @@ function EditorDrawer({
           </div>
         </form>
       </div>
+      {confirmDiscard && (
+        <div className="absolute inset-0 z-20 grid place-items-center bg-carbon/75 p-5 backdrop-blur-sm">
+          <div
+            className="w-full max-w-sm rounded-2xl border border-border bg-background p-6 shadow-deep"
+            role="alertdialog"
+            aria-modal="true"
+          >
+            <AlertTriangle className="h-6 w-6 text-brand" />
+            <h3 className="mt-4 font-display text-lg font-bold">Discard unsaved changes?</h3>
+            <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
+              Your edits have not been saved and will be lost.
+            </p>
+            <div className="mt-6 flex justify-end gap-3">
+              <button
+                type="button"
+                onClick={() => setConfirmDiscard(false)}
+                className="rounded-full border border-border px-4 py-2.5 font-mono text-[10px] uppercase tracking-wider text-muted-foreground hover:border-brand hover:text-foreground"
+              >
+                Keep editing
+              </button>
+              <button
+                type="button"
+                onClick={onClose}
+                className="rounded-full bg-destructive px-4 py-2.5 font-mono text-[10px] font-semibold uppercase tracking-wider text-white hover:brightness-110"
+              >
+                Discard
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
@@ -1362,11 +1681,20 @@ function RichTextEditor({
   );
 }
 
-function Enquiries({ demo }: { demo: boolean }) {
+function Enquiries({
+  demo,
+  role,
+  userId,
+}: {
+  demo: boolean;
+  role: "admin" | "editor" | "sales_manager" | "sales";
+  userId: string;
+}) {
   const queryClient = useQueryClient();
   const [search, setSearch] = useState("");
   const [status, setStatus] = useState("all");
-  const { data, isLoading } = useQuery<EnquiryRow[]>({
+  const [assignee, setAssignee] = useState("all");
+  const { data, isLoading, error, refetch } = useQuery<EnquiryRow[]>({
     queryKey: ["admin", "enquiries"],
     queryFn: async () => {
       if (demo) return getDemoRows("enquiries") as EnquiryRow[];
@@ -1379,16 +1707,65 @@ function Enquiries({ demo }: { demo: boolean }) {
     },
   });
 
+  const { data: team = [] } = useQuery<TeamMember[]>({
+    queryKey: ["admin", "sales-team"],
+    enabled: !demo && (role === "admin" || role === "sales_manager"),
+    queryFn: async () => {
+      const [{ data: profiles, error: profileError }, { data: roles, error: roleError }] =
+        await Promise.all([
+          supabase.from("profiles").select("id, email, full_name, active"),
+          supabase.from("user_roles").select("user_id, role").eq("role", "sales"),
+        ]);
+      if (profileError || roleError) throw profileError ?? roleError;
+      const salesIds = new Set((roles ?? []).map((item) => item.user_id));
+      return (profiles ?? [])
+        .filter((profile) => salesIds.has(profile.id))
+        .map((profile) => ({ ...profile, role: "sales" as const }));
+    },
+  });
+
   const update = useMutation({
-    mutationFn: async ({ id, status }: { id: string; status: string }) => {
+    mutationFn: async ({ id, changes }: { id: string; changes: Partial<EnquiryRow> }) => {
       if (demo) {
-        updateDemoRow("enquiries", id, { status });
+        updateDemoRow("enquiries", id, changes);
         return;
       }
-      const { error } = await supabase.from("enquiries").update({ status }).eq("id", id);
+      const { error } = await supabase.from("enquiries").update(changes).eq("id", id);
       if (error) throw error;
+      const { error: activityError } = await supabase.from("lead_activities").insert({
+        enquiry_id: id,
+        actor_id: userId,
+        action: "updated",
+        details: changes,
+      });
+      if (activityError) console.warn("Lead activity could not be recorded", activityError.message);
     },
     onSuccess: () => {
+      toast.success("Enquiry status updated.");
+      queryClient.invalidateQueries({ queryKey: ["admin", "enquiries"] });
+      queryClient.invalidateQueries({ queryKey: ["admin", "overview"] });
+    },
+    onError: (e: Error) => toast.error(e.message),
+  });
+
+  const assignment = useMutation({
+    mutationFn: async ({
+      enquiryId,
+      assignedTo,
+    }: {
+      enquiryId: string;
+      assignedTo: string | null;
+    }) => {
+      if (demo) {
+        updateDemoRow("enquiries", enquiryId, { assigned_to: assignedTo });
+        return { notified: false };
+      }
+      return assignLead({ data: { enquiryId, assignedTo } });
+    },
+    onSuccess: (result) => {
+      toast.success(
+        result?.notified ? "Lead assigned and sales executive notified." : "Lead assignment saved.",
+      );
       queryClient.invalidateQueries({ queryKey: ["admin", "enquiries"] });
       queryClient.invalidateQueries({ queryKey: ["admin", "overview"] });
     },
@@ -1399,6 +1776,9 @@ function Enquiries({ demo }: { demo: boolean }) {
   const statuses = ["new", "contacted", "quoted", "closed"];
   const visibleRows = rows.filter((row) => {
     if (status !== "all" && row.status !== status) return false;
+    if (assignee === "unassigned" && row.assigned_to) return false;
+    if (assignee !== "all" && assignee !== "unassigned" && row.assigned_to !== assignee)
+      return false;
     const needle = search.trim().toLowerCase();
     if (!needle) return true;
     return [row.name, row.company, row.email, row.phone, row.message]
@@ -1408,10 +1788,62 @@ function Enquiries({ demo }: { demo: boolean }) {
       .includes(needle);
   });
 
+  function exportCsv() {
+    const escape = (value: unknown) => `"${String(value ?? "").replace(/"/g, '""')}"`;
+    const header = [
+      "Created",
+      "Name",
+      "Company",
+      "Email",
+      "Phone",
+      "Status",
+      "Priority",
+      "Assigned To",
+      "Follow Up",
+      "Message",
+      "Internal Notes",
+    ];
+    const lines = visibleRows.map((row) => [
+      row.created_at,
+      row.name,
+      row.company,
+      row.email,
+      row.phone,
+      row.status,
+      row.priority,
+      team.find((member) => member.id === row.assigned_to)?.email ?? "",
+      row.follow_up_at,
+      row.message,
+      row.internal_notes,
+    ]);
+    const blob = new Blob(
+      [[header, ...lines].map((line) => line.map(escape).join(",")).join("\n")],
+      {
+        type: "text/csv;charset=utf-8",
+      },
+    );
+    const href = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = href;
+    link.download = `modtech-leads-${new Date().toISOString().slice(0, 10)}.csv`;
+    link.click();
+    URL.revokeObjectURL(href);
+  }
+
   return (
     <div>
       <p className="font-mono text-[10px] uppercase tracking-[0.24em] text-brand">/ pipeline</p>
-      <h1 className="mt-2 font-display text-3xl font-bold tracking-tight">Enquiries</h1>
+      <div className="flex flex-wrap items-center justify-between gap-4">
+        <h1 className="mt-2 font-display text-3xl font-bold tracking-tight">Enquiries</h1>
+        <button
+          type="button"
+          onClick={exportCsv}
+          disabled={!visibleRows.length}
+          className="inline-flex items-center gap-2 rounded-full border border-border px-4 py-2 font-mono text-[10px] uppercase tracking-wider transition hover:border-brand hover:text-brand disabled:opacity-40"
+        >
+          <Download className="h-4 w-4" /> Export CSV
+        </button>
+      </div>
       <p className="mt-2 max-w-2xl text-sm leading-relaxed text-muted-foreground">
         Review incoming opportunities and move each conversation through the sales pipeline.
       </p>
@@ -1454,6 +1886,22 @@ function Enquiries({ demo }: { demo: boolean }) {
             className="w-full rounded-xl border border-border bg-background py-2.5 pl-10 pr-4 text-sm outline-none ring-brand/30 transition focus:border-brand focus:ring-2"
           />
         </label>
+        {(role === "admin" || role === "sales_manager") && (
+          <select
+            value={assignee}
+            onChange={(event) => setAssignee(event.target.value)}
+            aria-label="Filter by assignee"
+            className="rounded-xl border border-border bg-background px-3 py-2.5 text-xs outline-none focus:border-brand"
+          >
+            <option value="all">All owners</option>
+            <option value="unassigned">Unassigned</option>
+            {team.map((member) => (
+              <option key={member.id} value={member.id}>
+                {member.full_name || member.email}
+              </option>
+            ))}
+          </select>
+        )}
         <span className="shrink-0 text-xs text-muted-foreground">
           {visibleRows.length} of {rows.length} leads
         </span>
@@ -1463,6 +1911,18 @@ function Enquiries({ demo }: { demo: boolean }) {
           {[0, 1].map((i) => (
             <div key={i} className="h-24 animate-pulse rounded-xl bg-card" />
           ))}
+        </div>
+      ) : error ? (
+        <div className="mt-6 rounded-2xl border border-destructive/30 bg-destructive/5 p-8 text-center">
+          <AlertTriangle className="mx-auto h-7 w-7 text-destructive" />
+          <p className="mt-3 text-sm text-destructive">Could not load enquiries.</p>
+          <button
+            type="button"
+            onClick={() => void refetch()}
+            className="mt-4 rounded-full border border-border px-4 py-2 font-mono text-[10px] uppercase tracking-wider text-foreground hover:border-brand hover:text-brand"
+          >
+            Try again
+          </button>
         </div>
       ) : visibleRows.length === 0 ? (
         <div className="mt-6 rounded-2xl border border-dashed border-border bg-card/50 p-10 text-center">
@@ -1486,8 +1946,10 @@ function Enquiries({ demo }: { demo: boolean }) {
                 {r.company && <span className="text-sm text-muted-foreground">· {r.company}</span>}
                 <select
                   value={r.status}
-                  onChange={(e) => update.mutate({ id: r.id, status: e.target.value })}
-                  className="ml-auto rounded-full border border-border bg-background px-3 py-1.5 font-mono text-[10px] uppercase tracking-[0.18em]"
+                  disabled={update.isPending}
+                  onChange={(e) => update.mutate({ id: r.id, changes: { status: e.target.value } })}
+                  aria-label={`Status for ${r.name}`}
+                  className="ml-auto rounded-full border border-border bg-background px-3 py-1.5 font-mono text-[10px] uppercase tracking-[0.18em] disabled:opacity-50"
                 >
                   {statuses.map((s) => (
                     <option key={s} value={s}>
@@ -1515,9 +1977,92 @@ function Enquiries({ demo }: { demo: boolean }) {
                   <Clock3 className="h-3 w-3" /> {new Date(r.created_at).toLocaleString("en-GB")}
                 </span>
               </div>
+              <div className="mt-4 grid gap-3 border-t border-border pt-4 sm:grid-cols-3">
+                {(role === "admin" || role === "sales_manager") && (
+                  <label className="text-xs text-muted-foreground">
+                    <span className="mb-1.5 block font-mono text-[9px] uppercase tracking-wider">
+                      Owner
+                    </span>
+                    <select
+                      value={r.assigned_to ?? ""}
+                      disabled={assignment.isPending}
+                      onChange={(event) =>
+                        assignment.mutate({
+                          enquiryId: r.id,
+                          assignedTo: event.target.value || null,
+                        })
+                      }
+                      className="w-full rounded-lg border border-border bg-background px-3 py-2 text-xs text-foreground"
+                    >
+                      <option value="">Unassigned</option>
+                      {team
+                        .filter((member) => member.active)
+                        .map((member) => (
+                          <option key={member.id} value={member.id}>
+                            {member.full_name || member.email}
+                          </option>
+                        ))}
+                    </select>
+                  </label>
+                )}
+                <label className="text-xs text-muted-foreground">
+                  <span className="mb-1.5 block font-mono text-[9px] uppercase tracking-wider">
+                    Priority
+                  </span>
+                  <select
+                    value={r.priority || "normal"}
+                    disabled={update.isPending}
+                    onChange={(event) =>
+                      update.mutate({ id: r.id, changes: { priority: event.target.value } })
+                    }
+                    className="w-full rounded-lg border border-border bg-background px-3 py-2 text-xs text-foreground"
+                  >
+                    {["low", "normal", "high", "urgent"].map((value) => (
+                      <option key={value}>{value}</option>
+                    ))}
+                  </select>
+                </label>
+                <label className="text-xs text-muted-foreground">
+                  <span className="mb-1.5 block font-mono text-[9px] uppercase tracking-wider">
+                    Next follow-up
+                  </span>
+                  <input
+                    type="datetime-local"
+                    defaultValue={
+                      r.follow_up_at ? new Date(r.follow_up_at).toISOString().slice(0, 16) : ""
+                    }
+                    onBlur={(event) =>
+                      update.mutate({
+                        id: r.id,
+                        changes: {
+                          follow_up_at: event.target.value
+                            ? new Date(event.target.value).toISOString()
+                            : null,
+                        },
+                      })
+                    }
+                    className="w-full rounded-lg border border-border bg-background px-3 py-2 text-xs text-foreground"
+                  />
+                </label>
+              </div>
               <p className="mt-4 whitespace-pre-wrap rounded-xl bg-secondary/30 p-4 text-sm leading-relaxed text-muted-foreground">
                 {r.message}
               </p>
+              <label className="mt-3 block">
+                <span className="mb-1.5 block font-mono text-[9px] uppercase tracking-wider text-muted-foreground">
+                  Internal sales notes
+                </span>
+                <textarea
+                  defaultValue={r.internal_notes ?? ""}
+                  rows={2}
+                  placeholder="Add qualification, quotation or next-step notes..."
+                  onBlur={(event) => {
+                    if (event.target.value !== (r.internal_notes ?? ""))
+                      update.mutate({ id: r.id, changes: { internal_notes: event.target.value } });
+                  }}
+                  className="w-full resize-y rounded-xl border border-border bg-background px-3 py-2 text-sm outline-none focus:border-brand"
+                />
+              </label>
             </div>
           ))}
         </div>
@@ -1526,7 +2071,271 @@ function Enquiries({ demo }: { demo: boolean }) {
   );
 }
 
-const SETTING_FIELDS: { key: string; label: string; hint: string; placeholder: string }[] = [
+function Team({
+  demo,
+  role,
+}: {
+  demo: boolean;
+  role: "admin" | "editor" | "sales_manager" | "sales";
+}) {
+  const queryClient = useQueryClient();
+  const [form, setForm] = useState({
+    fullName: "",
+    email: "",
+    role: "sales" as TeamMember["role"],
+  });
+  const {
+    data: members = [],
+    isLoading,
+    error,
+    refetch,
+  } = useQuery<TeamMember[]>({
+    queryKey: ["admin", "team"],
+    queryFn: async () => {
+      if (demo) return [];
+      const [{ data: profiles, error: profileError }, { data: roles, error: roleError }] =
+        await Promise.all([
+          supabase.from("profiles").select("id, email, full_name, active").order("created_at"),
+          supabase.from("user_roles").select("user_id, role"),
+        ]);
+      if (profileError || roleError) throw profileError ?? roleError;
+      const roleByUser = new Map((roles ?? []).map((item) => [item.user_id, item.role]));
+      return (profiles ?? [])
+        .filter((profile) => roleByUser.has(profile.id))
+        .map((profile) => ({ ...profile, role: roleByUser.get(profile.id)! }));
+    },
+  });
+
+  const invite = useMutation({
+    mutationFn: async () => {
+      if (demo) return { warning: "Demo mode does not send email." };
+      return inviteTeamMember({
+        data: {
+          fullName: form.fullName,
+          email: form.email,
+          role: form.role,
+        },
+      });
+    },
+    onSuccess: (result) => {
+      toast.success(result.warning ?? "Team member created and OTP sent through Brevo SMTP.");
+      setForm({ fullName: "", email: "", role: "sales" });
+      queryClient.invalidateQueries({ queryKey: ["admin", "team"] });
+      queryClient.invalidateQueries({ queryKey: ["admin", "sales-team"] });
+    },
+    onError: (e: Error) => toast.error(e.message),
+  });
+
+  const manageMember = useMutation({
+    mutationFn: async ({
+      member,
+      changes,
+    }: {
+      member: TeamMember;
+      changes: Partial<TeamMember>;
+    }) => {
+      if (demo) return { ok: true };
+      return updateTeamMember({
+        data: {
+          userId: member.id,
+          role: changes.role ?? member.role,
+          active: changes.active ?? member.active,
+        },
+      });
+    },
+    onSuccess: () => {
+      toast.success("Team access updated.");
+      queryClient.invalidateQueries({ queryKey: ["admin", "team"] });
+      queryClient.invalidateQueries({ queryKey: ["admin", "sales-team"] });
+    },
+    onError: (error: Error) => toast.error(error.message),
+  });
+
+  async function resendOtp(email: string | null) {
+    if (!email) return;
+    const { error } = await supabase.auth.signInWithOtp({
+      email,
+      options: { shouldCreateUser: false },
+    });
+    if (error) toast.error(error.message);
+    else toast.success(`Sign-in OTP sent to ${email}.`);
+  }
+
+  const roleLabel: Record<TeamMember["role"], string> = {
+    admin: "Administrator",
+    editor: "Content Editor",
+    sales_manager: "Sales Manager",
+    sales: "Sales Executive",
+  };
+
+  return (
+    <div>
+      <p className="font-mono text-[10px] uppercase tracking-[0.24em] text-brand">
+        / access & ownership
+      </p>
+      <h1 className="mt-2 font-display text-3xl font-bold tracking-tight">Sales team</h1>
+      <p className="mt-2 max-w-2xl text-sm leading-relaxed text-muted-foreground">
+        Add authorised team members. They receive a one-time sign-in code by email; no password
+        needs to be shared.
+      </p>
+
+      <div className="mt-8 grid gap-6 xl:grid-cols-[minmax(0,1fr)_22rem]">
+        <div className="rounded-2xl border border-border bg-card p-5">
+          <div className="flex items-center justify-between gap-3">
+            <h2 className="font-display text-lg font-bold">People & roles</h2>
+            <span className="font-mono text-[9px] uppercase tracking-wider text-muted-foreground">
+              {members.length} members
+            </span>
+          </div>
+          {isLoading ? (
+            <div className="mt-5 h-32 animate-pulse rounded-xl bg-secondary" />
+          ) : error ? (
+            <button
+              type="button"
+              onClick={() => void refetch()}
+              className="mt-5 text-sm text-destructive underline"
+            >
+              Could not load team. Try again.
+            </button>
+          ) : members.length === 0 ? (
+            <div className="mt-5 rounded-xl border border-dashed border-border p-8 text-center text-sm text-muted-foreground">
+              No team members are visible yet.
+            </div>
+          ) : (
+            <div className="mt-5 divide-y divide-border">
+              {members.map((member) => (
+                <div key={member.id} className="flex flex-wrap items-center gap-3 py-4">
+                  <span className="grid h-10 w-10 place-items-center rounded-full bg-brand/10 font-display font-bold text-brand">
+                    {(member.full_name || member.email || "T").slice(0, 1).toUpperCase()}
+                  </span>
+                  <div className="min-w-0 flex-1">
+                    <div className="truncate text-sm font-semibold">
+                      {member.full_name || "Team member"}
+                    </div>
+                    <div className="truncate text-xs text-muted-foreground">{member.email}</div>
+                  </div>
+                  {role === "admin" ? (
+                    <select
+                      value={member.role}
+                      disabled={manageMember.isPending}
+                      onChange={(event) =>
+                        manageMember.mutate({
+                          member,
+                          changes: { role: event.target.value as TeamMember["role"] },
+                        })
+                      }
+                      aria-label={`Role for ${member.full_name || member.email}`}
+                      className="rounded-full border border-brand/30 bg-background px-3 py-1.5 font-mono text-[9px] uppercase tracking-wider text-brand outline-none"
+                    >
+                      <option value="admin">Administrator</option>
+                      <option value="editor">Content Editor</option>
+                      <option value="sales_manager">Sales Manager</option>
+                      <option value="sales">Sales Executive</option>
+                    </select>
+                  ) : (
+                    <span className="rounded-full border border-brand/30 bg-brand/5 px-3 py-1 font-mono text-[9px] uppercase tracking-wider text-brand">
+                      {roleLabel[member.role]}
+                    </span>
+                  )}
+                  <button
+                    type="button"
+                    disabled={manageMember.isPending}
+                    onClick={() =>
+                      manageMember.mutate({ member, changes: { active: !member.active } })
+                    }
+                    className={`rounded-full border px-3 py-1.5 font-mono text-[9px] uppercase tracking-wider transition ${member.active ? "border-brand/30 text-brand hover:border-destructive hover:text-destructive" : "border-destructive/40 text-destructive hover:border-brand hover:text-brand"}`}
+                  >
+                    {member.active ? "Active" : "Inactive"}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => void resendOtp(member.email)}
+                    className="rounded-full border border-border px-3 py-1.5 font-mono text-[9px] uppercase tracking-wider hover:border-brand hover:text-brand"
+                  >
+                    Send OTP
+                  </button>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+
+        <form
+          onSubmit={(event) => {
+            event.preventDefault();
+            invite.mutate();
+          }}
+          className="h-fit rounded-2xl border border-brand/25 bg-brand/5 p-5"
+        >
+          <div className="flex items-center gap-2 text-brand">
+            <UserPlus className="h-4 w-4" />
+            <span className="font-mono text-[10px] uppercase tracking-wider">Add team member</span>
+          </div>
+          <div className="mt-5 space-y-4">
+            <label className="block text-xs text-muted-foreground">
+              Full name
+              <input
+                required
+                minLength={2}
+                value={form.fullName}
+                onChange={(event) => setForm({ ...form, fullName: event.target.value })}
+                className="mt-1.5 w-full rounded-xl border border-border bg-background px-3 py-2.5 text-sm text-foreground outline-none focus:border-brand"
+              />
+            </label>
+            <label className="block text-xs text-muted-foreground">
+              Work email
+              <input
+                required
+                type="email"
+                value={form.email}
+                onChange={(event) => setForm({ ...form, email: event.target.value })}
+                className="mt-1.5 w-full rounded-xl border border-border bg-background px-3 py-2.5 text-sm text-foreground outline-none focus:border-brand"
+              />
+            </label>
+            <label className="block text-xs text-muted-foreground">
+              Role
+              <select
+                value={form.role}
+                onChange={(event) =>
+                  setForm({ ...form, role: event.target.value as TeamMember["role"] })
+                }
+                className="mt-1.5 w-full rounded-xl border border-border bg-background px-3 py-2.5 text-sm text-foreground outline-none focus:border-brand"
+              >
+                <option value="sales">Sales Executive</option>
+                {role === "admin" && <option value="admin">Administrator</option>}
+                {role === "admin" && <option value="sales_manager">Sales Manager</option>}
+                {role === "admin" && <option value="editor">Content Editor</option>}
+              </select>
+            </label>
+          </div>
+          <button
+            type="submit"
+            disabled={invite.isPending}
+            className="mt-5 inline-flex w-full items-center justify-center gap-2 rounded-full bg-brand px-5 py-3 font-mono text-[10px] font-semibold uppercase tracking-wider text-brand-foreground disabled:opacity-50"
+          >
+            {invite.isPending ? (
+              <Loader2 className="h-4 w-4 animate-spin" />
+            ) : (
+              <UserPlus className="h-4 w-4" />
+            )}{" "}
+            Create & send OTP
+          </button>
+          <p className="mt-3 text-[11px] leading-relaxed text-muted-foreground">
+            OTP delivery uses Supabase Auth with your Brevo SMTP configuration.
+          </p>
+        </form>
+      </div>
+    </div>
+  );
+}
+
+const SETTING_FIELDS: {
+  key: string;
+  label: string;
+  hint: string;
+  placeholder: string;
+  required?: boolean;
+}[] = [
   {
     key: "admin_notify_email",
     label: "Lead notification email",
@@ -1545,13 +2354,26 @@ const SETTING_FIELDS: { key: string; label: string; hint: string; placeholder: s
     hint: "Shown as the From name in the inbox.",
     placeholder: "Modtech Machinery",
   },
+  {
+    key: "site_url",
+    label: "Public website URL",
+    hint: "Used for branded links in customer and sales emails.",
+    placeholder: "https://www.modtechworld.com",
+  },
+  {
+    key: "email_logo_url",
+    label: "Email logo URL",
+    hint: "Optional full HTTPS URL to a publicly accessible logo. The text logo remains as fallback.",
+    placeholder: "https://www.modtechworld.com/modtech-logo.png",
+    required: false,
+  },
 ];
 
 function Settings({ demo }: { demo: boolean }) {
   const queryClient = useQueryClient();
   const [form, setForm] = useState<Record<string, string> | null>(null);
 
-  const { data, isLoading } = useQuery({
+  const { data, isLoading, error, refetch } = useQuery({
     queryKey: ["admin", "settings"],
     queryFn: async () => {
       if (demo) {
@@ -1600,6 +2422,17 @@ function Settings({ demo }: { demo: boolean }) {
       </p>
       {isLoading ? (
         <div className="mt-8 h-40 animate-pulse rounded-xl bg-card" />
+      ) : error ? (
+        <div className="mt-8 rounded-2xl border border-destructive/30 bg-destructive/5 p-6 text-sm text-destructive">
+          Could not load email settings.
+          <button
+            type="button"
+            onClick={() => void refetch()}
+            className="ml-3 font-mono text-[10px] uppercase tracking-wider underline underline-offset-4"
+          >
+            Try again
+          </button>
+        </div>
       ) : (
         <form
           className="mt-8 grid gap-5 rounded-2xl border border-border bg-card p-6"
@@ -1618,6 +2451,8 @@ function Settings({ demo }: { demo: boolean }) {
               </label>
               <input
                 id={f.key}
+                type={f.key.endsWith("_url") ? "url" : f.key.includes("email") ? "email" : "text"}
+                required={f.required !== false}
                 value={values[f.key] ?? ""}
                 placeholder={f.placeholder}
                 onChange={(e) => setForm({ ...values, [f.key]: e.target.value })}

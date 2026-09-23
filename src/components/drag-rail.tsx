@@ -76,7 +76,11 @@ export function DragRail({
     const onUp = (e: PointerEvent) => {
       if (!down) return;
       down = false;
-      try { el.releasePointerCapture(e.pointerId); } catch { /* noop */ }
+      try {
+        el.releasePointerCapture(e.pointerId);
+      } catch {
+        /* noop */
+      }
       el.style.cursor = "grab";
     };
     const onClickCapture = (e: MouseEvent) => {
@@ -153,7 +157,6 @@ export function DragRail({
           <ChevronRight className="h-5 w-5" />
         </button>
       </div>
-
     </div>
   );
 }

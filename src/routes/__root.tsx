@@ -33,14 +33,26 @@ export const Route = createRootRoute({
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
       { title: "Modtech Machinery | Robotics & Casting Automation" },
-      { name: "description", content: "Modern robotics, automation, and investment casting machinery from Modtech Machinery." },
+      {
+        name: "description",
+        content:
+          "Modern robotics, automation, and investment casting machinery from Modtech Machinery.",
+      },
       { name: "author", content: "Modtech Machinery" },
       { property: "og:title", content: "Modtech Machinery | Robotics & Casting Automation" },
-      { property: "og:description", content: "Modern robotics, automation, and investment casting machinery from Modtech Machinery." },
+      {
+        property: "og:description",
+        content:
+          "Modern robotics, automation, and investment casting machinery from Modtech Machinery.",
+      },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
       { name: "twitter:title", content: "Modtech Machinery | Robotics & Casting Automation" },
-      { name: "twitter:description", content: "Modern robotics, automation, and investment casting machinery from Modtech Machinery." },
+      {
+        name: "twitter:description",
+        content:
+          "Modern robotics, automation, and investment casting machinery from Modtech Machinery.",
+      },
     ],
     links: [
       { rel: "stylesheet", href: appCss },
@@ -76,7 +88,9 @@ function RootShell({ children }: { children: React.ReactNode }) {
 }
 
 function RootComponent() {
-  const [queryClient] = useState(() => new QueryClient({ defaultOptions: { queries: { staleTime: 30_000 } } }));
+  const [queryClient] = useState(
+    () => new QueryClient({ defaultOptions: { queries: { staleTime: 30_000 } } }),
+  );
   return (
     <QueryClientProvider client={queryClient}>
       <Outlet />

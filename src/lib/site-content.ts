@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { supabase } from "@/integrations/supabase/client";
 
 export type SiteContentField = {
   key: string;
@@ -67,7 +68,7 @@ export const SITE_CONTENT_PAGES: SiteContentPage[] = [
         key: "description",
         label: "Hero description",
         defaultValue:
-          "Pick a category to filter the catalogue, then open any machine for full specifications.",
+          "Choose a division to filter the catalogue, then open any machine for full specifications.",
         multiline: true,
       },
     ],
@@ -236,11 +237,33 @@ export function getSiteContent(pageId: string) {
   return { ...getDefaultSiteContent(pageId), ...(readAllContent()[pageId] ?? {}) };
 }
 
-export function saveSiteContent(pageId: string, values: Record<string, string>) {
+function cacheSiteContent(pageId: string, values: Record<string, string>) {
   const all = readAllContent();
   all[pageId] = values;
   localStorage.setItem(STORAGE_KEY, JSON.stringify(all));
   window.dispatchEvent(new CustomEvent(EVENT_NAME));
+}
+
+export async function fetchSiteContent(pageId: string) {
+  if (import.meta.env.DEV) return getSiteContent(pageId);
+  const { data, error } = await supabase
+    .from("site_content" as never)
+    .select("content")
+    .eq("page_id", pageId)
+    .maybeSingle();
+  if (error) throw error;
+  const remote = (data as { content?: Record<string, string> } | null)?.content;
+  return { ...getDefaultSiteContent(pageId), ...(remote ?? {}) };
+}
+
+export async function saveSiteContent(pageId: string, values: Record<string, string>) {
+  if (!import.meta.env.DEV) {
+    const { error } = await supabase
+      .from("site_content" as never)
+      .upsert({ page_id: pageId, content: values } as never, { onConflict: "page_id" });
+    if (error) throw error;
+  }
+  cacheSiteContent(pageId, values);
 }
 
 export function useSiteContent(pageId: string) {
@@ -249,9 +272,20 @@ export function useSiteContent(pageId: string) {
   useEffect(() => {
     const sync = () => setContent(getSiteContent(pageId));
     sync();
+    let active = true;
+    void fetchSiteContent(pageId)
+      .then((next) => {
+        if (!active) return;
+        setContent(next);
+        if (!import.meta.env.DEV) cacheSiteContent(pageId, next);
+      })
+      .catch(() => {
+        // Keep the bundled defaults or last cached copy when the CMS is unavailable.
+      });
     window.addEventListener("storage", sync);
     window.addEventListener(EVENT_NAME, sync);
     return () => {
+      active = false;
       window.removeEventListener("storage", sync);
       window.removeEventListener(EVENT_NAME, sync);
     };
