@@ -1,5 +1,6 @@
 export const DEMO_EMAIL = import.meta.env.VITE_DEMO_ADMIN_EMAIL ?? "";
 export const DEMO_PASSWORD = import.meta.env.VITE_DEMO_ADMIN_PASSWORD ?? "";
+export const DEMO_MODE = import.meta.env.DEV && Boolean(DEMO_EMAIL.trim() && DEMO_PASSWORD.trim());
 
 const SESSION_KEY = "modtech-demo-admin";
 const DATA_KEY = "modtech-demo-admin-data";
@@ -35,8 +36,10 @@ const initialData: DemoData = {
       code: "MRC-600",
       slug: "six-axis-robotic-cell",
       category: "robotics",
+      section: "flexible-industrial-automation",
       sort_order: 1,
       image_url: "/productsimg/robots/robot-6-axis.jpg",
+      gallery_images: [],
       tagline: "Flexible automation for demanding production lines.",
       description: "Demo product used for local admin testing.",
       highlights: ["Flexible", "Repeatable", "Connected"],
@@ -93,7 +96,7 @@ const initialData: DemoData = {
 };
 
 export function hasDemoSession() {
-  return import.meta.env.DEV && sessionStorage.getItem(SESSION_KEY) === "active";
+  return DEMO_MODE && sessionStorage.getItem(SESSION_KEY) === "active";
 }
 
 export function startDemoSession() {

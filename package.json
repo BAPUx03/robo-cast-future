@@ -1,15 +1,28 @@
 {
-  "name": "tanstack_start_ts",
+  "name": "modtech-machinery",
   "private": true,
   "sideEffects": false,
   "type": "module",
   "scripts": {
     "dev": "vite dev",
-    "build": "vite build",
-    "build:dev": "vite build --mode development",
+    "build": "node scripts/build-preset.mjs node-server",
+    "build:node": "node scripts/build-preset.mjs node-server",
+    "build:cloudflare": "node scripts/build-preset.mjs cloudflare-module",
+    "build:vercel": "node scripts/build-preset.mjs vercel",
+    "build:netlify": "node scripts/build-preset.mjs netlify",
+    "build:render": "node scripts/build-preset.mjs render-com",
+    "build:dev": "vite build --app --mode development",
     "preview": "vite preview",
+    "start": "node .output/server/index.mjs",
+    "deploy:cloudflare": "npm run build:cloudflare && nitro deploy --prebuilt",
     "lint": "eslint .",
-    "format": "prettier --write ."
+    "format": "prettier --write .",
+    "db:migrate:file": "node --env-file=.env.local scripts/apply-migration.mjs",
+    "test:auth-flow": "node --env-file=.env.local scripts/test-auth-flow.mjs",
+    "test:data-integrity": "node --env-file=.env.local scripts/check-data-integrity.mjs",
+    "test:catalogue": "node scripts/audit-catalogue-pages.mjs",
+    "test:product-admin": "node --env-file=.env.local scripts/test-product-taxonomy.mjs",
+    "test:enquiry-rate-limit": "node --env-file=.env.local scripts/test-enquiry-rate-limit.mjs"
   },
   "dependencies": {
     "@cloudflare/vite-plugin": "^1.25.5",

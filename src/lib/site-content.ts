@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { DEMO_MODE } from "@/lib/demo-admin";
 
 export type SiteContentField = {
   key: string;
@@ -245,7 +246,7 @@ function cacheSiteContent(pageId: string, values: Record<string, string>) {
 }
 
 export async function fetchSiteContent(pageId: string) {
-  if (import.meta.env.DEV) return getSiteContent(pageId);
+  if (DEMO_MODE) return getSiteContent(pageId);
   const { data, error } = await supabase
     .from("site_content" as never)
     .select("content")
@@ -257,7 +258,7 @@ export async function fetchSiteContent(pageId: string) {
 }
 
 export async function saveSiteContent(pageId: string, values: Record<string, string>) {
-  if (!import.meta.env.DEV) {
+  if (!DEMO_MODE) {
     const { error } = await supabase
       .from("site_content" as never)
       .upsert({ page_id: pageId, content: values } as never, { onConflict: "page_id" });
@@ -277,7 +278,7 @@ export function useSiteContent(pageId: string) {
       .then((next) => {
         if (!active) return;
         setContent(next);
-        if (!import.meta.env.DEV) cacheSiteContent(pageId, next);
+        if (!DEMO_MODE) cacheSiteContent(pageId, next);
       })
       .catch(() => {
         // Keep the bundled defaults or last cached copy when the CMS is unavailable.

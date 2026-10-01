@@ -4,7 +4,6 @@ import { PageShell, PageHero } from "@/components/page-shell";
 import { useRevealOnScroll } from "@/hooks/use-reveal-on-scroll";
 import { divisions, categoryMeta } from "@/content/site-data";
 import { automationImages } from "@/content/automation-data";
-import { useState } from "react";
 import { useSiteContent } from "@/lib/site-content";
 
 export const Route = createFileRoute("/divisions")({
@@ -29,7 +28,6 @@ export const Route = createFileRoute("/divisions")({
 function DivisionsPage() {
   useRevealOnScroll();
   const content = useSiteContent("divisions");
-  const [hoverCat, setHoverCat] = useState<keyof typeof categoryMeta | null>(null);
   return (
     <PageShell>
       <PageHero
@@ -45,18 +43,15 @@ function DivisionsPage() {
 
       <section className="relative bg-background px-5 py-16 sm:px-8 sm:py-20">
         <div className="mx-auto max-w-7xl">
-          <div
-            className="cat-group grid gap-8 lg:grid-cols-2"
-            data-hover={hoverCat ? "true" : "false"}
-            onMouseLeave={() => setHoverCat(null)}
-          >
+          <div className="cat-group grid gap-8 lg:grid-cols-2">
             {divisions.map((d, idx) => (
-              <article
+              <Link
                 key={d.code}
-                className="cat-card reveal-on-scroll corner-tl group relative overflow-hidden rounded-2xl border border-border bg-card shadow-card"
+                to="/machines"
+                search={{ division: d.category }}
+                aria-label={`View ${d.title} products`}
+                className="cat-card reveal-on-scroll corner-tl group relative overflow-hidden rounded-2xl border border-border bg-card shadow-card transition duration-300 hover:-translate-y-1 hover:border-brand/50 hover:shadow-deep"
                 data-reveal-delay={idx * 140}
-                data-active={hoverCat === d.category ? "true" : "false"}
-                onMouseEnter={() => setHoverCat(d.category)}
               >
                 <div className="relative aspect-[16/10] overflow-hidden">
                   <img
@@ -92,23 +87,12 @@ function DivisionsPage() {
                       </li>
                     ))}
                   </ul>
-                  <div className="mt-7 flex flex-wrap items-center gap-3">
-                    <Link
-                      to={d.category === "casting" ? "/machines" : "/solutions"}
-                      className="inline-flex items-center gap-2 rounded-full bg-brand px-5 py-2.5 font-mono text-[11px] font-semibold uppercase tracking-wider text-brand-foreground shadow-glow transition hover:translate-y-[-2px]"
-                    >
-                      {d.category === "casting" ? "See machines" : "See solutions"}{" "}
-                      <ArrowRight className="h-3.5 w-3.5" />
-                    </Link>
-                    <Link
-                      to="/contact"
-                      className="inline-flex items-center gap-2 font-mono text-xs font-semibold uppercase tracking-wider text-brand transition hover:gap-3"
-                    >
-                      Discuss this division <ArrowRight className="h-4 w-4" />
-                    </Link>
-                  </div>
+                  <span className="mt-7 inline-flex items-center gap-2 rounded-full bg-brand px-5 py-2.5 font-mono text-[11px] font-semibold uppercase tracking-wider text-brand-foreground shadow-glow transition group-hover:gap-3">
+                    View {d.category === "casting" ? "casting products" : "automation products"}{" "}
+                    <ArrowRight className="h-3.5 w-3.5" />
+                  </span>
                 </div>
-              </article>
+              </Link>
             ))}
           </div>
         </div>

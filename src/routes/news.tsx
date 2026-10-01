@@ -7,7 +7,7 @@ import { news, exhibitions, categoryMeta, type Category } from "@/content/site-d
 import { automationImages } from "@/content/automation-data";
 import { useEffect, useState } from "react";
 import { useSiteContent } from "@/lib/site-content";
-import { getDemoRows } from "@/lib/demo-admin";
+import { DEMO_MODE, getDemoRows } from "@/lib/demo-admin";
 import { supabase } from "@/integrations/supabase/client";
 import { MarkdownContent } from "@/components/markdown-content";
 
@@ -38,7 +38,7 @@ function mapNewsRows(rows: Record<string, unknown>[]): PublicNewsItem[] {
 }
 
 async function loadNews(): Promise<PublicNewsItem[]> {
-  if (import.meta.env.DEV) {
+  if (DEMO_MODE) {
     const local = mapNewsRows(getDemoRows("news_items"));
     return local.length > 0 ? local : news;
   }
@@ -64,7 +64,7 @@ function mapExhibitionRows(rows: Record<string, unknown>[]): PublicExhibition[] 
 }
 
 async function loadExhibitions(): Promise<PublicExhibition[]> {
-  if (import.meta.env.DEV) {
+  if (DEMO_MODE) {
     const local = mapExhibitionRows(getDemoRows("exhibitions"));
     return local.length > 0 ? local : exhibitions;
   }

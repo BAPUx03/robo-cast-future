@@ -5,7 +5,10 @@ import tsconfigPaths from "vite-tsconfig-paths";
 import { tanstackStart } from "@tanstack/react-start/plugin/vite";
 import { nitro } from "nitro/vite";
 
+const deploymentPreset = process.env.NITRO_PRESET || "node-server";
+
 export default defineConfig({
+  builder: {},
   server: {
     host: "::",
     port: 8080,
@@ -32,7 +35,7 @@ export default defineConfig({
         },
       },
     }),
-    nitro({ defaultPreset: "cloudflare-module" }),
+    nitro({ preset: deploymentPreset }),
     react(),
   ],
 });

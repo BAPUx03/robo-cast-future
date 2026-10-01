@@ -3,7 +3,7 @@ import { ArrowLeft, ArrowRight, ArrowUpRight, CheckCircle2 } from "lucide-react"
 import { useState } from "react";
 import { PageShell } from "@/components/page-shell";
 import { useRevealOnScroll } from "@/hooks/use-reveal-on-scroll";
-import { categoryMeta, type Machine } from "@/content/site-data";
+import { categoryMeta, machineDivision, machineSection, type Machine } from "@/content/site-data";
 import { fetchPublishedMachines } from "@/lib/catalogue";
 
 const isCatalogueCutout = (machine: Machine) =>
@@ -15,7 +15,6 @@ const usesLightBackdropBlend = (image: string) =>
   image.includes("wax-extruder-");
 
 export const Route = createFileRoute("/machines/$slug")({
-  ssr: false,
   loader: async ({ params }) => {
     const catalogue = await fetchPublishedMachines();
     const machine = catalogue.find((item) => item.slug === params.slug);
@@ -67,9 +66,14 @@ function MachineDetail() {
     machine: Machine;
     catalogue: Machine[];
   };
-  const related = catalogue
-    .filter((x) => x.slug !== m.slug && x.category === m.category)
-    .slice(0, 3);
+  const division = machineDivision(m);
+  const relatedPool = catalogue.filter(
+    (item) => item.slug !== m.slug && machineDivision(item) === division,
+  );
+  const related = [
+    ...relatedPool.filter((item) => machineSection(item) === machineSection(m)),
+    ...relatedPool.filter((item) => machineSection(item) !== machineSection(m)),
+  ].slice(0, 3);
 
   return (
     <PageShell>
@@ -98,7 +102,7 @@ function MachineDetail() {
                 {m.code}
               </span>
               <span className="rounded-md border border-border bg-card/70 px-2.5 py-1 font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
-                {categoryMeta[m.category].label}
+                {categoryMeta[division].label}
               </span>
             </div>
             <h1 className="mt-5 font-display text-4xl font-bold leading-[1.05] tracking-tight sm:text-6xl">
@@ -204,7 +208,7 @@ function MachineDetail() {
                   / related machines
                 </div>
                 <h2 className="mt-2 font-display text-2xl font-bold tracking-tight sm:text-3xl">
-                  More from {categoryMeta[m.category].label.toLowerCase()}.
+                  More from {categoryMeta[division].label.toLowerCase()}.
                 </h2>
               </div>
               <Link

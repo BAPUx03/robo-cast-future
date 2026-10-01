@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, Link, useBlocker, useNavigate } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   Activity,
@@ -39,6 +39,7 @@ import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { slugify } from "@/lib/cms";
 import { assignLead, inviteTeamMember, updateTeamMember } from "@/lib/team.functions";
+import { requestAuthEmail } from "@/lib/auth-email.functions";
 import { BrandLogo } from "@/components/brand-logo";
 import { MarkdownContent } from "@/components/markdown-content";
 import {
@@ -55,6 +56,13 @@ import {
   saveSiteContent,
   SITE_CONTENT_PAGES,
 } from "@/lib/site-content";
+import {
+  functionalities,
+  machineDivision,
+  machineSection,
+  productSectionMeta,
+  type ProductSection,
+} from "@/content/site-data";
 
 export const Route = createFileRoute("/_authenticated/admin")({
   validateSearch: (search: Record<string, unknown>) => {
@@ -110,7 +118,7 @@ const TABS = [
   { id: "news", label: "News", description: "Updates & resources", Icon: Newspaper },
   { id: "exhibitions", label: "Exhibitions", description: "Events calendar", Icon: CalendarDays },
   { id: "enquiries", label: "Enquiries", description: "Sales leads", Icon: Inbox },
-  { id: "team", label: "Sales Team", description: "People & access", Icon: Users },
+  { id: "team", label: "Team & Access", description: "People, roles & access", Icon: Users },
   { id: "settings", label: "Email Settings", description: "Notifications", Icon: Settings2 },
 ] as const;
 
@@ -151,15 +159,83 @@ function formatAdminDate(value: unknown) {
   });
 }
 
+function formatDateTimeLocal(value: string | null) {
+  if (!value) return "";
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return "";
+  const local = new Date(date.getTime() - date.getTimezoneOffset() * 60_000);
+  return local.toISOString().slice(0, 16);
+}
+
+function UnsavedChangesGuard({ dirty }: { dirty: boolean }) {
+  const blocker = useBlocker({
+    shouldBlockFn: () => dirty,
+    enableBeforeUnload: () => dirty,
+    disabled: !dirty,
+    withResolver: true,
+  });
+
+  if (blocker.status !== "blocked") return null;
+  return (
+    <div className="fixed inset-0 z-[70] grid place-items-center bg-carbon/80 p-5 backdrop-blur-sm">
+      <div
+        className="w-full max-w-sm rounded-2xl border border-border bg-background p-6 shadow-deep"
+        role="alertdialog"
+        aria-modal="true"
+        aria-labelledby="unsaved-title"
+        aria-describedby="unsaved-description"
+      >
+        <AlertTriangle className="h-6 w-6 text-brand" />
+        <h2 id="unsaved-title" className="mt-4 font-display text-lg font-bold">
+          Leave without saving?
+        </h2>
+        <p id="unsaved-description" className="mt-2 text-sm leading-relaxed text-muted-foreground">
+          Your unsaved changes will be lost.
+        </p>
+        <div className="mt-6 flex justify-end gap-3">
+          <button
+            type="button"
+            onClick={blocker.reset}
+            className="rounded-full border border-border px-4 py-2.5 font-mono text-[10px] uppercase tracking-wider text-muted-foreground hover:border-brand hover:text-foreground"
+          >
+            Keep editing
+          </button>
+          <button
+            type="button"
+            onClick={blocker.proceed}
+            className="rounded-full bg-destructive px-4 py-2.5 font-mono text-[10px] font-semibold uppercase tracking-wider text-white hover:brightness-110"
+          >
+            Discard changes
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 type FieldDef = {
   key: string;
   label: string;
   type?: "text" | "textarea" | "richtext" | "number" | "bool" | "list" | "select" | "json";
-  options?: string[];
+  options?: Array<string | { value: string; label: string }>;
   full?: boolean;
   required?: boolean;
   hint?: string;
 };
+
+const PRODUCT_DIVISION_OPTIONS = [
+  { value: "casting", label: "Investment Casting" },
+  { value: "robotics", label: "Robotics & Automation" },
+];
+
+const PRODUCT_SECTION_OPTIONS = (
+  Object.entries(productSectionMeta) as Array<
+    [ProductSection, (typeof productSectionMeta)[ProductSection]]
+  >
+).map(([value, section]) => ({
+  value,
+  label: `${section.division === "casting" ? "Casting" : "Robotics"} — ${section.label}`,
+}));
 
 type CollectionTab = Exclude<Tab, "overview" | "website" | "enquiries" | "team" | "settings">;
 
@@ -239,10 +315,27 @@ const SCHEMAS: Record<
         key: "category",
         label: "Division",
         type: "select",
-        options: ["casting", "automation", "robotics"],
+        options: PRODUCT_DIVISION_OPTIONS,
+        required: true,
+      },
+      {
+        key: "section",
+        label: "Product section",
+        type: "select",
+        options: PRODUCT_SECTION_OPTIONS,
+        required: true,
+        full: true,
+        hint: "Controls the section where this product appears on the public Machines page.",
       },
       { key: "sort_order", label: "Sort order", type: "number" },
       { key: "image_url", label: "Image URL", full: true },
+      {
+        key: "gallery_images",
+        label: "Gallery image URLs (comma separated)",
+        type: "list",
+        full: true,
+        hint: "Add alternate product views. The primary image stays in Image URL.",
+      },
       { key: "tagline", label: "Tagline", full: true },
       { key: "description", label: "Description", type: "textarea", full: true },
       { key: "highlights", label: "Highlights (comma separated)", type: "list", full: true },
@@ -261,8 +354,10 @@ const SCHEMAS: Record<
       code: "",
       slug: "",
       category: "casting",
+      section: "wax-injection-machines",
       sort_order: 100,
       image_url: "",
+      gallery_images: [],
       tagline: "",
       description: "",
       highlights: [],
@@ -330,6 +425,51 @@ const SCHEMAS: Record<
   },
 };
 
+function mergeAdminProductRows(rows: Row[]): Row[] {
+  const overrides = new Map(rows.map((row) => [String(row["slug"] ?? ""), row]));
+  const builtInRows = functionalities.map((machine, index) => {
+    const override = overrides.get(machine.slug);
+    overrides.delete(machine.slug);
+    return {
+      title: machine.title,
+      code: machine.code,
+      slug: machine.slug,
+      category: machineDivision(machine),
+      section: machineSection(machine),
+      sort_order: (index + 1) * 10,
+      tagline: machine.tagline,
+      description: machine.desc,
+      highlights: machine.highlights,
+      applications: machine.applications,
+      specs: machine.specs,
+      published: true,
+      ...override,
+      image_url: override?.["image_url"] || machine.image,
+      gallery_images:
+        Array.isArray(override?.["gallery_images"]) && override["gallery_images"].length > 0
+          ? override["gallery_images"]
+          : (machine.images ?? []),
+      _builtIn: true,
+      _hasOverride: Boolean(override),
+      _defaultImage: machine.image,
+    } satisfies Row;
+  });
+
+  const customRows = [...overrides.values()].map((row) => ({
+    ...row,
+    section:
+      row["section"] ??
+      (row["category"] === "casting" ? "wax-injection-machines" : "flexible-industrial-automation"),
+    gallery_images: row["gallery_images"] ?? [],
+    _builtIn: false,
+    _hasOverride: false,
+  }));
+
+  return [...builtInRows, ...customRows].sort(
+    (a, b) => Number(a["sort_order"] ?? 0) - Number(b["sort_order"] ?? 0),
+  );
+}
+
 function AdminPage() {
   const { section } = Route.useSearch();
   const tab = section ?? "overview";
@@ -394,6 +534,7 @@ function AdminPage() {
               </div>
             </div>
             <button
+              type="button"
               onClick={signOut}
               className="inline-flex items-center gap-2 rounded-full border border-border px-4 py-2 font-mono text-[10px] uppercase tracking-[0.2em] transition hover:border-brand hover:text-brand"
             >
@@ -466,7 +607,7 @@ function AdminPage() {
           ) : activeTab === "enquiries" ? (
             <Enquiries demo={demo} role={role} userId={user.id} />
           ) : activeTab === "team" ? (
-            <Team demo={demo} role={role} />
+            <Team demo={demo} role={role} userId={user.id} />
           ) : activeTab === "settings" ? (
             <Settings demo={demo} />
           ) : (
@@ -565,6 +706,7 @@ function DashboardOverview({
           },
         ];
   const newEnquiries = data?.enquiries.filter((item) => item.status === "new") ?? [];
+  const salesWorkspace = role === "sales" || role === "sales_manager";
 
   return (
     <div>
@@ -577,7 +719,9 @@ function DashboardOverview({
             Control centre
           </h1>
           <p className="mt-2 max-w-2xl text-sm leading-relaxed text-muted-foreground">
-            Manage public content, review incoming leads and keep the website up to date.
+            {salesWorkspace
+              ? "Review incoming leads, record follow-ups and keep every opportunity moving."
+              : "Manage public content, review incoming leads and keep the website up to date."}
           </p>
         </div>
         <div className="rounded-full border border-border bg-card px-4 py-2 font-mono text-[10px] uppercase tracking-[0.16em] text-muted-foreground">
@@ -620,7 +764,9 @@ function DashboardOverview({
             ))}
           </div>
 
-          <div className="mt-8 grid gap-6 xl:grid-cols-[1.2fr_0.8fr]">
+          <div
+            className={`mt-8 grid gap-6 ${cards.length ? "xl:grid-cols-[1.2fr_0.8fr]" : "grid-cols-1"}`}
+          >
             <section className="overflow-hidden rounded-2xl border border-border bg-card shadow-card">
               <div className="flex items-center justify-between border-b border-border px-5 py-4">
                 <div>
@@ -668,28 +814,30 @@ function DashboardOverview({
               </div>
             </section>
 
-            <section className="rounded-2xl border border-border bg-carbon p-6 shadow-card">
-              <p className="font-mono text-[10px] uppercase tracking-[0.22em] text-brand">
-                / quick actions
-              </p>
-              <h2 className="mt-3 font-display text-2xl font-bold">Publish something new.</h2>
-              <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
-                Jump directly into the content area you need.
-              </p>
-              <div className="mt-6 grid gap-2">
-                {cards.slice(0, 3).map(({ tab, label, Icon }) => (
-                  <button
-                    key={tab}
-                    type="button"
-                    onClick={() => onNavigate(tab)}
-                    className="flex items-center gap-3 rounded-xl border border-border bg-card/50 px-4 py-3 text-left text-sm transition hover:border-brand/60 hover:text-brand"
-                  >
-                    <Icon className="h-4 w-4" /> Manage {label.toLowerCase()}{" "}
-                    <Plus className="ml-auto h-3.5 w-3.5" />
-                  </button>
-                ))}
-              </div>
-            </section>
+            {cards.length > 0 && (
+              <section className="rounded-2xl border border-border bg-carbon p-6 shadow-card">
+                <p className="font-mono text-[10px] uppercase tracking-[0.22em] text-brand">
+                  / quick actions
+                </p>
+                <h2 className="mt-3 font-display text-2xl font-bold">Publish something new.</h2>
+                <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
+                  Jump directly into the content area you need.
+                </p>
+                <div className="mt-6 grid gap-2">
+                  {cards.slice(0, 3).map(({ tab, label, Icon }) => (
+                    <button
+                      key={tab}
+                      type="button"
+                      onClick={() => onNavigate(tab)}
+                      className="flex items-center gap-3 rounded-xl border border-border bg-card/50 px-4 py-3 text-left text-sm transition hover:border-brand/60 hover:text-brand"
+                    >
+                      <Icon className="h-4 w-4" /> Manage {label.toLowerCase()}{" "}
+                      <Plus className="ml-auto h-3.5 w-3.5" />
+                    </button>
+                  ))}
+                </div>
+              </section>
+            )}
           </div>
         </>
       )}
@@ -740,15 +888,6 @@ function WebsiteContent({ demo }: { demo: boolean }) {
       active = false;
     };
   }, [pageId]);
-
-  useEffect(() => {
-    const protectRefresh = (event: BeforeUnloadEvent) => {
-      if (!dirty) return;
-      event.preventDefault();
-    };
-    window.addEventListener("beforeunload", protectRefresh);
-    return () => window.removeEventListener("beforeunload", protectRefresh);
-  }, [dirty]);
 
   function selectPage(nextPageId: string) {
     if (dirty) {
@@ -899,6 +1038,7 @@ function WebsiteContent({ demo }: { demo: boolean }) {
           </div>
         </form>
       </div>
+      <UnsavedChangesGuard dirty={dirty} />
     </div>
   );
 }
@@ -914,13 +1054,17 @@ function Collection({ tab, demo }: { tab: CollectionTab; demo: boolean }) {
   const { data, isLoading, error, refetch } = useQuery({
     queryKey: ["admin", schema.table],
     queryFn: async () => {
-      if (demo) return getDemoRows(schema.table) as Row[];
+      if (demo) {
+        const rows = getDemoRows(schema.table) as Row[];
+        return tab === "products" ? mergeAdminProductRows(rows) : rows;
+      }
       const { data, error } = await supabase
         .from(schema.table as never)
         .select("*")
         .order(schema.order, { ascending: schema.asc ?? false });
       if (error) throw error;
-      return (data ?? []) as Row[];
+      const rows = (data ?? []) as Row[];
+      return tab === "products" ? mergeAdminProductRows(rows) : rows;
     },
   });
 
@@ -933,6 +1077,12 @@ function Collection({ tab, demo }: { tab: CollectionTab; demo: boolean }) {
       const payload = { ...row };
       delete payload["created_at"];
       delete payload["updated_at"];
+      if (payload["_builtIn"] && payload["image_url"] === payload["_defaultImage"]) {
+        payload["image_url"] = null;
+      }
+      for (const key of Object.keys(payload)) {
+        if (key.startsWith("_")) delete payload[key];
+      }
       const id = payload["id"] as string | undefined;
       delete payload["id"];
       const client = supabase.from(schema.table as never);
@@ -987,7 +1137,7 @@ function Collection({ tab, demo }: { tab: CollectionTab; demo: boolean }) {
     if (status === "draft" && row["published"] !== false) return false;
     const needle = search.trim().toLowerCase();
     if (!needle) return true;
-    return [row[schema.titleKey], row["slug"], row["category"], row["code"]]
+    return [row[schema.titleKey], row["slug"], row["category"], row["section"], row["code"]]
       .filter(Boolean)
       .join(" ")
       .toLowerCase()
@@ -1015,6 +1165,7 @@ function Collection({ tab, demo }: { tab: CollectionTab; demo: boolean }) {
           </p>
         </div>
         <button
+          type="button"
           onClick={() => setEditing({ ...schema.blank })}
           className="inline-flex items-center gap-2 rounded-full bg-brand px-5 py-2.5 font-mono text-[10px] font-semibold uppercase tracking-[0.2em] text-brand-foreground shadow-glow transition hover:-translate-y-0.5"
         >
@@ -1039,6 +1190,7 @@ function Collection({ tab, demo }: { tab: CollectionTab; demo: boolean }) {
               key={value}
               type="button"
               onClick={() => setStatus(value)}
+              aria-pressed={status === value}
               className={`rounded-full border px-3 py-2 font-mono text-[9px] uppercase tracking-[0.14em] transition ${status === value ? "border-brand bg-brand text-brand-foreground" : "border-border text-muted-foreground hover:border-brand/60"}`}
             >
               {value}
@@ -1081,7 +1233,7 @@ function Collection({ tab, demo }: { tab: CollectionTab; demo: boolean }) {
           )}
           {visibleRows.map((row) => (
             <div
-              key={String(row["id"])}
+              key={String(row["id"] ?? row["slug"] ?? row[schema.titleKey])}
               className="group flex flex-wrap items-center gap-4 rounded-2xl border border-border bg-card p-4 shadow-card transition hover:border-brand/40"
             >
               <div className="grid h-14 w-16 shrink-0 place-items-center overflow-hidden rounded-xl border border-border bg-secondary/60 text-muted-foreground">
@@ -1102,6 +1254,17 @@ function Collection({ tab, demo }: { tab: CollectionTab; demo: boolean }) {
                 <div className="mt-1 flex flex-wrap items-center gap-x-3 gap-y-1 font-mono text-[9px] uppercase tracking-[0.14em] text-muted-foreground">
                   {Boolean(row["code"]) && <span>{String(row["code"])}</span>}
                   {Boolean(row["category"]) && <span>{String(row["category"])}</span>}
+                  {tab === "products" && Boolean(row["section"]) && (
+                    <span>
+                      {productSectionMeta[String(row["section"]) as ProductSection]?.label ??
+                        String(row["section"])}
+                    </span>
+                  )}
+                  {tab === "products" && row["_builtIn"] === true && (
+                    <span className={row["_hasOverride"] ? "text-brand" : undefined}>
+                      {row["_hasOverride"] ? "Customized" : "Default catalogue"}
+                    </span>
+                  )}
                   {Boolean(row["date_label"]) && <span>{String(row["date_label"])}</span>}
                   {Boolean(row["updated_at"]) && (
                     <span className="inline-flex items-center gap-1">
@@ -1137,20 +1300,24 @@ function Collection({ tab, demo }: { tab: CollectionTab; demo: boolean }) {
                 </a>
               )}
               <button
+                type="button"
                 onClick={() => setEditing({ ...row })}
                 className="rounded-full border border-border px-4 py-1.5 font-mono text-[10px] uppercase tracking-[0.18em] transition hover:border-brand hover:text-brand"
               >
                 Edit
               </button>
-              <button
-                type="button"
-                disabled={remove.isPending}
-                onClick={() => setDeleting(row)}
-                className="grid h-8 w-8 place-items-center rounded-full border border-border text-muted-foreground transition hover:border-destructive hover:text-destructive"
-                aria-label={`Delete ${String(row[schema.titleKey] ?? "entry")}`}
-              >
-                <Trash2 className="h-3.5 w-3.5" />
-              </button>
+              {Boolean(row["id"]) && (
+                <button
+                  type="button"
+                  disabled={remove.isPending}
+                  onClick={() => setDeleting(row)}
+                  className="grid h-8 w-8 place-items-center rounded-full border border-border text-muted-foreground transition hover:border-destructive hover:text-destructive"
+                  aria-label={`${row["_builtIn"] ? "Reset" : "Delete"} ${String(row[schema.titleKey] ?? "entry")}`}
+                  title={row["_builtIn"] ? "Reset this product to its built-in content" : undefined}
+                >
+                  <Trash2 className="h-3.5 w-3.5" />
+                </button>
+              )}
             </div>
           ))}
         </div>
@@ -1165,6 +1332,9 @@ function Collection({ tab, demo }: { tab: CollectionTab; demo: boolean }) {
           onClose={() => setEditing(null)}
           onSave={(row) => {
             const next = { ...row };
+            if ("slug" in next && !String(next["slug"] ?? "").trim()) {
+              next["slug"] = slugify(String(next["title"] ?? ""));
+            }
             const missingField = schema.fields.find(
               (field) => field.required && !String(next[field.key] ?? "").trim(),
             );
@@ -1172,11 +1342,20 @@ function Collection({ tab, demo }: { tab: CollectionTab; demo: boolean }) {
               toast.error(`${missingField.label} is required.`);
               return;
             }
-            if ("slug" in next && !String(next["slug"] ?? "").trim())
-              next["slug"] = slugify(String(next["title"] ?? ""));
             if ("slug" in next && !/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(String(next["slug"]))) {
               toast.error("URL slug can only contain lowercase letters, numbers and hyphens.");
               return;
+            }
+            if (tab === "products") {
+              const division = String(next["category"] ?? "");
+              const section = String(next["section"] ?? "") as ProductSection;
+              if (
+                !productSectionMeta[section] ||
+                productSectionMeta[section].division !== division
+              ) {
+                toast.error("Choose a product section that belongs to the selected division.");
+                return;
+              }
             }
             for (const field of schema.fields.filter((item) => item.type === "json")) {
               if (typeof next[field.key] === "string") {
@@ -1196,6 +1375,7 @@ function Collection({ tab, demo }: { tab: CollectionTab; demo: boolean }) {
       {deleting && (
         <DeleteConfirmation
           title={String(deleting[schema.titleKey] ?? "Untitled entry")}
+          reset={Boolean(deleting["_builtIn"])}
           busy={remove.isPending}
           onCancel={() => setDeleting(null)}
           onConfirm={() => remove.mutate(String(deleting["id"]))}
@@ -1207,11 +1387,13 @@ function Collection({ tab, demo }: { tab: CollectionTab; demo: boolean }) {
 
 function DeleteConfirmation({
   title,
+  reset = false,
   busy,
   onCancel,
   onConfirm,
 }: {
   title: string;
+  reset?: boolean;
   busy: boolean;
   onCancel: () => void;
   onConfirm: () => void;
@@ -1232,10 +1414,12 @@ function DeleteConfirmation({
           <AlertTriangle className="h-5 w-5" />
         </span>
         <h2 id="delete-title" className="mt-5 font-display text-xl font-bold">
-          Delete this entry?
+          {reset ? "Reset product changes?" : "Delete this entry?"}
         </h2>
         <p id="delete-description" className="mt-2 text-sm leading-relaxed text-muted-foreground">
-          “{title}” will be permanently removed. This action cannot be undone.
+          {reset
+            ? `“${title}” will return to its built-in catalogue content.`
+            : `“${title}” will be permanently removed. This action cannot be undone.`}
         </p>
         <div className="mt-6 flex justify-end gap-3">
           <button
@@ -1253,7 +1437,7 @@ function DeleteConfirmation({
             className="inline-flex items-center gap-2 rounded-full bg-destructive px-5 py-2.5 font-mono text-[10px] font-semibold uppercase tracking-wider text-white transition hover:brightness-110 disabled:opacity-50"
           >
             {busy ? <Loader2 className="h-4 w-4 animate-spin" /> : <Trash2 className="h-4 w-4" />}
-            Delete permanently
+            {reset ? "Reset to default" : "Delete permanently"}
           </button>
         </div>
       </div>
@@ -1311,6 +1495,15 @@ function EditorDrawer({
     const next = { ...row, [key]: value };
     if (key === "title" && "slug" in row && !row["id"] && !String(row["slug"] ?? "").trim()) {
       next["slug"] = slugify(String(value));
+    }
+    if (key === "category" && "section" in row) {
+      const division = value === "casting" ? "casting" : "robotics";
+      const currentSection = String(row["section"] ?? "") as ProductSection;
+      if (productSectionMeta[currentSection]?.division !== division) {
+        next["section"] = (Object.keys(productSectionMeta) as ProductSection[]).find(
+          (section) => productSectionMeta[section].division === division,
+        );
+      }
     }
     onChange(next);
   }
@@ -1371,6 +1564,16 @@ function EditorDrawer({
               f.full || f.type === "textarea" || f.type === "richtext" ? "sm:col-span-2" : "";
             const input =
               "mt-2 w-full rounded-xl border border-border bg-card px-4 py-3 text-sm outline-none ring-brand/40 transition focus:border-brand focus:ring-2";
+            const options =
+              f.key === "section"
+                ? f.options?.filter((option) => {
+                    const optionValue = typeof option === "string" ? option : option.value;
+                    return (
+                      productSectionMeta[optionValue as ProductSection]?.division ===
+                      (row["category"] === "casting" ? "casting" : "robotics")
+                    );
+                  })
+                : f.options;
             return (
               <div key={f.key} className={wrap}>
                 {f.type === "bool" ? (
@@ -1420,11 +1623,15 @@ function EditorDrawer({
                         onChange={(e) => set(f.key, e.target.value)}
                         className={input}
                       >
-                        {f.options?.map((o) => (
-                          <option key={o} value={o}>
-                            {o}
-                          </option>
-                        ))}
+                        {options?.map((option) => {
+                          const optionValue = typeof option === "string" ? option : option.value;
+                          const optionLabel = typeof option === "string" ? option : option.label;
+                          return (
+                            <option key={optionValue} value={optionValue}>
+                              {optionLabel}
+                            </option>
+                          );
+                        })}
                       </select>
                     ) : f.type === "list" ? (
                       <input
@@ -1741,7 +1948,7 @@ function Enquiries({
       if (activityError) console.warn("Lead activity could not be recorded", activityError.message);
     },
     onSuccess: () => {
-      toast.success("Enquiry status updated.");
+      toast.success("Enquiry updated.");
       queryClient.invalidateQueries({ queryKey: ["admin", "enquiries"] });
       queryClient.invalidateQueries({ queryKey: ["admin", "overview"] });
     },
@@ -1854,6 +2061,7 @@ function Enquiries({
             key={item}
             type="button"
             onClick={() => setStatus(status === item ? "all" : item)}
+            aria-pressed={status === item}
             className={`rounded-2xl border p-4 text-left transition ${
               status === item
                 ? "border-brand bg-brand/10"
@@ -2027,20 +2235,19 @@ function Enquiries({
                     Next follow-up
                   </span>
                   <input
+                    key={r.follow_up_at ?? "no-follow-up"}
                     type="datetime-local"
-                    defaultValue={
-                      r.follow_up_at ? new Date(r.follow_up_at).toISOString().slice(0, 16) : ""
-                    }
-                    onBlur={(event) =>
+                    defaultValue={formatDateTimeLocal(r.follow_up_at)}
+                    onBlur={(event) => {
+                      const nextValue = event.target.value
+                        ? new Date(event.target.value).toISOString()
+                        : null;
+                      if (nextValue === r.follow_up_at) return;
                       update.mutate({
                         id: r.id,
-                        changes: {
-                          follow_up_at: event.target.value
-                            ? new Date(event.target.value).toISOString()
-                            : null,
-                        },
-                      })
-                    }
+                        changes: { follow_up_at: nextValue },
+                      });
+                    }}
                     className="w-full rounded-lg border border-border bg-background px-3 py-2 text-xs text-foreground"
                   />
                 </label>
@@ -2074,9 +2281,11 @@ function Enquiries({
 function Team({
   demo,
   role,
+  userId,
 }: {
   demo: boolean;
   role: "admin" | "editor" | "sales_manager" | "sales";
+  userId: string;
 }) {
   const queryClient = useQueryClient();
   const [form, setForm] = useState({
@@ -2084,6 +2293,7 @@ function Team({
     email: "",
     role: "sales" as TeamMember["role"],
   });
+  const [resendingId, setResendingId] = useState<string | null>(null);
   const {
     data: members = [],
     isLoading,
@@ -2118,7 +2328,8 @@ function Team({
       });
     },
     onSuccess: (result) => {
-      toast.success(result.warning ?? "Team member created and OTP sent through Brevo SMTP.");
+      if (result.warning) toast.warning(result.warning);
+      else toast.success("Team member created and invitation code sent.");
       setForm({ fullName: "", email: "", role: "sales" });
       queryClient.invalidateQueries({ queryKey: ["admin", "team"] });
       queryClient.invalidateQueries({ queryKey: ["admin", "sales-team"] });
@@ -2151,14 +2362,18 @@ function Team({
     onError: (error: Error) => toast.error(error.message),
   });
 
-  async function resendOtp(email: string | null) {
+  async function resendOtp(member: TeamMember) {
+    const email = member.email;
     if (!email) return;
-    const { error } = await supabase.auth.signInWithOtp({
-      email,
-      options: { shouldCreateUser: false },
-    });
-    if (error) toast.error(error.message);
-    else toast.success(`Sign-in OTP sent to ${email}.`);
+    setResendingId(member.id);
+    try {
+      await requestAuthEmail({ data: { email, flow: "sign_in" } });
+      toast.success(`Sign-in code sent to ${email}.`);
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Could not send the sign-in code.");
+    } finally {
+      setResendingId(null);
+    }
   }
 
   const roleLabel: Record<TeamMember["role"], string> = {
@@ -2173,7 +2388,7 @@ function Team({
       <p className="font-mono text-[10px] uppercase tracking-[0.24em] text-brand">
         / access & ownership
       </p>
-      <h1 className="mt-2 font-display text-3xl font-bold tracking-tight">Sales team</h1>
+      <h1 className="mt-2 font-display text-3xl font-bold tracking-tight">Team & access</h1>
       <p className="mt-2 max-w-2xl text-sm leading-relaxed text-muted-foreground">
         Add authorised team members. They receive a one-time sign-in code by email; no password
         needs to be shared.
@@ -2217,7 +2432,7 @@ function Team({
                   {role === "admin" ? (
                     <select
                       value={member.role}
-                      disabled={manageMember.isPending}
+                      disabled={manageMember.isPending || member.id === userId}
                       onChange={(event) =>
                         manageMember.mutate({
                           member,
@@ -2225,6 +2440,7 @@ function Team({
                         })
                       }
                       aria-label={`Role for ${member.full_name || member.email}`}
+                      title={member.id === userId ? "You cannot change your own role." : undefined}
                       className="rounded-full border border-brand/30 bg-background px-3 py-1.5 font-mono text-[9px] uppercase tracking-wider text-brand outline-none"
                     >
                       <option value="admin">Administrator</option>
@@ -2237,22 +2453,32 @@ function Team({
                       {roleLabel[member.role]}
                     </span>
                   )}
+                  <span
+                    className={`rounded-full border px-3 py-1.5 font-mono text-[9px] uppercase tracking-wider ${member.active ? "border-brand/30 bg-brand/5 text-brand" : "border-destructive/40 bg-destructive/5 text-destructive"}`}
+                  >
+                    {member.active ? "Active" : "Inactive"}
+                  </span>
                   <button
                     type="button"
-                    disabled={manageMember.isPending}
+                    disabled={manageMember.isPending || member.id === userId}
                     onClick={() =>
                       manageMember.mutate({ member, changes: { active: !member.active } })
                     }
-                    className={`rounded-full border px-3 py-1.5 font-mono text-[9px] uppercase tracking-wider transition ${member.active ? "border-brand/30 text-brand hover:border-destructive hover:text-destructive" : "border-destructive/40 text-destructive hover:border-brand hover:text-brand"}`}
+                    className={`rounded-full border px-3 py-1.5 font-mono text-[9px] uppercase tracking-wider transition ${member.active ? "border-border text-muted-foreground hover:border-destructive hover:text-destructive" : "border-border text-muted-foreground hover:border-brand hover:text-brand"}`}
+                    title={
+                      member.id === userId ? "You cannot deactivate your own account." : undefined
+                    }
                   >
-                    {member.active ? "Active" : "Inactive"}
+                    {member.active ? "Deactivate" : "Activate"}
                   </button>
                   <button
                     type="button"
-                    onClick={() => void resendOtp(member.email)}
-                    className="rounded-full border border-border px-3 py-1.5 font-mono text-[9px] uppercase tracking-wider hover:border-brand hover:text-brand"
+                    disabled={!member.active || resendingId !== null}
+                    onClick={() => void resendOtp(member)}
+                    className="inline-flex items-center gap-1.5 rounded-full border border-border px-3 py-1.5 font-mono text-[9px] uppercase tracking-wider hover:border-brand hover:text-brand disabled:cursor-not-allowed disabled:opacity-50"
                   >
-                    Send OTP
+                    {resendingId === member.id && <Loader2 className="h-3 w-3 animate-spin" />}
+                    Send code
                   </button>
                 </div>
               ))}
@@ -2321,7 +2547,7 @@ function Team({
             Create & send OTP
           </button>
           <p className="mt-3 text-[11px] leading-relaxed text-muted-foreground">
-            OTP delivery uses Supabase Auth with your Brevo SMTP configuration.
+            Supabase generates each secure code and Modtech sends it through Brevo.
           </p>
         </form>
       </div>
@@ -2344,9 +2570,9 @@ const SETTING_FIELDS: {
   },
   {
     key: "sender_email",
-    label: "Sender email",
-    hint: "Must be a verified sender in your Brevo account.",
-    placeholder: "noreply@yourdomain.com",
+    label: "Reply-to email",
+    hint: "Customer replies come here. Brevo uses the verified technical sender automatically.",
+    placeholder: "info@yourdomain.com",
   },
   {
     key: "sender_name",
@@ -2404,21 +2630,24 @@ function Settings({ demo }: { demo: boolean }) {
       const { error } = await supabase.from("site_settings").upsert(rows, { onConflict: "key" });
       if (error) throw error;
     },
-    onSuccess: () => {
+    onSuccess: (_result, values) => {
       toast.success("Email settings saved.");
+      setForm({ ...values });
+      queryClient.setQueryData(["admin", "settings"], { ...values });
       queryClient.invalidateQueries({ queryKey: ["admin", "settings"] });
     },
     onError: (e: Error) => toast.error(e.message),
   });
 
   const values = form ?? data ?? {};
+  const dirty = Boolean(form && JSON.stringify(form) !== JSON.stringify(data ?? {}));
 
   return (
     <div className="max-w-2xl">
       <h1 className="font-display text-2xl font-bold tracking-tight">Email Settings</h1>
       <p className="mt-2 text-sm text-muted-foreground">
-        Set where new website enquiries are sent, and which verified Brevo sender the emails go out
-        from.
+        Set where new website enquiries and customer replies are sent. Modtech uses the active,
+        verified Brevo sender automatically.
       </p>
       {isLoading ? (
         <div className="mt-8 h-40 animate-pulse rounded-xl bg-card" />
@@ -2475,6 +2704,7 @@ function Settings({ demo }: { demo: boolean }) {
           </button>
         </form>
       )}
+      <UnsavedChangesGuard dirty={dirty} />
     </div>
   );
 }

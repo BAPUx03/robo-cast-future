@@ -13,7 +13,7 @@ import { PageShell } from "@/components/page-shell";
 import { EnquiryForm } from "@/components/enquiry-form";
 import { Button } from "@/components/ui/button";
 import { useRevealOnScroll } from "@/hooks/use-reveal-on-scroll";
-import { stats } from "@/content/site-data";
+import { stats, type Mode } from "@/content/site-data";
 import { useSiteContent } from "@/lib/site-content";
 import {
   automationIndustries,
@@ -74,7 +74,6 @@ function HomePage() {
       <section className="home-hero on-dark relative isolate -mt-28 min-h-[calc(100svh-1rem)] overflow-hidden bg-carbon pt-28 sm:-mt-32 sm:pt-32">
         <div className="home-hero-media pointer-events-none absolute inset-0 -z-10">
           <video
-            src="/modtech-automation-hero.mp4"
             poster={automationImages.palletizer}
             autoPlay
             muted
@@ -84,7 +83,13 @@ function HomePage() {
             disablePictureInPicture
             aria-hidden="true"
             className="h-full w-full object-cover"
-          />
+          >
+            <source
+              src="/modtech-automation-hero.mp4"
+              type="video/mp4"
+              media="(min-width: 768px) and (prefers-reduced-motion: no-preference)"
+            />
+          </video>
           <div className="absolute inset-0 bg-gradient-to-r from-carbon via-carbon/80 to-carbon/20" />
           <div className="absolute inset-0 bg-gradient-to-t from-carbon via-transparent to-carbon/40" />
         </div>
@@ -195,7 +200,7 @@ function HomePage() {
               description="Equipment for wax preparation and injection, ceramic shell building and foundry processing—engineered for repeatable production and dependable uptime."
               image={automationImages.casting}
               alt="Modtech wax injection machinery"
-              to="/machines"
+              division="casting"
               linkLabel="View casting machines"
               points={[
                 "Wax injectors",
@@ -210,7 +215,7 @@ function HomePage() {
               description="Custom robot cells for packaging, material handling and machine tending, built around each product, process and factory layout."
               image={automationImages.casePacker}
               alt="Modtech robotic case packing system"
-              to="/solutions"
+              division="robotics"
               linkLabel="Explore automation"
               points={[
                 "Robotic case erecting & packing",
@@ -390,7 +395,7 @@ function DivisionChapter({
   description,
   image,
   alt,
-  to,
+  division,
   linkLabel,
   points,
   reverse = false,
@@ -400,7 +405,7 @@ function DivisionChapter({
   description: string;
   image: string;
   alt: string;
-  to: "/machines" | "/solutions";
+  division: Mode;
   linkLabel: string;
   points: string[];
   reverse?: boolean;
@@ -439,7 +444,7 @@ function DivisionChapter({
           variant="link"
           className="mt-7 h-auto p-0 font-mono text-xs uppercase tracking-wider"
         >
-          <Link to={to}>
+          <Link to="/machines" search={{ division }}>
             {linkLabel} <ArrowRight />
           </Link>
         </Button>

@@ -1,7 +1,13 @@
 import { randomUUID } from "node:crypto";
 import postgres from "postgres";
+import { createClient } from "@supabase/supabase-js";
 
-if (!process.env.DATABASE_URL) throw new Error("DATABASE_URL is missing.");
+if (
+  !process.env.DATABASE_URL ||
+  !process.env.SUPABASE_URL ||
+  !process.env.SUPABASE_SERVICE_ROLE_KEY
+)
+  throw new Error("Database or Supabase environment is incomplete.");
 
 const sql = postgres(process.env.DATABASE_URL, {
   ssl: "require",
@@ -16,22 +22,42 @@ class RollbackWithResults extends Error {
   }
 }
 
-const users = {
-  admin: randomUUID(),
-  editor: randomUUID(),
-  manager: randomUUID(),
-  salesOne: randomUUID(),
-  salesTwo: randomUUID(),
-};
+const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+const admin = createClient(process.env.SUPABASE_URL, serviceKey, {
+  auth: { persistSession: false, autoRefreshToken: false },
+  global: {
+    fetch: (input, init) => {
+      const headers = new Headers(init?.headers);
+      if (serviceKey.startsWith("sb_") && headers.get("Authorization") === `Bearer ${serviceKey}`) {
+        headers.delete("Authorization");
+      }
+      headers.set("apikey", serviceKey);
+      return fetch(input, { ...init, headers });
+    },
+  },
+});
+
+const users = {};
+const createdUserIds = [];
+
+async function createTestUser(name) {
+  const marker = randomUUID().slice(0, 8);
+  const { data, error } = await admin.auth.admin.createUser({
+    email: `${name}-${marker}@access-test.invalid`,
+    email_confirm: true,
+    user_metadata: { full_name: name },
+  });
+  if (error || !data.user) throw error ?? new Error(`Could not create ${name} test user.`);
+  createdUserIds.push(data.user.id);
+  users[name] = data.user.id;
+}
 
 let results;
 try {
+  for (const name of ["admin", "editor", "manager", "salesOne", "salesTwo"]) {
+    await createTestUser(name);
+  }
   await sql.begin(async (tx) => {
-    for (const [name, id] of Object.entries(users)) {
-      await tx`insert into public.profiles (id, email, full_name)
-        values (${id}, ${`${name}@access-test.invalid`}, ${name})`;
-    }
-
     await tx`insert into public.user_roles (user_id, role) values
       (${users.admin}, 'admin'),
       (${users.editor}, 'editor'),
@@ -89,5 +115,6 @@ try {
     process.exitCode = 1;
   }
 } finally {
+  for (const userId of createdUserIds) await admin.auth.admin.deleteUser(userId);
   await sql.end();
 }

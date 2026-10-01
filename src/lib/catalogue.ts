@@ -1,11 +1,23 @@
-import { functionalities, type Category, type Machine } from "@/content/site-data";
-import { getDemoRows } from "@/lib/demo-admin";
+import {
+  functionalities,
+  machineSection,
+  productSectionMeta,
+  type Category,
+  type Machine,
+  type ProductSection,
+} from "@/content/site-data";
+import { DEMO_MODE, getDemoRows } from "@/lib/demo-admin";
 import { supabase } from "@/integrations/supabase/client";
 
 type ProductRow = Record<string, unknown>;
 
 function stringList(value: unknown, fallback: string[]) {
   return Array.isArray(value) ? value.map(String).filter(Boolean) : fallback;
+}
+
+function galleryImages(value: unknown, fallback: string[]) {
+  const images = stringList(value, fallback);
+  return images.length > 0 ? images : fallback;
 }
 
 function specifications(value: unknown, fallback: Machine["specs"]) {
@@ -21,6 +33,11 @@ function category(value: unknown): Category {
   return next === "automation" || next === "robotics" ? next : "casting";
 }
 
+function section(value: unknown, fallback: ProductSection): ProductSection {
+  const next = String(value ?? "") as ProductSection;
+  return next in productSectionMeta ? next : fallback;
+}
+
 function mergeProduct(row: ProductRow, base?: Machine): Machine {
   const nextCategory = category(row.category ?? base?.category);
   const fallbackImage = base?.image ?? "/productsimg/casting/4-pillar-wax-injector.png";
@@ -29,11 +46,19 @@ function mergeProduct(row: ProductRow, base?: Machine): Machine {
     slug: String(row.slug ?? base?.slug ?? "custom-machine"),
     title: String(row.title ?? base?.title ?? "Custom Machine"),
     image: String(row.image_url || base?.image || fallbackImage),
-    images: base?.images,
     desc: String(row.description ?? base?.desc ?? ""),
     category: nextCategory,
+    section: section(
+      row.section,
+      base
+        ? machineSection(base)
+        : nextCategory === "casting"
+          ? "wax-injection-machines"
+          : "flexible-industrial-automation",
+    ),
     tagline: String(row.tagline ?? base?.tagline ?? ""),
     group: base?.group ?? (nextCategory === "casting" ? "wax-automation" : "robotic"),
+    images: galleryImages(row.gallery_images, base?.images ?? []),
     highlights: stringList(row.highlights, base?.highlights ?? []),
     applications: stringList(row.applications, base?.applications ?? []),
     specs: specifications(row.specs, base?.specs ?? []),
@@ -62,7 +87,7 @@ function mergeCatalogue(rows: ProductRow[]) {
 }
 
 export async function fetchPublishedMachines() {
-  if (import.meta.env.DEV) {
+  if (DEMO_MODE) {
     if (typeof window === "undefined") return functionalities;
     return mergeCatalogue(getDemoRows("products"));
   }

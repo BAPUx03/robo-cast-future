@@ -21,6 +21,8 @@ const expectedTables = [
   "site_settings",
   "enquiries",
   "lead_activities",
+  "auth_email_requests",
+  "enquiry_rate_limits",
 ];
 
 try {

@@ -1,11 +1,11 @@
 import { createFileRoute, Outlet, redirect } from "@tanstack/react-router";
 import { supabase } from "@/integrations/supabase/client";
-import { DEMO_EMAIL, hasDemoSession } from "@/lib/demo-admin";
+import { DEMO_EMAIL, DEMO_MODE, hasDemoSession } from "@/lib/demo-admin";
 
 export const Route = createFileRoute("/_authenticated")({
   ssr: false,
   beforeLoad: async () => {
-    if (import.meta.env.DEV) {
+    if (DEMO_MODE) {
       if (hasDemoSession()) {
         return {
           user: { id: "demo-admin", email: DEMO_EMAIL },

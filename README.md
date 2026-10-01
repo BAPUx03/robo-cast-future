@@ -8,7 +8,7 @@ Independent website and administration platform for Modtech Machinery's Investme
 - TypeScript and Tailwind CSS
 - Supabase Postgres, Auth and Row Level Security
 - Brevo transactional email
-- Nitro/Cloudflare deployment output
+- Nitro deployment output for Node, Docker, Cloudflare, Vercel and Netlify
 
 ## Local development
 
@@ -31,8 +31,16 @@ Database changes live in `drizzle/migrations`. Apply them in numerical order to 
 
 ```sh
 npm run build
+npm start
 ```
 
-The current Nitro preset creates Cloudflare-compatible output. Deployment accounts, domains, environment variables and infrastructure remain under the site owner's control.
+The default build creates a portable Node server. Provider-specific builds are also available:
 
-See `docs/CRM_SETUP.md` for the CRM, role, Supabase and Brevo configuration.
+```sh
+npm run build:cloudflare
+npm run build:vercel
+npm run build:netlify
+npm run build:render
+```
+
+See `docs/DEPLOYMENT.md` for hosting instructions and `docs/CRM_SETUP.md` for the CRM, role, Supabase and Brevo configuration.

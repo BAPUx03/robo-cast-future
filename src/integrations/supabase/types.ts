@@ -65,6 +65,24 @@ export type Database = {
         };
         Relationships: [];
       };
+      auth_email_requests: {
+        Row: {
+          email_hash: string;
+          flow: string;
+          requested_at: string;
+        };
+        Insert: {
+          email_hash: string;
+          flow: string;
+          requested_at?: string;
+        };
+        Update: {
+          email_hash?: string;
+          flow?: string;
+          requested_at?: string;
+        };
+        Relationships: [];
+      };
       enquiries: {
         Row: {
           assigned_to: string | null;
@@ -120,6 +138,24 @@ export type Database = {
             referencedColumns: ["id"];
           },
         ];
+      };
+      enquiry_rate_limits: {
+        Row: {
+          fingerprint_hash: string;
+          request_count: number;
+          window_started_at: string;
+        };
+        Insert: {
+          fingerprint_hash: string;
+          request_count?: number;
+          window_started_at?: string;
+        };
+        Update: {
+          fingerprint_hash?: string;
+          request_count?: number;
+          window_started_at?: string;
+        };
+        Relationships: [];
       };
       exhibitions: {
         Row: {
@@ -209,10 +245,12 @@ export type Database = {
           code: string;
           created_at: string;
           description: string;
+          gallery_images: string[];
           highlights: string[];
           id: string;
           image_url: string | null;
           published: boolean;
+          section: string;
           slug: string;
           sort_order: number;
           specs: Json;
@@ -226,10 +264,12 @@ export type Database = {
           code: string;
           created_at?: string;
           description?: string;
+          gallery_images?: string[];
           highlights?: string[];
           id?: string;
           image_url?: string | null;
           published?: boolean;
+          section?: string;
           slug: string;
           sort_order?: number;
           specs?: Json;
@@ -243,10 +283,12 @@ export type Database = {
           code?: string;
           created_at?: string;
           description?: string;
+          gallery_images?: string[];
           highlights?: string[];
           id?: string;
           image_url?: string | null;
           published?: boolean;
+          section?: string;
           slug?: string;
           sort_order?: number;
           specs?: Json;
@@ -376,6 +418,22 @@ export type Database = {
       };
       has_role_name: {
         Args: { _role: string; _user_id: string };
+        Returns: boolean;
+      };
+      reserve_auth_email_request: {
+        Args: {
+          _email_hash: string;
+          _flow: string;
+          _minimum_interval_seconds?: number;
+        };
+        Returns: boolean;
+      };
+      reserve_enquiry_request: {
+        Args: {
+          _fingerprint_hash: string;
+          _maximum_requests?: number;
+          _window_seconds?: number;
+        };
         Returns: boolean;
       };
     };

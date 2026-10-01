@@ -19,6 +19,9 @@
 - Sales managers can add and manage sales executives only.
 - Inactive accounts are signed out before the control centre loads.
 
+See `docs/AUTH_SETUP.md` for the complete invitation, OTP, password-recovery, expiry, delivery and test
+configuration.
+
 ## Roles
 
 | Role            | Website content | All leads     | Assign leads | Team                      | Settings |
@@ -59,23 +62,33 @@ Apply these migrations in order:
 1. `drizzle/migrations/0000_create_cms_tables.sql`
 2. `drizzle/migrations/0001_admin_content.sql`
 3. `drizzle/migrations/0002_sales_crm.sql`
+4. `drizzle/migrations/0003_auth_email_delivery.sql`
+5. `drizzle/migrations/0004_profile_integrity.sql`
+6. `drizzle/migrations/0005_enquiry_rate_limit.sql`
+7. `drizzle/migrations/0006_product_sections.sql`
 
-The third migration adds sales roles, lead ownership, priority, follow-up, internal notes, activity history, profile sync, indexes and RLS policies.
+The third migration adds the CRM and role policies. The fourth adds the server-only, atomic resend
+rate limit for authentication emails. The fifth keeps profiles and roles linked to Supabase Auth
+users and removes orphan records safely. The sixth limits the public enquiry form to five requests
+per browser/network fingerprint per hour and keeps its server-only counter table self-cleaning.
+The seventh adds editable product divisions, catalogue sections and gallery images.
 
 ## Brevo transactional email
 
 1. Verify the sending domain or sender in Brevo and configure SPF, DKIM and DMARC.
 2. Create a Brevo transactional API key and store it as `BREVO_API_KEY` on the server.
-3. In Admin > Email Settings, save the verified sender email, sender name and new-lead notification address.
-4. In Supabase Authentication > SMTP Settings, enable custom SMTP and enter the Brevo SMTP credentials. This is used for team OTP emails.
-5. In the Supabase Magic Link email template, include `{{ .Token }}` so the message contains the six-digit OTP.
-6. Set the production Site URL and allowed redirect URLs in Supabase Authentication settings.
+3. In Admin > Email Settings, save the reply-to email, Modtech sender name and new-lead notification address. The server selects the active verified Brevo sender automatically.
+4. Set Supabase Email OTP expiration to 3,600 seconds.
+5. Set the production Site URL and allowed redirect URLs in Supabase Authentication settings.
 
-Brevo has two separate credentials: the HTTP API key sends lead/customer messages; the SMTP key entered in Supabase sends authentication OTPs.
+The server uses the same Brevo HTTP API for lead/customer messages and authentication OTPs.
+Supabase generates and verifies the OTP, while the application server delivers it. A Supabase SMTP
+configuration is therefore not required for the application paths.
 
-### Supabase Auth OTP through Brevo SMTP
+### Optional Supabase dashboard email fallback
 
-In Supabase, open Authentication > Emails > SMTP Settings and use:
+Emails sent directly from the Supabase dashboard do not pass through the application. If that
+fallback is needed, configure Supabase custom SMTP with:
 
 - Host: `smtp-relay.brevo.com`
 - Port: `587`
@@ -84,7 +97,7 @@ In Supabase, open Authentication > Emails > SMTP Settings and use:
 - Sender name: `Modtech Machinery`
 - Sender email: a sender/domain verified in Brevo
 
-Then open Authentication > Email Templates > Magic Link, use the subject `Your Modtech secure sign-in code`, and paste `docs/supabase-otp-template.html`. The template intentionally uses `{{ .Token }}` rather than `{{ .ConfirmationURL }}` so Supabase sends a six-digit OTP.
+Then configure the Magic Link and Reset Password templates using the files under `docs/`.
 
 ## Lead lifecycle
 
@@ -95,7 +108,7 @@ Recommended statuses are `new`, `contacted`, `quoted` and `closed`. Use priority
 - Apply all database migrations.
 - Add the service-role and Brevo secrets only on the server.
 - Configure and test Brevo sender/domain authentication.
-- Configure Supabase custom SMTP and OTP template.
+- Set Supabase Email OTP expiry to 3,600 seconds.
 - Create the first user in Supabase Authentication. On their first successful sign-in they can claim the administrator role only when no administrator exists; add everyone else from Sales Team.
 - Submit a real test enquiry and verify the customer, admin and assignee emails.
 - Test each role with a separate account before launch.

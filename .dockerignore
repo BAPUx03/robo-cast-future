@@ -1,0 +1,13 @@
+node_modules
+.git
+.output
+.nitro
+.tanstack
+.vercel
+.netlify
+.wrangler
+.env
+.env.*
+!.env.example
+*.log
+npm-install*.log

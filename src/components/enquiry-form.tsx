@@ -28,6 +28,17 @@ function Field({
         id={`f-${name}`}
         name={name}
         type={type}
+        autoComplete={
+          name === "name"
+            ? "name"
+            : name === "company"
+              ? "organization"
+              : name === "email"
+                ? "email"
+                : name === "phone"
+                  ? "tel"
+                  : undefined
+        }
         required={required}
         maxLength={type === "email" ? 255 : 120}
         className="mt-2 w-full rounded-xl border border-border bg-background px-4 py-3 text-sm text-foreground outline-none ring-brand/40 transition placeholder:text-muted-foreground focus:border-brand focus:ring-2"
@@ -76,7 +87,7 @@ export function EnquiryForm({ heading = "Send us a message" }: { heading?: strin
         <Field name="name" label="Name" required />
         <Field name="company" label="Company" />
         <Field name="email" type="email" label="Email" required />
-        <Field name="phone" label="Phone" />
+        <Field name="phone" type="tel" label="Phone" />
         <div className="sm:col-span-2">
           <label
             className="block font-mono text-[10px] uppercase tracking-[0.2em] text-muted-foreground"

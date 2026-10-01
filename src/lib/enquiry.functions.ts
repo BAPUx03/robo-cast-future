@@ -1,4 +1,5 @@
 import { createServerFn } from "@tanstack/react-start";
+import { getRequest } from "@tanstack/react-start/server";
 import { createClient } from "@supabase/supabase-js";
 import { z } from "zod";
 import type { Database } from "@/integrations/supabase/types";
@@ -22,6 +23,20 @@ function esc(v: string) {
     /[&<>"']/g,
     (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]!,
   );
+}
+
+async function enquiryFingerprint() {
+  const request = getRequest();
+  const forwardedFor = request.headers.get("x-forwarded-for")?.split(",")[0]?.trim();
+  const address =
+    request.headers.get("cf-connecting-ip")?.trim() ||
+    forwardedFor ||
+    request.headers.get("x-real-ip")?.trim() ||
+    "unknown";
+  const userAgent = request.headers.get("user-agent")?.slice(0, 200) || "unknown";
+  const input = new TextEncoder().encode(`${address}|${userAgent}`);
+  const digest = await crypto.subtle.digest("SHA-256", input);
+  return Array.from(new Uint8Array(digest), (byte) => byte.toString(16).padStart(2, "0")).join("");
 }
 
 function shell(inner: string, preview: string, logoUrl = "", siteUrl = "") {
@@ -83,22 +98,27 @@ function leadEmail(d: EnquiryInput, logoUrl: string, siteUrl: string) {
   );
 }
 
-async function sendBrevo(payload: Record<string, unknown>, apiKey: string) {
-  const res = await fetch("https://api.brevo.com/v3/smtp/email", {
-    method: "POST",
-    headers: { "api-key": apiKey, "content-type": "application/json", accept: "application/json" },
-    body: JSON.stringify(payload),
-  });
-  if (!res.ok) {
-    console.error("Brevo send failed", res.status, await res.text());
-    return false;
-  }
-  return true;
-}
-
 export const submitEnquiry = createServerFn({ method: "POST" })
   .inputValidator((input: unknown) => enquirySchema.parse(input))
   .handler(async ({ data }) => {
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const fingerprintHash = await enquiryFingerprint();
+    const { data: reserved, error: rateLimitError } = await supabaseAdmin.rpc(
+      "reserve_enquiry_request",
+      {
+        _fingerprint_hash: fingerprintHash,
+        _window_seconds: 3600,
+        _maximum_requests: 5,
+      },
+    );
+    if (rateLimitError) {
+      console.error("enquiry rate limit failed", rateLimitError.message);
+      throw new Error("Could not submit your enquiry. Please try again.");
+    }
+    if (!reserved) {
+      throw new Error("Too many enquiries. Please wait before trying again.");
+    }
+
     const url = process.env["SUPABASE_URL"]!;
     const key = process.env["SUPABASE_PUBLISHABLE_KEY"]!;
     const supabasePublic = createClient<Database>(url, key, {
@@ -135,7 +155,6 @@ export const submitEnquiry = createServerFn({ method: "POST" })
     let logoUrl = "";
     let siteUrl = "";
     try {
-      const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
       const { data: rows } = await supabaseAdmin.from("site_settings").select("key, value");
       const map = Object.fromEntries((rows ?? []).map((r) => [r.key, r.value]));
       adminEmail = (map["admin_notify_email"] ?? "").trim();
@@ -147,32 +166,44 @@ export const submitEnquiry = createServerFn({ method: "POST" })
       console.error("settings read failed", e);
     }
 
-    if (!senderEmail) return { ok: true, emailed: false as const };
-    const sender = { email: senderEmail, name: senderName };
+    const { getBrevoSender, sendBrevoEmail } = await import("@/lib/brevo.server");
+    let sender: Awaited<ReturnType<typeof getBrevoSender>>;
+    try {
+      sender = await getBrevoSender(apiKey, senderName);
+    } catch (senderError) {
+      console.error("Brevo sender lookup failed", senderError);
+      return { ok: true, emailed: false as const };
+    }
 
-    const customerSent = await sendBrevo(
-      {
+    let customerSent = false;
+    try {
+      await sendBrevoEmail(apiKey, {
         sender,
         to: [{ email: data.email, name: data.name }],
-        replyTo: adminEmail ? { email: adminEmail, name: senderName } : undefined,
+        replyTo: senderEmail ? { email: senderEmail, name: senderName } : undefined,
         subject: `Thank you for contacting ${SITE}`,
         htmlContent: thankYouEmail(data, logoUrl, siteUrl),
-      },
-      apiKey,
-    );
+      });
+      customerSent = true;
+    } catch (sendError) {
+      console.error("Customer acknowledgement failed", sendError);
+    }
 
     let adminSent = !adminEmail;
     if (adminEmail) {
-      adminSent = await sendBrevo(
-        {
+      try {
+        await sendBrevoEmail(apiKey, {
           sender,
           to: [{ email: adminEmail }],
           replyTo: { email: data.email, name: data.name },
           subject: `New enquiry — ${data.name}${data.company ? ` (${data.company})` : ""}`,
           htmlContent: leadEmail(data, logoUrl, siteUrl),
-        },
-        apiKey,
-      );
+        });
+        adminSent = true;
+      } catch (sendError) {
+        console.error("Lead notification failed", sendError);
+        adminSent = false;
+      }
     }
 
     return { ok: true, emailed: customerSent && adminSent };

@@ -4,7 +4,14 @@ import { ArrowLeft, Eye, EyeOff, KeyRound, Lock, Loader2, ShieldCheck } from "lu
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { BrandLogo } from "@/components/brand-logo";
-import { DEMO_EMAIL, DEMO_PASSWORD, hasDemoSession, startDemoSession } from "@/lib/demo-admin";
+import { requestAuthEmail } from "@/lib/auth-email.functions";
+import {
+  DEMO_EMAIL,
+  DEMO_MODE,
+  DEMO_PASSWORD,
+  hasDemoSession,
+  startDemoSession,
+} from "@/lib/demo-admin";
 
 export const Route = createFileRoute("/auth")({
   ssr: false,
@@ -24,20 +31,50 @@ export const Route = createFileRoute("/auth")({
 
 type AuthMethod = "otp" | "password" | "reset";
 
+const configuredOtpExpiry = Number(import.meta.env.VITE_AUTH_OTP_EXPIRY_SECONDS ?? "3600");
+const configuredResendDelay = Number(import.meta.env.VITE_AUTH_OTP_RESEND_SECONDS ?? "60");
+const OTP_EXPIRY_SECONDS =
+  Number.isFinite(configuredOtpExpiry) && configuredOtpExpiry >= 60 ? configuredOtpExpiry : 3600;
+const OTP_RESEND_SECONDS =
+  Number.isFinite(configuredResendDelay) && configuredResendDelay >= 1 ? configuredResendDelay : 60;
+
+function formatCountdown(totalSeconds: number) {
+  const minutes = Math.floor(totalSeconds / 60);
+  const seconds = totalSeconds % 60;
+  return minutes ? `${minutes}:${String(seconds).padStart(2, "0")}` : `${seconds}s`;
+}
+
+function authErrorMessage(error: unknown) {
+  const message = error instanceof Error ? error.message : String(error);
+  const normalized = message.toLowerCase();
+  if (normalized.includes("rate limit") || normalized.includes("security purposes")) {
+    return "Please wait before requesting another code.";
+  }
+  if (normalized.includes("expired") || normalized.includes("invalid token")) {
+    return "This code is invalid or has expired. Request a new code.";
+  }
+  if (normalized.includes("invalid login credentials")) {
+    return "Email or password is incorrect.";
+  }
+  return message || "Something went wrong";
+}
+
 function AuthPage() {
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
-  const [method, setMethod] = useState<AuthMethod>(import.meta.env.DEV ? "password" : "otp");
+  const [method, setMethod] = useState<AuthMethod>(DEMO_MODE ? "password" : "otp");
   const [otpSent, setOtpSent] = useState(false);
   const [otpVerified, setOtpVerified] = useState(false);
   const [otp, setOtp] = useState("");
   const [busy, setBusy] = useState(false);
+  const [otpSentAt, setOtpSentAt] = useState<number | null>(null);
+  const [now, setNow] = useState(() => Date.now());
 
   useEffect(() => {
-    if (import.meta.env.DEV) {
+    if (DEMO_MODE) {
       if (hasDemoSession())
         navigate({ to: "/admin", search: { section: undefined }, replace: true });
       return;
@@ -47,11 +84,19 @@ function AuthPage() {
     });
   }, [navigate]);
 
+  useEffect(() => {
+    if (!otpSentAt) return;
+    setNow(Date.now());
+    const timer = window.setInterval(() => setNow(Date.now()), 1000);
+    return () => window.clearInterval(timer);
+  }, [otpSentAt]);
+
   function changeMethod(next: AuthMethod) {
     setMethod(next);
     setOtpSent(false);
     setOtpVerified(false);
     setOtp("");
+    setOtpSentAt(null);
     setPassword("");
     setConfirmPassword("");
   }
@@ -87,20 +132,25 @@ function AuthPage() {
   }
 
   async function sendOtp() {
-    const { error } = await supabase.auth.signInWithOtp({
-      email: email.trim(),
-      options: { shouldCreateUser: false },
+    const address = email.trim();
+    await requestAuthEmail({
+      data: { email: address, flow: method === "reset" ? "recovery" : "sign_in" },
     });
-    if (error) throw error;
     setOtpSent(true);
-    toast.success("A secure 6-digit code has been sent to your work email.");
+    setOtp("");
+    setOtpSentAt(Date.now());
+    toast.success(
+      method === "reset"
+        ? "A password recovery code has been sent to your work email."
+        : "A secure 6-digit sign-in code has been sent to your work email.",
+    );
   }
 
   async function verifyEmailOtp() {
     const { error } = await supabase.auth.verifyOtp({
       email: email.trim(),
       token: otp.trim(),
-      type: "email",
+      type: method === "reset" ? "recovery" : "email",
     });
     if (error) throw error;
   }
@@ -109,7 +159,7 @@ function AuthPage() {
     event.preventDefault();
     setBusy(true);
     try {
-      if (import.meta.env.DEV) {
+      if (DEMO_MODE) {
         if (email.trim().toLowerCase() === DEMO_EMAIL.toLowerCase() && password === DEMO_PASSWORD) {
           startDemoSession();
           navigate({ to: "/admin", search: { section: undefined }, replace: true });
@@ -124,17 +174,24 @@ function AuthPage() {
           await sendOtp();
           return;
         }
+        if (otpExpired) {
+          await sendOtp();
+          return;
+        }
         if (!otpVerified) {
           await verifyEmailOtp();
           setOtpVerified(true);
           toast.success("Code verified. Create your new password.");
           return;
         }
-        if (password.length < 8) throw new Error("Password must be at least 8 characters.");
+        if (password.length < 12) throw new Error("Password must be at least 12 characters.");
+        if (!/[A-Za-z]/.test(password) || !/\d/.test(password)) {
+          throw new Error("Password must contain at least one letter and one number.");
+        }
         if (password !== confirmPassword) throw new Error("Passwords do not match.");
         const { error } = await supabase.auth.updateUser({ password });
         if (error) throw error;
-        await supabase.auth.signOut();
+        await supabase.auth.signOut({ scope: "local" });
         changeMethod("password");
         toast.success("Password updated. You can now sign in securely.");
         return;
@@ -156,7 +213,7 @@ function AuthPage() {
 
       await completeTeamSignIn();
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : "Something went wrong");
+      toast.error(authErrorMessage(error));
     } finally {
       setBusy(false);
     }
@@ -164,6 +221,10 @@ function AuthPage() {
 
   const needsOtp = (method === "otp" || method === "reset") && otpSent && !otpVerified;
   const needsPassword = method === "password" || (method === "reset" && otpVerified);
+  const elapsedSeconds = otpSentAt ? Math.floor((now - otpSentAt) / 1000) : 0;
+  const resendIn = Math.max(0, OTP_RESEND_SECONDS - elapsedSeconds);
+  const expiresIn = Math.max(0, OTP_EXPIRY_SECONDS - elapsedSeconds);
+  const otpExpired = Boolean(otpSentAt && expiresIn === 0);
 
   return (
     <main className="relative grid min-h-screen place-items-center overflow-hidden bg-background px-5 py-16 text-foreground">
@@ -190,7 +251,7 @@ function AuthPage() {
             : "Secure access for Modtech administrators, content editors and sales teams."}
         </p>
 
-        {!import.meta.env.DEV && method !== "reset" && (
+        {!DEMO_MODE && method !== "reset" && (
           <div className="mt-6 grid grid-cols-2 gap-2 rounded-xl border border-border bg-background p-1">
             {(["otp", "password"] as const).map((item) => (
               <button
@@ -205,7 +266,7 @@ function AuthPage() {
           </div>
         )}
 
-        {import.meta.env.DEV && (
+        {DEMO_MODE && (
           <button
             type="button"
             onClick={() => {
@@ -262,6 +323,13 @@ function AuthPage() {
                 onChange={(event) => setOtp(event.target.value.replace(/\D/g, ""))}
                 className="mt-2 w-full rounded-xl border border-border bg-background px-4 py-3 text-center font-mono text-xl tracking-[0.5em] outline-none ring-brand/40 transition focus:border-brand focus:ring-2"
               />
+              <p
+                className={`mt-2 text-xs ${otpExpired ? "text-destructive" : "text-muted-foreground"}`}
+              >
+                {otpExpired
+                  ? "This code has expired. Request a new code."
+                  : `Code expires in ${formatCountdown(expiresIn)}.`}
+              </p>
             </div>
           )}
 
@@ -279,7 +347,7 @@ function AuthPage() {
                   type={showPassword ? "text" : "password"}
                   autoComplete={method === "reset" ? "new-password" : "current-password"}
                   required
-                  minLength={method === "reset" ? 8 : 6}
+                  minLength={method === "reset" ? 12 : 6}
                   value={password}
                   onChange={(event) => setPassword(event.target.value)}
                   className="w-full rounded-xl border border-border bg-background py-3 pl-4 pr-12 text-sm outline-none ring-brand/40 transition focus:border-brand focus:ring-2"
@@ -293,6 +361,11 @@ function AuthPage() {
                   {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                 </button>
               </div>
+              {method === "reset" && (
+                <p className="mt-2 text-xs text-muted-foreground">
+                  Use at least 12 characters with a letter and a number.
+                </p>
+              )}
             </div>
           )}
 
@@ -309,7 +382,7 @@ function AuthPage() {
                 type={showPassword ? "text" : "password"}
                 autoComplete="new-password"
                 required
-                minLength={8}
+                minLength={12}
                 value={confirmPassword}
                 onChange={(event) => setConfirmPassword(event.target.value)}
                 className="mt-2 w-full rounded-xl border border-border bg-background px-4 py-3 text-sm outline-none ring-brand/40 transition focus:border-brand focus:ring-2"
@@ -333,7 +406,9 @@ function AuthPage() {
               ? !otpSent
                 ? "Send recovery code"
                 : !otpVerified
-                  ? "Verify code"
+                  ? otpExpired
+                    ? "Request new code"
+                    : "Verify code"
                   : "Update password"
               : method === "otp"
                 ? otpSent
@@ -343,21 +418,41 @@ function AuthPage() {
           </button>
         </form>
 
-        {!import.meta.env.DEV && needsOtp && (
-          <button
-            type="button"
-            disabled={busy}
-            onClick={() => {
-              setOtpSent(false);
-              setOtp("");
-            }}
-            className="mt-3 w-full text-center text-xs text-muted-foreground underline underline-offset-4 hover:text-brand"
-          >
-            Change email or request another code
-          </button>
+        {!DEMO_MODE && needsOtp && (
+          <div className="mt-3 flex items-center justify-center gap-4 text-xs">
+            <button
+              type="button"
+              disabled={busy}
+              onClick={() => {
+                setOtpSent(false);
+                setOtp("");
+                setOtpSentAt(null);
+              }}
+              className="text-muted-foreground underline underline-offset-4 hover:text-brand"
+            >
+              Change email
+            </button>
+            <button
+              type="button"
+              disabled={busy || resendIn > 0}
+              onClick={async () => {
+                setBusy(true);
+                try {
+                  await sendOtp();
+                } catch (error) {
+                  toast.error(authErrorMessage(error));
+                } finally {
+                  setBusy(false);
+                }
+              }}
+              className="text-muted-foreground underline underline-offset-4 hover:text-brand disabled:no-underline disabled:opacity-60"
+            >
+              {resendIn > 0 ? `Resend in ${formatCountdown(resendIn)}` : "Resend code"}
+            </button>
+          </div>
         )}
 
-        {!import.meta.env.DEV && method === "password" && (
+        {!DEMO_MODE && method === "password" && (
           <button
             type="button"
             onClick={() => changeMethod("reset")}
@@ -367,7 +462,7 @@ function AuthPage() {
           </button>
         )}
 
-        {!import.meta.env.DEV && method === "reset" && (
+        {!DEMO_MODE && method === "reset" && (
           <button
             type="button"
             onClick={() => changeMethod("otp")}

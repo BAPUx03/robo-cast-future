@@ -1,17 +1,19 @@
 import { Link } from "@tanstack/react-router";
-import { Mail, MapPin, Linkedin, Facebook, Instagram, Youtube, Twitter } from "lucide-react";
+import { Mail, MapPin, Linkedin } from "lucide-react";
 import { SiteHeader } from "@/components/site-header";
 import { BrandLogo } from "@/components/brand-logo";
 import { useSiteContent } from "@/lib/site-content";
 
 export function PageShell({ children }: { children: React.ReactNode }) {
   return (
-    <main className="relative min-h-screen overflow-hidden bg-background text-foreground">
+    <>
       <SiteHeader />
-      <div className="pt-28 sm:pt-32">{children}</div>
+      <main className="relative min-h-screen overflow-hidden bg-background pt-28 text-foreground sm:pt-32">
+        {children}
+      </main>
       <SiteFooter />
       <FloatingActions />
-    </main>
+    </>
   );
 }
 
@@ -106,11 +108,11 @@ function SiteFooter() {
     { to: "/contact", label: "Contact Us" },
   ];
   const socials = [
-    { href: "https://www.linkedin.com/", Icon: Linkedin, label: "LinkedIn" },
-    { href: "https://www.facebook.com/", Icon: Facebook, label: "Facebook" },
-    { href: "https://www.instagram.com/", Icon: Instagram, label: "Instagram" },
-    { href: "https://www.youtube.com/", Icon: Youtube, label: "YouTube" },
-    { href: "https://twitter.com/", Icon: Twitter, label: "Twitter / X" },
+    {
+      href: "https://www.linkedin.com/company/modtech-machines-pvt-ltd",
+      Icon: Linkedin,
+      label: "Modtech Machines on LinkedIn",
+    },
   ];
   return (
     <footer className="relative border-t border-border bg-carbon-2 px-5 py-14 sm:px-8">
@@ -162,7 +164,7 @@ function SiteFooter() {
             <li>
               <a
                 href={`mailto:${content.primary_email}`}
-                className="inline-flex items-center gap-2 transition hover:text-brand"
+                className="inline-flex min-w-0 items-center gap-2 break-all transition hover:text-brand"
               >
                 <Mail className="h-4 w-4 text-brand" /> {content.primary_email}
               </a>
@@ -170,7 +172,7 @@ function SiteFooter() {
             <li>
               <a
                 href={`mailto:${content.automation_email}`}
-                className="inline-flex items-center gap-2 transition hover:text-brand"
+                className="inline-flex min-w-0 items-center gap-2 break-all transition hover:text-brand"
               >
                 <Mail className="h-4 w-4 text-brand" /> {content.automation_email}
               </a>

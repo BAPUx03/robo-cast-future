@@ -168,6 +168,7 @@ export type Machine = {
   images?: string[];
   desc: string;
   category: Category;
+  section?: ProductSection;
   tagline: string;
   group:
     | "wax-injector"
@@ -181,6 +182,83 @@ export type Machine = {
   applications: string[];
   specs: { label: string; value: string }[];
 };
+
+export type ProductSection =
+  | "wax-injection-machines"
+  | "wax-processing-conditioning"
+  | "wax-room-automation"
+  | "shelling-solutions"
+  | "ceramic-injectors"
+  | "fettling-equipment"
+  | "end-of-line-packaging"
+  | "flexible-industrial-automation";
+
+export const productSectionMeta: Record<
+  ProductSection,
+  { label: string; division: Mode; description: string }
+> = {
+  "wax-injection-machines": {
+    label: "Wax Injection Machines",
+    division: "casting",
+    description:
+      "Wax injectors for precision pattern production, from manual machines to large IGT presses.",
+  },
+  "wax-processing-conditioning": {
+    label: "Wax Processing & Conditioning",
+    division: "casting",
+    description: "Extrusion, melting and conditioning equipment for stable, reusable foundry wax.",
+  },
+  "wax-room-automation": {
+    label: "Wax Room Automation",
+    division: "casting",
+    description:
+      "Robotic cells for hands-off injection, handling, inspection and wax-component assembly.",
+  },
+  "shelling-solutions": {
+    label: "Shelling Solutions",
+    division: "casting",
+    description: "Slurry preparation, sanding and automated shell-building systems.",
+  },
+  "ceramic-injectors": {
+    label: "Ceramic Injectors",
+    division: "casting",
+    description:
+      "Machines for repeatable ceramic core injection across industrial and aerospace applications.",
+  },
+  "fettling-equipment": {
+    label: "Fettling Equipment",
+    division: "casting",
+    description: "Post-cast cut-off and shell-removal systems.",
+  },
+  "end-of-line-packaging": {
+    label: "End-of-Line Packaging",
+    division: "robotics",
+    description: "Robotic case erection, packing and palletizing cells.",
+  },
+  "flexible-industrial-automation": {
+    label: "Flexible Industrial Automation",
+    division: "robotics",
+    description: "Pick-and-place, machine tending and vision-guided robotic systems.",
+  },
+};
+
+export function machineSection(machine: Machine): ProductSection {
+  if (machine.section && machine.section in productSectionMeta) return machine.section;
+  if (machine.category !== "casting") {
+    return ["RA.01", "RA.02", "RA.03"].includes(machine.code)
+      ? "end-of-line-packaging"
+      : "flexible-industrial-automation";
+  }
+  if (machine.code.startsWith("WI.")) return "wax-injection-machines";
+  if (machine.code.startsWith("WX.") || machine.code.startsWith("TK.")) {
+    return "wax-processing-conditioning";
+  }
+  if (machine.group === "wax-automation") return "wax-room-automation";
+  if (machine.group === "shelling") return "shelling-solutions";
+  if (machine.group === "ceramic-injector") return "ceramic-injectors";
+  if (machine.group === "fettling") return "fettling-equipment";
+  return "wax-injection-machines";
+}
 
 // Full product catalogue — mirrors modtechworld.com product taxonomy.
 const castingMachines: Machine[] = [
@@ -469,7 +547,7 @@ const castingMachines: Machine[] = [
     slug: "wax-injection-cell",
     title: "Wax Injection Cell",
     image: castingProductImages.waxInjectionCell,
-    category: "automation",
+    category: "casting",
     group: "wax-automation",
     tagline: "Robotic transfer for hands-off pattern production.",
     desc: "Robotic wax injection cell that pairs the injector with a 6-axis robot, conveyor and vision QC for hands-off pattern production.",
@@ -488,7 +566,7 @@ const castingMachines: Machine[] = [
     title: "KAWAS — Robotic Wax Assembly Cell",
     image: castingGalleryImage("kawas", "front.webp"),
     images: [castingGalleryImage("kawas", "front.webp")],
-    category: "automation",
+    category: "casting",
     group: "wax-automation",
     tagline: "Enclosed robotic handling for repeatable wax-component assembly.",
     desc: "KAWAS is an enclosed robotic cell for repeatable wax-component handling and assembly, with guarded access, dedicated fixtures and operator HMI control.",
@@ -642,8 +720,8 @@ const castingMachines: Machine[] = [
     slug: "automated-shelling-solution",
     title: "Automated Shelling Solution",
     image: castingProductImages.shellingSolution,
-    category: "robotics",
-    group: "robotic",
+    category: "casting",
+    group: "shelling",
     tagline: "Full-line automation: dip · drain · stucco · dry.",
     desc: "Six-axis robotic shelling cell automating the full dip, drain, stucco and dry cycle with multi-station layout and SCADA traceability.",
     highlights: ["6-axis robot", "Up to 6 stations", "Recipe per part", "Production traceability"],
