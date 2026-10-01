@@ -61,11 +61,11 @@ function authErrorMessage(error: unknown) {
 
 function AuthPage() {
   const navigate = useNavigate();
-  const [email, setEmail] = useState("");
+  const [email, setEmail] = useState("admin@modtech.com");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
-  const [method, setMethod] = useState<AuthMethod>(DEMO_MODE ? "password" : "otp");
+  const [method, setMethod] = useState<AuthMethod>("password");
   const [otpSent, setOtpSent] = useState(false);
   const [otpVerified, setOtpVerified] = useState(false);
   const [otp, setOtp] = useState("");
@@ -251,21 +251,6 @@ function AuthPage() {
             : "Secure access for Modtech administrators, content editors and sales teams."}
         </p>
 
-        {!DEMO_MODE && method !== "reset" && (
-          <div className="mt-6 grid grid-cols-2 gap-2 rounded-xl border border-border bg-background p-1">
-            {(["otp", "password"] as const).map((item) => (
-              <button
-                key={item}
-                type="button"
-                onClick={() => changeMethod(item)}
-                className={`rounded-lg px-3 py-2 font-mono text-[10px] uppercase tracking-wider transition ${method === item ? "bg-brand text-brand-foreground" : "text-muted-foreground hover:text-foreground"}`}
-              >
-                {item === "otp" ? "Email OTP" : "Password"}
-              </button>
-            ))}
-          </div>
-        )}
-
         {DEMO_MODE && (
           <button
             type="button"
@@ -450,16 +435,6 @@ function AuthPage() {
               {resendIn > 0 ? `Resend in ${formatCountdown(resendIn)}` : "Resend code"}
             </button>
           </div>
-        )}
-
-        {!DEMO_MODE && method === "password" && (
-          <button
-            type="button"
-            onClick={() => changeMethod("reset")}
-            className="mt-4 w-full text-center text-xs text-muted-foreground transition hover:text-brand"
-          >
-            Forgot password? Reset with email OTP
-          </button>
         )}
 
         {!DEMO_MODE && method === "reset" && (
