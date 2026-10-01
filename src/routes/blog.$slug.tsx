@@ -208,19 +208,13 @@ function BlogArticle() {
                   <List className="h-4 w-4" /> In this article
                 </div>
                 <ol className="mt-4 grid gap-2 sm:grid-cols-2">
-                  {sections.map((section, index) => (
-                    <li
-                      key={`${section.id}-${index}`}
-                      className={section.level === 3 ? "sm:pl-4" : ""}
-                    >
+                  {sections.map((section) => (
+                    <li key={section.id} className={section.level === 3 ? "sm:pl-4" : ""}>
                       <a
                         href={`#${section.id}`}
-                        className="group flex items-start gap-2 text-sm leading-relaxed text-muted-foreground transition hover:text-brand"
+                        className="text-sm leading-relaxed text-muted-foreground transition hover:text-brand"
                       >
-                        <span className="mt-0.5 font-mono text-[10px] text-brand">
-                          {String(index + 1).padStart(2, "0")}
-                        </span>
-                        <span>{section.title}</span>
+                        {section.title}
                       </a>
                     </li>
                   ))}
@@ -275,12 +269,7 @@ function BlogArticle() {
             <div className="mx-auto max-w-6xl">
               <div className="flex items-end justify-between gap-4">
                 <div>
-                  <p className="font-mono text-[10px] uppercase tracking-[0.3em] text-brand">
-                    / keep reading
-                  </p>
-                  <h2 className="mt-2 font-display text-2xl font-bold">
-                    Related engineering insights
-                  </h2>
+                  <h2 className="font-display text-2xl font-bold">Related engineering insights</h2>
                 </div>
                 <Link
                   to="/blog"

@@ -80,8 +80,7 @@ export function EnquiryForm({ heading = "Send us a message" }: { heading?: strin
       className="reveal-on-scroll relative overflow-hidden rounded-2xl border border-border bg-card p-7 sm:p-8"
       onSubmit={handleSubmit}
     >
-      <div className="font-mono text-[10px] uppercase tracking-[0.3em] text-brand">/ enquiry</div>
-      <h2 className="mt-2 font-display text-2xl font-bold tracking-tight">{heading}</h2>
+      <h2 className="font-display text-2xl font-bold tracking-tight">{heading}</h2>
 
       <div className="mt-6 grid gap-4 sm:grid-cols-2">
         <Field name="name" label="Name" required />

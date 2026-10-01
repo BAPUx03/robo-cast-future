@@ -109,10 +109,7 @@ function BlogIndex() {
         <div className="mx-auto max-w-7xl">
           <div className="mb-8 flex flex-col gap-4 border-b border-border pb-8 sm:flex-row sm:items-end sm:justify-between">
             <div>
-              <p className="font-mono text-[10px] uppercase tracking-[0.28em] text-brand">
-                / knowledge centre
-              </p>
-              <h2 className="mt-3 font-display text-3xl font-bold tracking-tight sm:text-4xl">
+              <h2 className="font-display text-3xl font-bold tracking-tight sm:text-4xl">
                 Explore our latest thinking.
               </h2>
             </div>
@@ -214,10 +211,7 @@ function BlogIndex() {
 
           {featured && (
             <section className="mt-12">
-              <h2 className="font-mono text-[10px] uppercase tracking-[0.3em] text-brand">
-                / featured insight
-              </h2>
-              <div className="mt-4">
+              <div>
                 <PostCard post={featured} index={0} featured />
               </div>
             </section>
@@ -227,11 +221,8 @@ function BlogIndex() {
             <section className="mt-14">
               <div className="flex items-end justify-between gap-4 border-b border-border pb-4">
                 <div>
-                  <h2 className="font-mono text-[10px] uppercase tracking-[0.3em] text-brand">
-                    {hasFilters ? "/ search results" : "/ latest insights"}
-                  </h2>
                   {hasFilters && (
-                    <p className="mt-2 text-sm text-muted-foreground">
+                    <p className="text-sm text-muted-foreground">
                       Articles matching your selected filters.
                     </p>
                   )}
@@ -253,10 +244,7 @@ function BlogIndex() {
               <div className="pointer-events-none absolute -right-24 -top-24 h-72 w-72 rounded-full bg-brand/15 blur-3xl" />
               <div className="relative grid gap-8 lg:grid-cols-[1fr_auto] lg:items-end">
                 <div>
-                  <p className="font-mono text-[10px] uppercase tracking-[0.28em] text-brand">
-                    / put insight into production
-                  </p>
-                  <h2 className="mt-3 max-w-2xl font-display text-3xl font-bold tracking-tight sm:text-4xl">
+                  <h2 className="max-w-2xl font-display text-3xl font-bold tracking-tight sm:text-4xl">
                     Have a process challenge worth solving?
                   </h2>
                   <p className="mt-4 max-w-2xl leading-relaxed text-muted-foreground">

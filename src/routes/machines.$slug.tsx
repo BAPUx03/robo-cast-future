@@ -134,10 +134,7 @@ function MachineDetail() {
       <section className="relative bg-background px-5 py-16 sm:px-8 sm:py-20">
         <div className="mx-auto grid max-w-7xl gap-10 lg:grid-cols-3">
           <div className="reveal-on-scroll lg:col-span-2">
-            <div className="font-mono text-[11px] uppercase tracking-[0.3em] text-brand">
-              / overview
-            </div>
-            <h2 className="mt-3 font-display text-3xl font-bold tracking-tight sm:text-4xl">
+            <h2 className="font-display text-3xl font-bold tracking-tight sm:text-4xl">
               Engineered for repeatability.
             </h2>
             <p className="mt-4 leading-relaxed text-muted-foreground">{m.desc}</p>
@@ -155,10 +152,7 @@ function MachineDetail() {
             </div>
 
             <div className="mt-10">
-              <div className="font-mono text-[11px] uppercase tracking-[0.3em] text-brand">
-                / applications
-              </div>
-              <ul className="mt-4 flex flex-wrap gap-2">
+              <ul className="flex flex-wrap gap-2">
                 {m.applications.map((a) => (
                   <li
                     key={a}
@@ -173,10 +167,7 @@ function MachineDetail() {
 
           <aside className="reveal-on-scroll" data-reveal-delay="120">
             <div className="rounded-2xl border border-border bg-card p-6 shadow-card">
-              <div className="font-mono text-[11px] uppercase tracking-[0.3em] text-brand">
-                / specs
-              </div>
-              <dl className="mt-4 divide-y divide-border">
+              <dl className="divide-y divide-border">
                 {m.specs.map((s) => (
                   <div key={s.label} className="flex items-center justify-between gap-4 py-3">
                     <dt className="font-mono text-[10.5px] uppercase tracking-[0.18em] text-muted-foreground">
@@ -204,10 +195,7 @@ function MachineDetail() {
           <div className="mx-auto max-w-7xl">
             <div className="flex items-end justify-between gap-4">
               <div>
-                <div className="font-mono text-[11px] uppercase tracking-[0.3em] text-brand">
-                  / related machines
-                </div>
-                <h2 className="mt-2 font-display text-2xl font-bold tracking-tight sm:text-3xl">
+                <h2 className="font-display text-2xl font-bold tracking-tight sm:text-3xl">
                   More from {categoryMeta[division].label.toLowerCase()}.
                 </h2>
               </div>

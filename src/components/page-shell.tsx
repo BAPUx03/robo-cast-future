@@ -19,12 +19,11 @@ export function PageShell({ children }: { children: React.ReactNode }) {
 }
 
 export function PageHero({
-  kicker,
   title,
   subtitle,
   image,
 }: {
-  kicker: string;
+  kicker?: string;
   title: React.ReactNode;
   subtitle?: string;
   image?: string;
@@ -47,8 +46,7 @@ export function PageHero({
       <div className="pointer-events-none absolute inset-0 bg-grid bg-grid-fade opacity-30" />
       <div className="pointer-events-none absolute -top-40 left-1/2 h-[500px] w-[800px] -translate-x-1/2 rounded-full bg-brand/15 blur-[140px]" />
       <div className="relative mx-auto max-w-7xl text-center">
-        <div className="font-mono text-[11px] uppercase tracking-[0.3em] text-brand">{kicker}</div>
-        <h1 className="reveal mx-auto mt-4 max-w-4xl font-display text-[clamp(2rem,4.6vw,3.6rem)] font-bold tracking-[-0.03em]">
+        <h1 className="reveal mx-auto max-w-4xl font-display text-[clamp(2rem,4.6vw,3.6rem)] font-bold tracking-[-0.03em]">
           {title}
         </h1>
         {subtitle && (
@@ -168,10 +166,7 @@ function SiteFooter() {
         </div>
 
         <div>
-          <div className="font-mono text-[10px] uppercase tracking-[0.25em] text-brand">
-            / navigate
-          </div>
-          <nav className="mt-4 grid grid-cols-2 gap-y-2 font-display text-sm text-muted-foreground">
+          <nav className="grid grid-cols-2 gap-y-2 font-display text-sm text-muted-foreground">
             {links.map((l) => (
               <Link key={l.to} to={l.to} className="transition hover:text-brand">
                 {l.label}
@@ -181,10 +176,7 @@ function SiteFooter() {
         </div>
 
         <div>
-          <div className="font-mono text-[10px] uppercase tracking-[0.25em] text-brand">
-            / reach us
-          </div>
-          <ul className="mt-4 space-y-3 text-sm text-muted-foreground">
+          <ul className="space-y-3 text-sm text-muted-foreground">
             <li>
               <a
                 href={`mailto:${content.primary_email}`}

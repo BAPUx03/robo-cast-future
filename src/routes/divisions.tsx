@@ -2,7 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { ArrowRight } from "lucide-react";
 import { PageShell, PageHero } from "@/components/page-shell";
 import { useRevealOnScroll } from "@/hooks/use-reveal-on-scroll";
-import { divisions, categoryMeta } from "@/content/site-data";
+import { divisions } from "@/content/site-data";
 import { automationImages } from "@/content/automation-data";
 import { useSiteContent } from "@/lib/site-content";
 
@@ -61,14 +61,6 @@ function DivisionsPage() {
                     className="h-full w-full object-cover transition duration-700 group-hover:scale-105"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-card via-card/40 to-transparent" />
-                  <div className="absolute left-4 top-4 flex items-center gap-2">
-                    <span className="rounded-md bg-card/80 px-2.5 py-1 font-mono text-[10px] uppercase tracking-widest text-brand backdrop-blur">
-                      {d.code}
-                    </span>
-                    <span className="cat-tag rounded-md border border-border bg-card/80 px-2.5 py-1 font-mono text-[10px] uppercase tracking-widest text-muted-foreground backdrop-blur transition">
-                      {categoryMeta[d.category].label}
-                    </span>
-                  </div>
                 </div>
                 <div className="p-7 sm:p-8">
                   <div className="font-mono text-[11px] uppercase tracking-widest text-muted-foreground">

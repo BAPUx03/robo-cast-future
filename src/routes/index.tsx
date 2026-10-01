@@ -94,11 +94,8 @@ function HomePage() {
 
         <div className="mx-auto grid min-h-[calc(100svh-8rem)] max-w-7xl content-center gap-10 px-5 pb-16 pt-12 sm:px-8 sm:pb-20 lg:grid-cols-[minmax(0,1fr)_16rem] lg:items-end lg:pb-16 xl:grid-cols-[minmax(0,1fr)_18rem]">
           <div className="min-w-0 max-w-4xl">
-            <div className="reveal inline-flex max-w-full items-center gap-2 border-l-2 border-brand pl-3 font-mono text-[9px] uppercase leading-relaxed tracking-[0.16em] text-brand sm:text-xs sm:tracking-[0.24em]">
-              {content.eyebrow}
-            </div>
             <h1
-              className="reveal mt-6 max-w-4xl font-display text-[clamp(2.5rem,6.4vw,6rem)] font-bold leading-[0.98]"
+              className="reveal max-w-4xl font-display text-[clamp(2.5rem,6.4vw,6rem)] font-bold leading-[0.98]"
               data-reveal-delay="80"
             >
               {content.title}
@@ -175,10 +172,7 @@ function HomePage() {
         <div className="mx-auto max-w-7xl">
           <header className="reveal-on-scroll grid gap-6 border-b border-border pb-10 lg:grid-cols-[0.8fr_1.2fr] lg:items-end">
             <div>
-              <p className="font-mono text-[10px] uppercase tracking-[0.28em] text-brand">
-                Two engineering divisions
-              </p>
-              <h2 className="mt-4 font-display text-4xl font-bold sm:text-6xl">
+              <h2 className="font-display text-4xl font-bold sm:text-6xl">
                 One team.
                 <br />
                 Two disciplines.
@@ -192,7 +186,6 @@ function HomePage() {
 
           <div className="mt-12 space-y-20 sm:mt-16 sm:space-y-28">
             <DivisionChapter
-              number="01"
               title="Investment Casting Machinery"
               description="Equipment for wax preparation and injection, ceramic shell building and foundry processing—engineered for repeatable production and dependable uptime."
               image={automationImages.casting}
@@ -207,7 +200,6 @@ function HomePage() {
               ]}
             />
             <DivisionChapter
-              number="02"
               title="Robotics & Automation"
               description="Custom robot cells for packaging, material handling and machine tending, built around each product, process and factory layout."
               image={automationImages.casePacker}
@@ -230,10 +222,7 @@ function HomePage() {
         <div className="mx-auto max-w-7xl">
           <div className="reveal-on-scroll grid gap-10 lg:grid-cols-[0.8fr_1.2fr]">
             <div className="lg:sticky lg:top-32 lg:self-start">
-              <p className="font-mono text-[10px] uppercase tracking-[0.28em] text-brand">
-                Why Modtech
-              </p>
-              <h2 className="mt-4 font-display text-4xl font-bold sm:text-6xl">
+              <h2 className="font-display text-4xl font-bold sm:text-6xl">
                 Engineering that stays accountable.
               </h2>
               <p className="mt-5 max-w-lg leading-relaxed text-muted-foreground">
@@ -242,14 +231,13 @@ function HomePage() {
               </p>
             </div>
             <ol className="border-t border-border">
-              {advantages.map(({ Icon, title, text }, index) => (
+              {advantages.map(({ Icon, title, text }) => (
                 <li
                   key={title}
                   className="grid gap-4 border-b border-border py-7 sm:grid-cols-[4rem_1fr] sm:py-9"
                 >
-                  <div className="flex items-center gap-3 sm:block">
-                    <span className="font-mono text-xs text-brand">0{index + 1}</span>
-                    <Icon className="mt-0 h-5 w-5 text-brand sm:mt-5" />
+                  <div className="flex items-center sm:block">
+                    <Icon className="h-5 w-5 text-brand" />
                   </div>
                   <div>
                     <h3 className="font-display text-2xl font-bold">{title}</h3>
@@ -268,10 +256,7 @@ function HomePage() {
         <div className="reveal-on-scroll mx-auto max-w-7xl">
           <div className="grid gap-10 lg:grid-cols-[0.7fr_1.3fr] lg:items-start">
             <div>
-              <p className="font-mono text-[10px] uppercase tracking-[0.28em] text-brand">
-                Trusted ecosystem
-              </p>
-              <h2 className="mt-4 font-display text-3xl font-bold sm:text-5xl">
+              <h2 className="font-display text-3xl font-bold sm:text-5xl">
                 Global production experience.
               </h2>
               <p className="mt-4 text-sm leading-relaxed text-muted-foreground">
@@ -297,10 +282,7 @@ function HomePage() {
       <section id="contact" className="bg-background px-5 py-20 sm:px-8 sm:py-28">
         <div className="mx-auto grid max-w-7xl gap-10 lg:grid-cols-[0.8fr_1.2fr] lg:gap-16">
           <div className="reveal-on-scroll lg:pt-4">
-            <p className="font-mono text-[10px] uppercase tracking-[0.28em] text-brand">
-              Start a project
-            </p>
-            <h2 className="mt-4 font-display text-4xl font-bold sm:text-6xl">
+            <h2 className="font-display text-4xl font-bold sm:text-6xl">
               Tell us what your line needs to achieve.
             </h2>
             <p className="mt-5 max-w-lg leading-relaxed text-muted-foreground">
@@ -329,7 +311,6 @@ function HomePage() {
 }
 
 function DivisionChapter({
-  number,
   title,
   description,
   image,
@@ -339,7 +320,6 @@ function DivisionChapter({
   points,
   reverse = false,
 }: {
-  number: string;
   title: string;
   description: string;
   image: string;
@@ -360,15 +340,9 @@ function DivisionChapter({
           loading="lazy"
           className="home-machine-image absolute inset-0 h-full w-full object-cover"
         />
-        <span className="absolute left-4 top-4 bg-carbon/80 px-3 py-2 font-mono text-xs text-brand backdrop-blur">
-          DIV.{number}
-        </span>
       </div>
       <div className={`lg:col-span-5 ${reverse ? "lg:order-1 lg:pr-10" : "lg:pl-10"}`}>
-        <p className="font-mono text-[10px] uppercase tracking-[0.26em] text-brand">
-          Division {number}
-        </p>
-        <h3 className="mt-4 font-display text-3xl font-bold sm:text-5xl">{title}</h3>
+        <h3 className="font-display text-3xl font-bold sm:text-5xl">{title}</h3>
         <p className="mt-5 leading-relaxed text-muted-foreground">{description}</p>
         <ul className="mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-1">
           {points.map((point) => (

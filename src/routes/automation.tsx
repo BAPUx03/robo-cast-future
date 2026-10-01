@@ -87,10 +87,7 @@ export function SolutionsContent() {
                   <div className="absolute inset-0 bg-gradient-to-t from-card/70 to-transparent lg:bg-gradient-to-r" />
                 </div>
                 <div className="p-7 sm:p-9">
-                  <div className="font-mono text-[11px] uppercase tracking-[0.3em] text-brand">
-                    / {String(i + 1).padStart(2, "0")}
-                  </div>
-                  <h2 className="mt-3 font-display text-2xl font-bold tracking-tight sm:text-3xl">
+                  <h2 className="font-display text-2xl font-bold tracking-tight sm:text-3xl">
                     {s.title}
                   </h2>
                   <p className="mt-4 text-sm leading-relaxed text-muted-foreground">{s.summary}</p>
@@ -142,11 +139,8 @@ export function SolutionsContent() {
                 </div>
                 {s.gallery && s.gallery.length > 0 && (
                   <div className="border-t border-border bg-carbon-2/40 p-5 sm:p-7 lg:col-span-2">
-                    <div className="font-mono text-[10px] uppercase tracking-[0.22em] text-brand">
-                      / on the shop floor
-                    </div>
                     <div
-                      className={`mt-4 grid gap-4 ${s.gallery.length > 1 ? "sm:grid-cols-2" : ""} ${s.gallery.length > 2 ? "lg:grid-cols-4" : ""}`}
+                      className={`grid gap-4 ${s.gallery.length > 1 ? "sm:grid-cols-2" : ""} ${s.gallery.length > 2 ? "lg:grid-cols-4" : ""}`}
                     >
                       {s.gallery.map((g, gi) => (
                         <div
@@ -171,10 +165,7 @@ export function SolutionsContent() {
           {/* Machine tending cells */}
           <div className="reveal-on-scroll mt-16">
             <div className="text-center">
-              <div className="font-mono text-[11px] uppercase tracking-[0.3em] text-brand">
-                / machine tending cells
-              </div>
-              <h2 className="mt-3 font-display text-2xl font-bold tracking-tight sm:text-3xl">
+              <h2 className="font-display text-2xl font-bold tracking-tight sm:text-3xl">
                 Real installations, <span className="text-gradient-brand">running today</span>.
               </h2>
             </div>
@@ -221,10 +212,7 @@ export function SolutionsContent() {
         <div className="absolute inset-0 bg-grid bg-grid-fade opacity-40" />
         <div className="relative mx-auto max-w-7xl">
           <div className="reveal-on-scroll text-center">
-            <div className="font-mono text-[11px] uppercase tracking-[0.3em] text-brand">
-              / robots for specific needs
-            </div>
-            <h2 className="mt-3 font-display text-3xl font-bold tracking-tight sm:text-4xl">
+            <h2 className="font-display text-3xl font-bold tracking-tight sm:text-4xl">
               The right robot for <span className="text-gradient-brand">every task</span>.
             </h2>
           </div>
@@ -256,10 +244,7 @@ export function SolutionsContent() {
       <section className="relative bg-background px-5 py-16 sm:px-8 sm:py-20">
         <div className="mx-auto max-w-7xl space-y-10">
           <div className="reveal-on-scroll rounded-2xl border border-border bg-card/60 px-6 py-8 sm:px-10">
-            <div className="font-mono text-[10px] uppercase tracking-[0.3em] text-brand">
-              / industries we automate
-            </div>
-            <div className="mt-5 flex flex-wrap gap-2">
+            <div className="flex flex-wrap gap-2">
               {automationIndustries.map((i) => (
                 <span
                   key={i}
@@ -272,10 +257,7 @@ export function SolutionsContent() {
           </div>
 
           <div className="reveal-on-scroll rounded-2xl border border-border bg-card/60 px-6 py-8 sm:px-10">
-            <div className="font-mono text-[10px] uppercase tracking-[0.3em] text-brand">
-              / official integrators & partners
-            </div>
-            <div className="mt-7 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-5">
+            <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-5">
               {automationPartners.map((partner) => (
                 <div
                   key={partner.name}

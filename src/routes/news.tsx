@@ -225,10 +225,7 @@ function NewsPage() {
         <div className="absolute inset-0 bg-grid bg-grid-fade opacity-40" />
         <div className="relative mx-auto max-w-7xl">
           <div className="reveal-on-scroll text-center">
-            <div className="font-mono text-[11px] uppercase tracking-[0.3em] text-brand">
-              / exhibitions & events
-            </div>
-            <h2 className="mt-3 font-display text-3xl font-bold leading-[1.1] tracking-tight sm:text-5xl">
+            <h2 className="font-display text-3xl font-bold leading-[1.1] tracking-tight sm:text-5xl">
               Meet us at <span className="text-gradient-brand">global trade shows</span>.
             </h2>
             <p className="mx-auto mt-4 max-w-2xl text-muted-foreground">

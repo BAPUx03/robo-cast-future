@@ -7,7 +7,6 @@ import {
   Cpu,
   Eye,
   Globe2,
-  Headphones,
   Layers,
   LifeBuoy,
 } from "lucide-react";
@@ -42,19 +41,16 @@ export const Route = createFileRoute("/about")({
 
 const story = [
   {
-    code: "01",
     year: "1990",
     title: "Built here. Proven everywhere.",
     body: "Modtech began by developing investment casting machinery in-house. That hands-on engineering culture still shapes every machine, cell and production line we deliver.",
   },
   {
-    code: "02",
     year: "45+ countries",
     title: "Indian engineering, global installation base.",
     body: "Our special-purpose machines now operate across the UK, France, Germany, Japan, the USA, Russia and major manufacturing markets worldwide.",
   },
   {
-    code: "03",
     year: "Future ready",
     title: "Advanced technology without unnecessary complexity.",
     body: "We continually upgrade our equipment while keeping operation intuitive, maintenance practical and every system ready for long-term production.",
@@ -114,10 +110,7 @@ function AboutPage() {
         <div className="mx-auto flex min-h-[520px] max-w-7xl flex-col justify-between lg:min-h-[610px]">
           <div className="grid gap-10 lg:grid-cols-[1.4fr_0.6fr] lg:items-end">
             <div>
-              <div className="font-mono text-[11px] uppercase tracking-[0.28em] text-brand">
-                {content.eyebrow}
-              </div>
-              <h1 className="reveal mt-6 max-w-5xl font-display text-[clamp(2.8rem,7vw,6.7rem)] font-bold leading-[0.94]">
+              <h1 className="reveal max-w-5xl font-display text-[clamp(2.8rem,7vw,6.7rem)] font-bold leading-[0.94]">
                 {content.title} <span className="text-brand">{content.accent}</span>
               </h1>
             </div>
@@ -130,13 +123,13 @@ function AboutPage() {
           </div>
 
           <dl className="mt-14 grid grid-cols-2 border-y border-border/70 bg-carbon/55 backdrop-blur-md lg:grid-cols-4">
-            {stats.map((stat, index) => (
+            {stats.map((stat) => (
               <div
                 key={stat.label}
                 className="border-border/70 px-4 py-5 sm:px-6 lg:border-r lg:last:border-r-0"
               >
                 <dt className="font-mono text-[9px] uppercase tracking-[0.18em] text-muted-foreground">
-                  0{index + 1} / {stat.label}
+                  {stat.label}
                 </dt>
                 <dd className="mt-2 font-display text-3xl font-bold text-foreground sm:text-4xl">
                   {stat.value}
@@ -151,20 +144,16 @@ function AboutPage() {
         <div className="mx-auto max-w-7xl">
           <div className="reveal-on-scroll grid gap-10 lg:grid-cols-[0.42fr_1fr] lg:gap-20">
             <div>
-              <div className="font-mono text-[10px] uppercase tracking-[0.26em] text-brand">
-                / Our journey
-              </div>
-              <h2 className="mt-4 font-display text-3xl font-bold sm:text-5xl">
+              <h2 className="font-display text-3xl font-bold sm:text-5xl">
                 Three decades of building what production demands.
               </h2>
             </div>
             <ol className="border-t border-border">
               {story.map((item) => (
                 <li
-                  key={item.code}
-                  className="group grid gap-4 border-b border-border py-8 sm:grid-cols-[72px_150px_1fr] sm:items-start"
+                  key={item.year}
+                  className="group grid gap-4 border-b border-border py-8 sm:grid-cols-[150px_1fr] sm:items-start"
                 >
-                  <span className="font-mono text-xs text-brand">{item.code}</span>
                   <span className="font-display text-sm font-semibold text-foreground sm:text-base">
                     {item.year}
                   </span>
@@ -195,10 +184,7 @@ function AboutPage() {
               />
             </div>
             <div className="flex flex-col justify-center px-6 py-12 sm:px-12 lg:px-16">
-              <div className="font-mono text-[10px] uppercase tracking-[0.26em] text-copper">
-                Division 01 / Investment Casting
-              </div>
-              <h2 className="mt-5 max-w-xl font-display text-3xl font-bold sm:text-5xl">
+              <h2 className="max-w-xl font-display text-3xl font-bold sm:text-5xl">
                 From wax pattern to shell room.
               </h2>
               <p className="mt-6 max-w-xl text-base leading-relaxed text-muted-foreground">
@@ -228,10 +214,7 @@ function AboutPage() {
               />
             </div>
             <div className="flex flex-col justify-center px-6 py-12 sm:px-12 lg:px-16">
-              <div className="font-mono text-[10px] uppercase tracking-[0.26em] text-cyan">
-                Division 02 / Robotics & Automation
-              </div>
-              <h2 className="mt-5 max-w-xl font-display text-3xl font-bold sm:text-5xl">
+              <h2 className="max-w-xl font-display text-3xl font-bold sm:text-5xl">
                 Turnkey automation for the real factory floor.
               </h2>
               <p className="mt-6 max-w-xl text-base leading-relaxed text-muted-foreground">
@@ -255,20 +238,16 @@ function AboutPage() {
       <section className="bg-brand px-5 py-16 text-brand-foreground sm:px-8 sm:py-20">
         <div className="mx-auto grid max-w-7xl gap-10 lg:grid-cols-[0.7fr_1.3fr] lg:items-start">
           <div className="reveal-on-scroll">
-            <div className="font-mono text-[10px] uppercase tracking-[0.26em] opacity-70">
-              / The Modtech promise
-            </div>
-            <h2 className="mt-4 max-w-lg font-display text-3xl font-bold sm:text-5xl">
+            <h2 className="max-w-lg font-display text-3xl font-bold sm:text-5xl">
               Support designed around uptime.
             </h2>
           </div>
           <ul className="reveal-on-scroll grid border-t border-brand-foreground/25 sm:grid-cols-2">
-            {promises.map((promise, index) => (
+            {promises.map((promise) => (
               <li
                 key={promise}
                 className="flex gap-4 border-b border-brand-foreground/25 py-6 sm:px-5 sm:odd:border-r"
               >
-                <span className="font-mono text-xs opacity-60">0{index + 1}</span>
                 <span className="font-display text-base font-semibold leading-snug">{promise}</span>
               </li>
             ))}
@@ -280,10 +259,7 @@ function AboutPage() {
         <div className="mx-auto max-w-7xl">
           <div className="reveal-on-scroll grid gap-10 lg:grid-cols-[0.45fr_1fr] lg:gap-20">
             <div>
-              <div className="font-mono text-[10px] uppercase tracking-[0.26em] text-brand">
-                / Capabilities
-              </div>
-              <h2 className="mt-4 font-display text-3xl font-bold sm:text-5xl">
+              <h2 className="font-display text-3xl font-bold sm:text-5xl">
                 One accountable engineering team.
               </h2>
               <p className="mt-5 text-sm leading-relaxed text-muted-foreground">
@@ -292,16 +268,13 @@ function AboutPage() {
               </p>
             </div>
             <ul className="grid border-l border-t border-border sm:grid-cols-2">
-              {capabilities.map((capability, index) => (
+              {capabilities.map((capability) => (
                 <li
                   key={capability.t}
                   className="group min-h-44 border-b border-r border-border p-6 transition hover:bg-card sm:p-8"
                 >
                   <div className="flex items-center justify-between">
                     <capability.Icon className="h-5 w-5 text-brand" />
-                    <span className="font-mono text-[10px] text-muted-foreground">
-                      0{index + 1}
-                    </span>
                   </div>
                   <h3 className="mt-8 font-display text-lg font-semibold group-hover:text-brand">
                     {capability.t}
@@ -317,10 +290,7 @@ function AboutPage() {
           <div className="reveal-on-scroll mt-24 border-y border-border py-10">
             <div className="flex flex-col gap-7 lg:flex-row lg:items-center lg:justify-between">
               <div>
-                <div className="font-mono text-[10px] uppercase tracking-[0.26em] text-brand">
-                  / Trusted on the line
-                </div>
-                <h2 className="mt-3 font-display text-2xl font-bold">
+                <h2 className="font-display text-2xl font-bold">
                   Chosen by leading manufacturers.
                 </h2>
               </div>
@@ -338,10 +308,7 @@ function AboutPage() {
           </div>
 
           <div className="reveal-on-scroll mt-10 border-y border-border py-8">
-            <p className="font-mono text-[10px] uppercase tracking-[0.26em] text-brand">
-              / integration partners
-            </p>
-            <div className="mt-5 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-5">
+            <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-5">
               {automationPartners.map((partner) => (
                 <div
                   key={partner.name}
@@ -360,10 +327,7 @@ function AboutPage() {
 
           <div className="reveal-on-scroll mt-20 grid gap-8 border-l-2 border-brand pl-6 sm:pl-10 lg:grid-cols-[1fr_auto] lg:items-end">
             <div>
-              <div className="flex items-center gap-2 font-mono text-[10px] uppercase tracking-[0.25em] text-brand">
-                <Headphones className="h-4 w-4" /> Start a conversation
-              </div>
-              <h2 className="mt-4 max-w-3xl font-display text-3xl font-bold sm:text-5xl">
+              <h2 className="max-w-3xl font-display text-3xl font-bold sm:text-5xl">
                 Bring us the production challenge. We&apos;ll engineer the line.
               </h2>
             </div>

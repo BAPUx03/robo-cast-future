@@ -124,12 +124,7 @@ export function MarkdownContent({ value, compact = false }: { value: string; com
           return (
             <ol key={index} className="space-y-2 pl-1">
               {block.split("\n").map((item, itemIndex) => (
-                <li key={itemIndex} className="flex gap-3">
-                  <span className="font-mono text-xs text-brand">
-                    {String(itemIndex + 1).padStart(2, "0")}
-                  </span>
-                  <span>{inlineMarkdown(item.replace(/^\d+\.\s+/, ""))}</span>
-                </li>
+                <li key={itemIndex}>{inlineMarkdown(item.replace(/^\d+\.\s+/, ""))}</li>
               ))}
             </ol>
           );
