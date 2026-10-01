@@ -62,7 +62,7 @@ function authErrorMessage(error: unknown) {
 function AuthPage() {
   const navigate = useNavigate();
   const [email, setEmail] = useState("admin@modtech.com");
-  const [password, setPassword] = useState("");
+  const [password, setPassword] = useState("Modtech@123");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [method, setMethod] = useState<AuthMethod>("password");
