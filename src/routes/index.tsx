@@ -18,7 +18,6 @@ import { useSiteContent } from "@/lib/site-content";
 import {
   automationIndustries,
   automationPartners,
-  automationSolutions,
   automationImages,
   companyContact,
 } from "@/content/automation-data";
@@ -44,8 +43,6 @@ export const Route = createFileRoute("/")({
   }),
   component: HomePage,
 });
-
-const featuredSolutions = automationSolutions.slice(0, 5);
 
 const advantages = [
   {
@@ -225,64 +222,6 @@ function HomePage() {
               ]}
               reverse
             />
-          </div>
-        </div>
-      </section>
-
-      <section className="on-dark bg-carbon px-5 py-20 sm:px-8 sm:py-28">
-        <div className="mx-auto max-w-7xl">
-          <div className="reveal-on-scroll flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
-            <div>
-              <p className="font-mono text-[10px] uppercase tracking-[0.28em] text-brand">
-                Automation portfolio
-              </p>
-              <h2 className="mt-4 max-w-3xl font-display text-4xl font-bold sm:text-6xl">
-                Built around the work your line needs done.
-              </h2>
-            </div>
-            <Button
-              asChild
-              variant="outline"
-              className="w-fit border-foreground/25 bg-transparent font-mono text-xs uppercase tracking-wider hover:border-brand hover:bg-brand hover:text-brand-foreground"
-            >
-              <Link to="/solutions">
-                See all solutions <ArrowRight />
-              </Link>
-            </Button>
-          </div>
-
-          <div className="mt-12 grid gap-px overflow-hidden border border-border bg-border sm:grid-cols-2 lg:grid-cols-12">
-            {featuredSolutions.map((solution, index) => (
-              <Link
-                key={solution.slug}
-                to="/solutions"
-                className={`home-solution reveal-on-scroll group relative min-h-[24rem] overflow-hidden bg-card ${index < 2 ? "lg:col-span-6" : "lg:col-span-4"}`}
-                data-reveal-delay={(index % 3) * 90}
-              >
-                <img
-                  src={solution.image}
-                  alt={solution.title}
-                  loading="lazy"
-                  className="home-machine-image absolute inset-0 h-full w-full object-cover"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-carbon via-carbon/25 to-transparent" />
-                <div className="absolute inset-x-0 bottom-0 p-6 sm:p-8">
-                  <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-brand">
-                    System {String(index + 1).padStart(2, "0")}
-                  </span>
-                  <h3 className="mt-2 max-w-sm font-display text-2xl font-bold sm:text-3xl">
-                    {solution.title}
-                  </h3>
-                  <p className="mt-3 line-clamp-2 max-w-md text-sm leading-relaxed text-foreground/70">
-                    {solution.summary}
-                  </p>
-                  <span className="mt-5 inline-flex items-center gap-2 font-mono text-[10px] uppercase tracking-wider text-brand">
-                    View system{" "}
-                    <ArrowUpRight className="h-4 w-4 transition group-hover:translate-x-1 group-hover:-translate-y-1" />
-                  </span>
-                </div>
-              </Link>
-            ))}
           </div>
         </div>
       </section>
