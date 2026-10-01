@@ -68,16 +68,20 @@ function FloatingActions() {
     "Hello Modtech, I would like to discuss a project requirement.",
   );
   return (
-    <div className="floating-actions fixed bottom-7 right-7 z-40 hidden flex-col gap-3 transition-opacity duration-300 sm:flex">
+    <div className="floating-actions fixed bottom-5 right-4 z-40 flex flex-col gap-3 transition-opacity duration-300 sm:bottom-7 sm:right-7">
       <a
         href={`https://wa.me/${whatsappNumber}?text=${whatsappMessage}`}
         target="_blank"
         rel="noopener noreferrer"
         aria-label="Chat with Modtech on WhatsApp"
-        className="group grid h-14 w-14 place-items-center rounded-full bg-brand text-brand-foreground shadow-glow ring-2 ring-white/10 transition hover:scale-110"
+        title="Chat with Modtech on WhatsApp"
+        className="group relative grid h-14 w-14 place-items-center rounded-full bg-[#25d366] text-white shadow-[0_12px_35px_rgba(37,211,102,0.42)] ring-2 ring-white/40 transition duration-200 hover:-translate-y-1 hover:scale-105 hover:bg-[#20bd5a] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[#25d366]/35 sm:h-16 sm:w-16"
       >
-        <WhatsAppIcon className="h-7 w-7" />
-        <span className="pointer-events-none absolute right-full mr-3 hidden whitespace-nowrap rounded-md bg-carbon px-3 py-1.5 font-mono text-[10px] uppercase tracking-wider text-foreground shadow-deep group-hover:block">
+        <WhatsAppIcon className="h-7 w-7 sm:h-8 sm:w-8" />
+        <span
+          aria-hidden="true"
+          className="pointer-events-none absolute right-full top-1/2 mr-3 hidden -translate-y-1/2 whitespace-nowrap rounded-lg border border-border bg-carbon px-3 py-2 font-display text-xs font-semibold text-foreground opacity-0 shadow-deep transition-opacity group-hover:opacity-100 group-focus-visible:opacity-100 sm:block"
+        >
           Chat on WhatsApp
         </span>
       </a>
@@ -93,7 +97,7 @@ function WhatsAppIcon({ className }: { className?: string }) {
       className={className}
       fill="none"
       stroke="currentColor"
-      strokeWidth="1.8"
+      strokeWidth="2.1"
       strokeLinecap="round"
       strokeLinejoin="round"
     >
