@@ -3,6 +3,7 @@ import { Mail, MapPin, Linkedin } from "lucide-react";
 import { SiteHeader } from "@/components/site-header";
 import { BrandLogo } from "@/components/brand-logo";
 import { useSiteContent } from "@/lib/site-content";
+import { companyContact } from "@/content/automation-data";
 
 export function PageShell({ children }: { children: React.ReactNode }) {
   return (
@@ -64,20 +65,43 @@ export function PageHero({
 }
 
 function FloatingActions() {
-  const content = useSiteContent("global");
+  const whatsappNumber = companyContact.phone.replace(/\D/g, "");
+  const whatsappMessage = encodeURIComponent(
+    "Hello Modtech, I would like to discuss a project requirement.",
+  );
   return (
     <div className="floating-actions fixed bottom-7 right-7 z-40 hidden flex-col gap-3 transition-opacity duration-300 sm:flex">
       <a
-        href={`mailto:${content.automation_email}`}
-        aria-label="Email Modtech"
+        href={`https://wa.me/${whatsappNumber}?text=${whatsappMessage}`}
+        target="_blank"
+        rel="noopener noreferrer"
+        aria-label="Chat with Modtech on WhatsApp"
         className="group grid h-14 w-14 place-items-center rounded-full bg-brand text-brand-foreground shadow-glow ring-2 ring-white/10 transition hover:scale-110"
       >
-        <Mail className="h-6 w-6" />
+        <WhatsAppIcon className="h-7 w-7" />
         <span className="pointer-events-none absolute right-full mr-3 hidden whitespace-nowrap rounded-md bg-carbon px-3 py-1.5 font-mono text-[10px] uppercase tracking-wider text-foreground shadow-deep group-hover:block">
-          Email Modtech
+          Chat on WhatsApp
         </span>
       </a>
     </div>
+  );
+}
+
+function WhatsAppIcon({ className }: { className?: string }) {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      aria-hidden="true"
+      className={className}
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.8"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <path d="M20.5 11.6a8.5 8.5 0 0 1-12.7 7.4L3 20.5l1.5-4.6A8.5 8.5 0 1 1 20.5 11.6Z" />
+      <path d="M8.2 7.8c.3-.4.7-.4 1-.1l1.1 1.5c.2.3.2.6 0 .9l-.6.8c.8 1.7 1.8 2.7 3.5 3.5l.8-.6c.3-.2.6-.2.9 0l1.5 1.1c.3.2.3.7-.1 1-1 .9-2.2 1.1-3.6.5-2.5-1-4.9-3.4-5.9-5.9-.6-1.4-.4-2.7.5-3.6Z" />
+    </svg>
   );
 }
 
