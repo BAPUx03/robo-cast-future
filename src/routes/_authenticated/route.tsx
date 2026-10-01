@@ -1,12 +1,19 @@
 import { createFileRoute, Outlet, redirect } from "@tanstack/react-router";
 import { supabase } from "@/integrations/supabase/client";
-import { DEMO_EMAIL, DEMO_MODE, hasDemoSession } from "@/lib/demo-admin";
+import {
+  DEMO_EMAIL,
+  DEMO_MODE,
+  LOCAL_ADMIN_BYPASS,
+  hasDemoSession,
+  startDemoSession,
+} from "@/lib/demo-admin";
 
 export const Route = createFileRoute("/_authenticated")({
   ssr: false,
   beforeLoad: async () => {
     if (DEMO_MODE) {
-      if (hasDemoSession()) {
+      if (LOCAL_ADMIN_BYPASS || hasDemoSession()) {
+        if (LOCAL_ADMIN_BYPASS) startDemoSession();
         return {
           user: { id: "demo-admin", email: DEMO_EMAIL },
           role: "admin" as const,

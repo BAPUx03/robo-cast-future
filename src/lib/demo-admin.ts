@@ -1,6 +1,9 @@
-export const DEMO_EMAIL = import.meta.env.VITE_DEMO_ADMIN_EMAIL ?? "";
+export const LOCAL_ADMIN_BYPASS =
+  import.meta.env.DEV && import.meta.env.VITE_LOCAL_ADMIN_BYPASS === "true";
+export const DEMO_EMAIL = import.meta.env.VITE_DEMO_ADMIN_EMAIL ?? "admin@modtech.com";
 export const DEMO_PASSWORD = import.meta.env.VITE_DEMO_ADMIN_PASSWORD ?? "";
-export const DEMO_MODE = import.meta.env.DEV && Boolean(DEMO_EMAIL.trim() && DEMO_PASSWORD.trim());
+export const DEMO_MODE =
+  LOCAL_ADMIN_BYPASS || (import.meta.env.DEV && Boolean(DEMO_EMAIL.trim() && DEMO_PASSWORD.trim()));
 
 const SESSION_KEY = "modtech-demo-admin";
 const DATA_KEY = "modtech-demo-admin-data";

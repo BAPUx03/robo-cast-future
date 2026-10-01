@@ -46,6 +46,7 @@ import {
   deleteDemoRow,
   endDemoSession,
   getDemoRows,
+  LOCAL_ADMIN_BYPASS,
   saveDemoRow,
   saveDemoSettings,
   updateDemoRow,
@@ -508,7 +509,7 @@ function AdminPage() {
     queryClient.clear();
     if (demo) {
       endDemoSession();
-      navigate({ to: "/auth", replace: true });
+      navigate({ to: LOCAL_ADMIN_BYPASS ? "/" : "/auth", replace: true });
       return;
     }
     await supabase.auth.signOut();
@@ -538,7 +539,8 @@ function AdminPage() {
               onClick={signOut}
               className="inline-flex items-center gap-2 rounded-full border border-border px-4 py-2 font-mono text-[10px] uppercase tracking-[0.2em] transition hover:border-brand hover:text-brand"
             >
-              <LogOut className="h-3.5 w-3.5" /> Sign out
+              <LogOut className="h-3.5 w-3.5" />
+              {LOCAL_ADMIN_BYPASS ? "Exit admin" : "Sign out"}
             </button>
           </div>
         </div>

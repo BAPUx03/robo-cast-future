@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
+import { createFileRoute, useNavigate, Link, redirect } from "@tanstack/react-router";
 import { ArrowLeft, Eye, EyeOff, KeyRound, Lock, Loader2, ShieldCheck } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
@@ -15,6 +15,9 @@ import {
 
 export const Route = createFileRoute("/auth")({
   ssr: false,
+  beforeLoad: () => {
+    if (DEMO_MODE) throw redirect({ to: "/admin" });
+  },
   head: () => ({
     meta: [
       { title: "Team Sign In — Modtech Machinery" },
