@@ -8,11 +8,22 @@ export const DEMO_MODE =
 const SESSION_KEY = "modtech-demo-admin";
 const DATA_KEY = "modtech-demo-admin-data";
 
-export type DemoRow = Record<string, unknown> & { id?: string };
+export type DemoRow = Record<string, unknown> & { id?: string | number };
 
 type DemoData = Record<string, DemoRow[]>;
 
 const initialData: DemoData = {
+  announcement_bar: [
+    {
+      id: 1,
+      message:
+        "Engineering manufacturing systems since 1990 — Investment Casting Machines & Robotic Automation",
+      redirect_url: "/contact",
+      is_visible: true,
+      active_until: null,
+      updated_at: "2026-10-03T17:30:00.000Z",
+    },
+  ],
   blog_posts: [
     {
       id: "demo-post-1",
@@ -79,6 +90,60 @@ const initialData: DemoData = {
       updated_at: "2026-09-18T10:00:00.000Z",
     },
   ],
+  gallery_items: [
+    {
+      id: "demo-gallery-1",
+      title: "Office meets engineering",
+      category: "office",
+      location: "Modtech engineering campus",
+      image_url: "/gallery/modtech-office-hero.webp",
+      alt_text: "Contemporary office overlooking a robotics integration floor",
+      caption: "Customer conversations, engineering decisions and execution happen side by side.",
+      featured: true,
+      sort_order: 1,
+      published: true,
+      updated_at: "2026-09-18T10:00:00.000Z",
+    },
+    {
+      id: "demo-gallery-2",
+      title: "Engineering design studio",
+      category: "team",
+      location: "Design & applications office",
+      image_url: "/gallery/engineering-design-studio.webp",
+      alt_text: "Automation engineers collaborating around a mechanical design workstation",
+      caption: "Cross-functional teams develop machine concepts, tooling and controls.",
+      featured: false,
+      sort_order: 2,
+      published: true,
+      updated_at: "2026-09-18T10:00:00.000Z",
+    },
+    {
+      id: "demo-gallery-3",
+      title: "Project review room",
+      category: "office",
+      location: "Customer engineering centre",
+      image_url: "/gallery/project-review-room.webp",
+      alt_text: "Engineering leaders reviewing project drawings beside the automation floor",
+      caption: "Structured project reviews connect design decisions to manufacturing reality.",
+      featured: false,
+      sort_order: 3,
+      published: true,
+      updated_at: "2026-09-18T10:00:00.000Z",
+    },
+    {
+      id: "demo-gallery-4",
+      title: "Ideas move faster together",
+      category: "team",
+      location: "Engineering collaboration lounge",
+      image_url: "/gallery/team-collaboration.webp",
+      alt_text: "Engineering and operations team discussing a project in a modern office",
+      caption: "Mechanical, electrical, controls and operations expertise come together.",
+      featured: false,
+      sort_order: 4,
+      published: true,
+      updated_at: "2026-09-18T10:00:00.000Z",
+    },
+  ],
   enquiries: [
     {
       id: "demo-enquiry-1",
@@ -139,13 +204,13 @@ export function saveDemoRow(table: string, row: DemoRow) {
   writeData(data);
 }
 
-export function deleteDemoRow(table: string, id: string) {
+export function deleteDemoRow(table: string, id: string | number) {
   const data = readData();
   data[table] = (data[table] ?? []).filter((item) => item.id !== id);
   writeData(data);
 }
 
-export function updateDemoRow(table: string, id: string, values: DemoRow) {
+export function updateDemoRow(table: string, id: string | number, values: DemoRow) {
   const data = readData();
   data[table] = (data[table] ?? []).map((item) => (item.id === id ? { ...item, ...values } : item));
   writeData(data);

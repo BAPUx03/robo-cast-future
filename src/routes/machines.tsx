@@ -1,11 +1,12 @@
 import { createFileRoute, Link, Outlet, useLocation } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
-import { ArrowRight } from "lucide-react";
-import { PageShell, PageHero } from "@/components/page-shell";
+import { ArrowLeft, ArrowRight, Layers3 } from "lucide-react";
+import { PageShell } from "@/components/page-shell";
 import { useRevealOnScroll } from "@/hooks/use-reveal-on-scroll";
 import {
   functionalities,
   categoryMeta,
+  modeData,
   machineDivision,
   machineSection,
   productSectionMeta,
@@ -13,8 +14,6 @@ import {
   type Mode,
   type ProductSection,
 } from "@/content/site-data";
-import { automationImages } from "@/content/automation-data";
-import { useSiteContent } from "@/lib/site-content";
 import { fetchPublishedMachines } from "@/lib/catalogue";
 
 export const Route = createFileRoute("/machines")({
@@ -76,134 +75,150 @@ const catalogueSections: CatalogueSection[] = catalogueSectionOrder.map((id) => 
   matches: (machine) => machineSection(machine) === id,
 }));
 
-const divisionOrder: Mode[] = ["casting", "robotics"];
-
 function MachinesPage() {
   useRevealOnScroll();
-  const content = useSiteContent("machines");
   const { division: activeDivision } = Route.useSearch();
   const { data: catalogue } = useQuery({
     queryKey: ["public-machines"],
     queryFn: fetchPublishedMachines,
   });
   const machines = catalogue ?? functionalities;
-  const visible = activeDivision
-    ? machines.filter((machine) => machineDivision(machine) === activeDivision)
-    : machines;
-  const visibleDivisions = activeDivision ? [activeDivision] : divisionOrder;
+
+  const division = activeDivision ?? "casting";
+  const divisionContent = modeData[division];
+  const divisionMachines = machines.filter((machine) => machineDivision(machine) === division);
+  const sections = catalogueSections
+    .filter((section) => section.division === division)
+    .map((section) => ({
+      ...section,
+      machines: divisionMachines.filter(section.matches),
+    }))
+    .filter((section) => section.machines.length > 0);
+
   return (
     <PageShell>
-      <PageHero
-        kicker={content.eyebrow}
-        image={automationImages.palletizer}
-        title={
-          <>
-            {content.title} <span className="text-gradient-brand">{content.accent}</span>
-          </>
-        }
-        subtitle={content.description}
-      />
+      <section className="catalogue-hero on-dark relative isolate overflow-hidden bg-carbon px-5 py-14 sm:px-8 sm:py-20">
+        <div className="pointer-events-none absolute inset-0 -z-20">
+          <img
+            src={divisionContent.image}
+            alt=""
+            aria-hidden
+            className="h-full w-full object-cover opacity-25"
+          />
+          <div className="absolute inset-0 bg-gradient-to-r from-carbon via-carbon/90 to-carbon/55" />
+          <div className="absolute inset-0 bg-gradient-to-t from-carbon via-transparent to-carbon/35" />
+        </div>
+        <div className="pointer-events-none absolute inset-0 -z-10 bg-grid opacity-20" />
+        <div className="relative mx-auto max-w-7xl">
+          <div className="reveal flex flex-wrap items-center gap-x-3 gap-y-2 font-mono text-[10px] uppercase tracking-[0.2em]">
+            <Link
+              to="/divisions"
+              className="inline-flex items-center gap-2 text-foreground/60 transition hover:text-brand"
+            >
+              <ArrowLeft className="h-3.5 w-3.5" /> Divisions
+            </Link>
+            <span className="text-foreground/25">/</span>
+            <span className="text-brand">Step 02 / 02 · Complete catalogue</span>
+          </div>
+
+          <div className="mt-8 grid gap-8 lg:grid-cols-[1fr_auto] lg:items-end">
+            <div>
+              <p
+                className="reveal font-mono text-[10px] uppercase tracking-[0.28em] text-brand"
+                data-reveal-delay="60"
+              >
+                {divisionContent.kicker}
+              </p>
+              <h1
+                className="reveal mt-3 max-w-4xl font-display text-[clamp(2.5rem,5.5vw,5.7rem)] font-bold leading-[0.96] tracking-[-0.04em]"
+                data-reveal-delay="110"
+              >
+                {categoryMeta[division].label}
+                <span className="block text-gradient-brand">machines & systems.</span>
+              </h1>
+              <p
+                className="reveal mt-6 max-w-2xl text-base leading-relaxed text-foreground/65 sm:text-lg"
+                data-reveal-delay="170"
+              >
+                {divisionContent.description}
+              </p>
+            </div>
+            <div
+              className="reveal flex items-center gap-4 border-l border-brand/35 pl-5 lg:mb-1"
+              data-reveal-delay="220"
+            >
+              <span className="font-display text-5xl font-bold text-brand sm:text-6xl">
+                {divisionMachines.length.toString().padStart(2, "0")}
+              </span>
+              <span className="max-w-24 font-mono text-[9px] uppercase leading-relaxed tracking-[0.2em] text-foreground/55">
+                Products in this division
+              </span>
+            </div>
+          </div>
+        </div>
+      </section>
 
       <section className="relative bg-background py-12 sm:py-16">
-        <div className="mx-auto mb-10 max-w-7xl px-5 sm:px-8">
-          <div className="flex flex-wrap items-center gap-2">
+        <div className="mx-auto mb-12 max-w-7xl px-5 sm:px-8">
+          <div className="reveal-on-scroll rounded-2xl border border-border bg-card/65 p-4 shadow-card backdrop-blur sm:flex sm:items-center sm:justify-between sm:gap-6 sm:p-5">
+            <div className="flex items-center gap-3">
+              <span className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-brand/10 text-brand">
+                <Layers3 className="h-4 w-4" />
+              </span>
+              <div>
+                <p className="font-display text-sm font-semibold">Browse by product family</p>
+                <p className="mt-0.5 text-xs text-muted-foreground">
+                  Every {categoryMeta[division].label.toLowerCase()} product is shown below.
+                </p>
+              </div>
+            </div>
             <Link
-              to="/machines"
-              search={{ division: undefined }}
-              aria-pressed={!activeDivision}
-              className={`rounded-full border px-4 py-1.5 font-mono text-[10px] uppercase tracking-[0.2em] transition ${
-                !activeDivision
-                  ? "border-brand bg-brand text-brand-foreground shadow-glow"
-                  : "border-border bg-card/60 text-muted-foreground hover:border-brand/60 hover:text-brand"
-              }`}
+              to="/divisions"
+              className="mt-4 inline-flex items-center gap-2 rounded-full border border-border px-4 py-2 font-mono text-[9px] uppercase tracking-[0.18em] text-muted-foreground transition hover:border-brand/60 hover:text-brand sm:mt-0"
             >
-              All machines
+              <ArrowLeft className="h-3.5 w-3.5" /> Change division
             </Link>
-            {(["casting", "robotics"] as Mode[]).map((division) => (
-              <Link
-                key={division}
-                to="/machines"
-                search={{ division }}
-                aria-pressed={activeDivision === division}
-                className={`rounded-full border px-4 py-1.5 font-mono text-[10px] uppercase tracking-[0.2em] transition ${
-                  activeDivision === division
-                    ? "border-brand bg-brand text-brand-foreground shadow-glow"
-                    : "border-border bg-card/60 text-muted-foreground hover:border-brand/60 hover:text-brand"
-                }`}
-              >
-                {division === "casting" ? "Investment Casting" : "Robotics & Automation"}
-              </Link>
-            ))}
-            <span className="ml-auto hidden items-center gap-2 font-mono text-[10px] uppercase tracking-[0.3em] text-muted-foreground sm:flex">
-              {visible.length} machines
-            </span>
           </div>
         </div>
 
-        <div className="relative mx-auto max-w-7xl space-y-16 px-5 sm:px-8 sm:space-y-20">
-          {visibleDivisions.map((division) => {
-            const divisionMachines = visible.filter(
-              (machine) => machineDivision(machine) === division,
-            );
-            const sections = catalogueSections
-              .filter((section) => section.division === division)
-              .map((section) => ({
-                ...section,
-                machines: divisionMachines.filter(section.matches),
-              }))
-              .filter((section) => section.machines.length > 0);
-
-            return (
-              <section key={division} aria-labelledby={`${division}-division-heading`}>
-                <header className="mb-8 border-b border-border pb-6 sm:flex sm:items-end sm:justify-between">
-                  <div>
-                    <p className="font-mono text-[10px] uppercase tracking-[0.28em] text-brand">
-                      Product division
-                    </p>
-                    <h2
-                      id={`${division}-division-heading`}
-                      className="mt-3 font-display text-3xl font-bold sm:text-5xl"
-                    >
-                      {categoryMeta[division].label}
-                    </h2>
+        <div className="relative mx-auto max-w-7xl px-5 sm:px-8">
+          <section aria-labelledby={`${division}-division-heading`}>
+            <h2 id={`${division}-division-heading`} className="sr-only">
+              {categoryMeta[division].label} product catalogue
+            </h2>
+            <div className="space-y-14 sm:space-y-20">
+              {sections.map((section, sectionIndex) => (
+                <section key={section.id} id={section.id} data-machine-section={section.id}>
+                  <div className="reveal-on-scroll mb-6 grid gap-3 border-b border-border pb-5 sm:grid-cols-[auto_1fr_auto] sm:items-end sm:gap-5">
+                    <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-brand">
+                      {(sectionIndex + 1).toString().padStart(2, "0")}
+                    </span>
+                    <div>
+                      <h3 className="font-display text-2xl font-bold tracking-tight sm:text-3xl">
+                        {section.title}
+                      </h3>
+                      <p className="mt-2 max-w-3xl text-sm leading-relaxed text-muted-foreground">
+                        {section.description}
+                      </p>
+                    </div>
+                    <span className="shrink-0 font-mono text-[10px] uppercase tracking-[0.18em] text-muted-foreground">
+                      {section.machines.length} products
+                    </span>
                   </div>
-                  <p className="mt-3 font-mono text-[10px] uppercase tracking-[0.2em] text-muted-foreground sm:mt-0">
-                    {divisionMachines.length} products
-                  </p>
-                </header>
-
-                <div className="space-y-12 sm:space-y-16">
-                  {sections.map((section) => (
-                    <section key={section.id} data-machine-section={section.id}>
-                      <div className="mb-5 flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
-                        <div>
-                          <h3 className="font-display text-2xl font-bold tracking-tight sm:text-3xl">
-                            {section.title}
-                          </h3>
-                          <p className="mt-2 max-w-3xl text-sm leading-relaxed text-muted-foreground">
-                            {section.description}
-                          </p>
-                        </div>
-                        <span className="shrink-0 font-mono text-[10px] uppercase tracking-[0.18em] text-muted-foreground">
-                          {section.machines.length} products
-                        </span>
-                      </div>
-                      <div className="cat-group grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-                        {section.machines.map((machine, index) => (
-                          <MachineCard
-                            key={machine.slug}
-                            machine={machine}
-                            index={index}
-                            activeDivision={activeDivision}
-                          />
-                        ))}
-                      </div>
-                    </section>
-                  ))}
-                </div>
-              </section>
-            );
-          })}
+                  <div className="cat-group grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+                    {section.machines.map((machine, index) => (
+                      <MachineCard
+                        key={machine.slug}
+                        machine={machine}
+                        index={index}
+                        activeDivision={activeDivision}
+                      />
+                    ))}
+                  </div>
+                </section>
+              ))}
+            </div>
+          </section>
         </div>
       </section>
     </PageShell>
@@ -223,8 +238,8 @@ function MachineCard({
     <Link
       to="/machines/$slug"
       params={{ slug: machine.slug }}
-      className="cat-card reveal group relative flex min-w-0 flex-col overflow-hidden rounded-2xl border border-border bg-card shadow-card transition duration-300 hover:-translate-y-1 hover:border-brand/45 hover:shadow-deep"
-      style={{ animationDelay: `${(index % 6) * 60}ms` }}
+      className="cat-card reveal-on-scroll group relative flex min-w-0 flex-col overflow-hidden rounded-2xl border border-border bg-card shadow-card transition duration-300 hover:-translate-y-1 hover:border-brand/45 hover:shadow-deep"
+      data-reveal-delay={(index % 6) * 70}
       data-active={activeDivision === machineDivision(machine) ? "true" : "false"}
       data-machine-division={machineDivision(machine)}
     >

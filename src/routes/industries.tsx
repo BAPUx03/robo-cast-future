@@ -13,6 +13,8 @@ import {
   Wrench,
   Anchor,
   Sprout,
+  Pill,
+  ShoppingBasket,
 } from "lucide-react";
 import { PageShell, PageHero } from "@/components/page-shell";
 import { useRevealOnScroll } from "@/hooks/use-reveal-on-scroll";
@@ -40,6 +42,16 @@ export const Route = createFileRoute("/industries")({
 });
 
 const INDUSTRIES = [
+  {
+    name: "Pharma",
+    Icon: Pill,
+    desc: "Robotic handling, packing and inspection for pharmaceutical production lines.",
+  },
+  {
+    name: "FMCG",
+    Icon: ShoppingBasket,
+    desc: "High-speed case packing, palletizing and end-of-line automation.",
+  },
   { name: "Automotive", Icon: Car, desc: "Engine, drivetrain and chassis components at scale." },
   {
     name: "Aerospace",

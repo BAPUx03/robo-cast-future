@@ -117,7 +117,7 @@ export const assignLead = createServerFn({ method: "POST" })
         supabaseAdmin.from("user_roles").select("role").eq("user_id", data.assignedTo),
       ]);
       if (!assignee?.active || !assigneeRoles?.some((item) => item.role === "sales")) {
-        throw new Error("Select an active sales executive.");
+        throw new Error("Select an active sales person.");
       }
     }
 
@@ -202,7 +202,7 @@ export const updateTeamMember = createServerFn({ method: "POST" })
 
     const targetIsAdmin = currentRoles?.some((item) => item.role === "admin") ?? false;
     if (data.userId === context.userId && targetIsAdmin && data.role !== "admin") {
-      throw new Error("You cannot remove your own administrator role.");
+      throw new Error("You cannot remove your own super admin role.");
     }
     if (targetIsAdmin && (data.role !== "admin" || !data.active)) {
       const { data: adminRoles, error: adminRolesError } = await supabaseAdmin
@@ -219,12 +219,12 @@ export const updateTeamMember = createServerFn({ method: "POST" })
       if (activeAdminError) throw activeAdminError;
       const targetIsActiveAdmin = activeAdmins?.some((profile) => profile.id === data.userId);
       if (targetIsActiveAdmin && activeAdmins.length <= 1) {
-        throw new Error("At least one active administrator is required.");
+        throw new Error("At least one active super admin is required.");
       }
     }
 
     if (!isAdmin && !currentRoles?.some((item) => item.role === "sales")) {
-      throw new Error("Sales managers can only manage sales executives.");
+      throw new Error("Sales managers can only manage sales people.");
     }
 
     const { error: insertError } = await supabaseAdmin

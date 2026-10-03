@@ -14,6 +14,7 @@ import { Route as ProcessRouteImport } from './routes/process'
 import { Route as NewsRouteImport } from './routes/news'
 import { Route as MachinesRouteImport } from './routes/machines'
 import { Route as IndustriesRouteImport } from './routes/industries'
+import { Route as GalleryRouteImport } from './routes/gallery'
 import { Route as DivisionsRouteImport } from './routes/divisions'
 import { Route as ContactRouteImport } from './routes/contact'
 import { Route as BlogRouteImport } from './routes/blog'
@@ -49,6 +50,11 @@ const MachinesRoute = MachinesRouteImport.update({
 const IndustriesRoute = IndustriesRouteImport.update({
   id: '/industries',
   path: '/industries',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const GalleryRoute = GalleryRouteImport.update({
+  id: '/gallery',
+  path: '/gallery',
   getParentRoute: () => rootRouteImport,
 } as any)
 const DivisionsRoute = DivisionsRouteImport.update({
@@ -114,6 +120,7 @@ export interface FileRoutesByFullPath {
   '/blog': typeof BlogRouteWithChildren
   '/contact': typeof ContactRoute
   '/divisions': typeof DivisionsRoute
+  '/gallery': typeof GalleryRoute
   '/industries': typeof IndustriesRoute
   '/machines': typeof MachinesRouteWithChildren
   '/news': typeof NewsRoute
@@ -131,6 +138,7 @@ export interface FileRoutesByTo {
   '/blog': typeof BlogRouteWithChildren
   '/contact': typeof ContactRoute
   '/divisions': typeof DivisionsRoute
+  '/gallery': typeof GalleryRoute
   '/industries': typeof IndustriesRoute
   '/machines': typeof MachinesRouteWithChildren
   '/news': typeof NewsRoute
@@ -150,6 +158,7 @@ export interface FileRoutesById {
   '/blog': typeof BlogRouteWithChildren
   '/contact': typeof ContactRoute
   '/divisions': typeof DivisionsRoute
+  '/gallery': typeof GalleryRoute
   '/industries': typeof IndustriesRoute
   '/machines': typeof MachinesRouteWithChildren
   '/news': typeof NewsRoute
@@ -169,6 +178,7 @@ export interface FileRouteTypes {
     | '/blog'
     | '/contact'
     | '/divisions'
+    | '/gallery'
     | '/industries'
     | '/machines'
     | '/news'
@@ -186,6 +196,7 @@ export interface FileRouteTypes {
     | '/blog'
     | '/contact'
     | '/divisions'
+    | '/gallery'
     | '/industries'
     | '/machines'
     | '/news'
@@ -204,6 +215,7 @@ export interface FileRouteTypes {
     | '/blog'
     | '/contact'
     | '/divisions'
+    | '/gallery'
     | '/industries'
     | '/machines'
     | '/news'
@@ -223,6 +235,7 @@ export interface RootRouteChildren {
   BlogRoute: typeof BlogRouteWithChildren
   ContactRoute: typeof ContactRoute
   DivisionsRoute: typeof DivisionsRoute
+  GalleryRoute: typeof GalleryRoute
   IndustriesRoute: typeof IndustriesRoute
   MachinesRoute: typeof MachinesRouteWithChildren
   NewsRoute: typeof NewsRoute
@@ -265,6 +278,13 @@ declare module '@tanstack/react-router' {
       path: '/industries'
       fullPath: '/industries'
       preLoaderRoute: typeof IndustriesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/gallery': {
+      id: '/gallery'
+      path: '/gallery'
+      fullPath: '/gallery'
+      preLoaderRoute: typeof GalleryRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/divisions': {
@@ -389,6 +409,7 @@ const rootRouteChildren: RootRouteChildren = {
   BlogRoute: BlogRouteWithChildren,
   ContactRoute: ContactRoute,
   DivisionsRoute: DivisionsRoute,
+  GalleryRoute: GalleryRoute,
   IndustriesRoute: IndustriesRoute,
   MachinesRoute: MachinesRouteWithChildren,
   NewsRoute: NewsRoute,

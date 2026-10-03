@@ -8,6 +8,33 @@ export type Database = {
   };
   public: {
     Tables: {
+      announcement_bar: {
+        Row: {
+          active_until: string | null;
+          id: number;
+          is_visible: boolean;
+          message: string;
+          redirect_url: string;
+          updated_at: string;
+        };
+        Insert: {
+          active_until?: string | null;
+          id?: number;
+          is_visible?: boolean;
+          message?: string;
+          redirect_url?: string;
+          updated_at?: string;
+        };
+        Update: {
+          active_until?: string | null;
+          id?: number;
+          is_visible?: boolean;
+          message?: string;
+          redirect_url?: string;
+          updated_at?: string;
+        };
+        Relationships: [];
+      };
       blog_posts: {
         Row: {
           author: string;
@@ -185,6 +212,51 @@ export type Database = {
           date_label?: string;
           id?: string;
           image_url?: string | null;
+          location?: string;
+          published?: boolean;
+          sort_order?: number;
+          title?: string;
+          updated_at?: string;
+        };
+        Relationships: [];
+      };
+      gallery_items: {
+        Row: {
+          alt_text: string;
+          caption: string;
+          category: string;
+          created_at: string;
+          featured: boolean;
+          id: string;
+          image_url: string;
+          location: string;
+          published: boolean;
+          sort_order: number;
+          title: string;
+          updated_at: string;
+        };
+        Insert: {
+          alt_text?: string;
+          caption?: string;
+          category?: string;
+          created_at?: string;
+          featured?: boolean;
+          id?: string;
+          image_url: string;
+          location?: string;
+          published?: boolean;
+          sort_order?: number;
+          title: string;
+          updated_at?: string;
+        };
+        Update: {
+          alt_text?: string;
+          caption?: string;
+          category?: string;
+          created_at?: string;
+          featured?: boolean;
+          id?: string;
+          image_url?: string;
           location?: string;
           published?: boolean;
           sort_order?: number;

@@ -115,22 +115,20 @@ function SiteFooter() {
       | "/about"
       | "/divisions"
       | "/solutions"
-      | "/machines"
       | "/industries"
       | "/process"
+      | "/gallery"
       | "/news"
-      | "/blog"
       | "/contact";
     label: string;
   }> = [
     { to: "/about", label: "About Us" },
-    { to: "/divisions", label: "Divisions" },
-    { to: "/machines", label: "Products / Machines" },
+    { to: "/divisions", label: "Divisions / Machines" },
     { to: "/solutions", label: "Services / Solutions" },
     { to: "/industries", label: "Industries Served" },
     { to: "/process", label: "Process" },
-    { to: "/news", label: "Resources / News" },
-    { to: "/blog", label: "Blog" },
+    { to: "/gallery", label: "Gallery" },
+    { to: "/news", label: "News & Insights" },
     { to: "/contact", label: "Contact Us" },
   ];
   const socials = [

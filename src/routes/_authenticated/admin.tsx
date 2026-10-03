@@ -13,6 +13,7 @@ import {
   FileText,
   Globe2,
   Heading2,
+  Images,
   Inbox,
   Italic,
   LayoutDashboard,
@@ -20,6 +21,7 @@ import {
   List as ListIcon,
   LogOut,
   Mail,
+  Megaphone,
   MonitorCog,
   Newspaper,
   Package,
@@ -40,6 +42,12 @@ import { supabase } from "@/integrations/supabase/client";
 import { slugify } from "@/lib/cms";
 import { assignLead, inviteTeamMember, updateTeamMember } from "@/lib/team.functions";
 import { requestAuthEmail } from "@/lib/auth-email.functions";
+import {
+  DEFAULT_ANNOUNCEMENT,
+  isAnnouncementActive,
+  safeAnnouncementUrl,
+  type Announcement,
+} from "@/lib/announcement";
 import { BrandLogo } from "@/components/brand-logo";
 import { MarkdownContent } from "@/components/markdown-content";
 import {
@@ -75,6 +83,8 @@ export const Route = createFileRoute("/_authenticated/admin")({
       "products",
       "news",
       "exhibitions",
+      "gallery",
+      "announcement",
       "enquiries",
       "team",
       "settings",
@@ -107,6 +117,8 @@ type Tab =
   | "products"
   | "news"
   | "exhibitions"
+  | "gallery"
+  | "announcement"
   | "enquiries"
   | "team"
   | "settings";
@@ -118,6 +130,13 @@ const TABS = [
   { id: "products", label: "Products", description: "Machine catalogue", Icon: Package },
   { id: "news", label: "News", description: "Updates & resources", Icon: Newspaper },
   { id: "exhibitions", label: "Exhibitions", description: "Events calendar", Icon: CalendarDays },
+  { id: "gallery", label: "Gallery", description: "Office & facility photos", Icon: Images },
+  {
+    id: "announcement",
+    label: "Announcement",
+    description: "Top bar message",
+    Icon: Megaphone,
+  },
   { id: "enquiries", label: "Enquiries", description: "Sales leads", Icon: Inbox },
   { id: "team", label: "Team & Access", description: "People, roles & access", Icon: Users },
   { id: "settings", label: "Email Settings", description: "Notifications", Icon: Settings2 },
@@ -238,7 +257,10 @@ const PRODUCT_SECTION_OPTIONS = (
   label: `${section.division === "casting" ? "Casting" : "Robotics"} — ${section.label}`,
 }));
 
-type CollectionTab = Exclude<Tab, "overview" | "website" | "enquiries" | "team" | "settings">;
+type CollectionTab = Exclude<
+  Tab,
+  "overview" | "website" | "announcement" | "enquiries" | "team" | "settings"
+>;
 
 const SCHEMAS: Record<
   CollectionTab,
@@ -424,11 +446,65 @@ const SCHEMAS: Record<
       published: true,
     },
   },
+  gallery: {
+    table: "gallery_items",
+    order: "sort_order",
+    asc: true,
+    titleKey: "title",
+    description:
+      "Manage office, facility, factory-floor, team and event photographs shown in the public gallery.",
+    fields: [
+      { key: "title", label: "Image title", full: true, required: true },
+      {
+        key: "category",
+        label: "Category",
+        type: "select",
+        options: [
+          { value: "office", label: "Office" },
+          { value: "facility", label: "Facility" },
+          { value: "factory", label: "Factory floor" },
+          { value: "team", label: "People / team" },
+          { value: "events", label: "Events" },
+        ],
+        required: true,
+      },
+      { key: "location", label: "Location" },
+      { key: "sort_order", label: "Sort order", type: "number" },
+      {
+        key: "image_url",
+        label: "Image URL",
+        full: true,
+        required: true,
+        hint: "Use a public image URL or a project path such as /gallery/office.jpg.",
+      },
+      {
+        key: "alt_text",
+        label: "Accessible image description",
+        full: true,
+        required: true,
+        hint: "Briefly describe what is visible for screen-reader users.",
+      },
+      { key: "caption", label: "Caption", type: "textarea", full: true },
+      { key: "featured", label: "Featured large tile", type: "bool" },
+      { key: "published", label: "Published", type: "bool" },
+    ],
+    blank: {
+      title: "",
+      category: "facility",
+      location: "Modtech Machinery",
+      sort_order: 100,
+      image_url: "",
+      alt_text: "",
+      caption: "",
+      featured: false,
+      published: true,
+    },
+  },
 };
 
 function mergeAdminProductRows(rows: Row[]): Row[] {
   const overrides = new Map(rows.map((row) => [String(row["slug"] ?? ""), row]));
-  const builtInRows = functionalities.map((machine, index) => {
+  const builtInRows: Row[] = functionalities.map((machine, index) => {
     const override = overrides.get(machine.slug);
     overrides.delete(machine.slug);
     return {
@@ -456,7 +532,7 @@ function mergeAdminProductRows(rows: Row[]): Row[] {
     } satisfies Row;
   });
 
-  const customRows = [...overrides.values()].map((row) => ({
+  const customRows: Row[] = [...overrides.values()].map((row) => ({
     ...row,
     section:
       row["section"] ??
@@ -485,11 +561,13 @@ function AdminPage() {
       "products",
       "news",
       "exhibitions",
+      "gallery",
+      "announcement",
       "enquiries",
       "team",
       "settings",
     ],
-    editor: ["overview", "website", "posts", "products", "news", "exhibitions"],
+    editor: ["overview", "website", "posts", "products", "news", "exhibitions", "gallery"],
     sales_manager: ["overview", "enquiries", "team"],
     sales: ["overview", "enquiries"],
   };
@@ -606,6 +684,8 @@ function AdminPage() {
             <DashboardOverview demo={demo} onNavigate={setTab} role={role} />
           ) : activeTab === "website" ? (
             <WebsiteContent demo={demo} />
+          ) : activeTab === "announcement" ? (
+            <AnnouncementSettings demo={demo} />
           ) : activeTab === "enquiries" ? (
             <Enquiries demo={demo} role={role} userId={user.id} />
           ) : activeTab === "team" ? (
@@ -639,6 +719,7 @@ function DashboardOverview({
           products: getDemoRows("products"),
           news: getDemoRows("news_items"),
           exhibitions: getDemoRows("exhibitions"),
+          gallery: getDemoRows("gallery_items"),
           enquiries: getDemoRows("enquiries") as EnquiryRow[],
         };
       }
@@ -648,19 +729,27 @@ function DashboardOverview({
           .select("*")
           .order("created_at", { ascending: false });
         if (error) throw error;
-        return { posts: [], products: [], news: [], exhibitions: [], enquiries: enquiries ?? [] };
+        return {
+          posts: [],
+          products: [],
+          news: [],
+          exhibitions: [],
+          gallery: [],
+          enquiries: enquiries ?? [],
+        };
       }
-      const [posts, products, news, exhibitions, enquiries] = await Promise.all([
+      const [posts, products, news, exhibitions, gallery, enquiries] = await Promise.all([
         supabase.from("blog_posts").select("id, published, updated_at"),
         supabase.from("products").select("id, published, updated_at"),
         supabase.from("news_items").select("id, published, updated_at"),
         supabase.from("exhibitions").select("id, published, updated_at"),
+        supabase.from("gallery_items").select("id, published, updated_at"),
         supabase
           .from("enquiries")
           .select("id, name, company, status, created_at")
           .order("created_at", { ascending: false }),
       ]);
-      const failure = [posts, products, news, exhibitions, enquiries].find(
+      const failure = [posts, products, news, exhibitions, gallery, enquiries].find(
         (result) => result.error,
       )?.error;
       if (failure) throw failure;
@@ -669,6 +758,7 @@ function DashboardOverview({
         products: products.data ?? [],
         news: news.data ?? [],
         exhibitions: exhibitions.data ?? [],
+        gallery: gallery.data ?? [],
         enquiries: enquiries.data ?? [],
       };
     },
@@ -705,6 +795,13 @@ function DashboardOverview({
             value: data?.exhibitions.length ?? 0,
             published: data?.exhibitions.filter((item) => item.published).length ?? 0,
             Icon: CalendarDays,
+          },
+          {
+            tab: "gallery" as const,
+            label: "Gallery images",
+            value: data?.gallery.length ?? 0,
+            published: data?.gallery.filter((item) => item.published).length ?? 0,
+            Icon: Images,
           },
         ];
   const newEnquiries = data?.enquiries.filter((item) => item.status === "new") ?? [];
@@ -1103,6 +1200,7 @@ function Collection({ tab, demo }: { tab: CollectionTab; demo: boolean }) {
       if (tab === "news") queryClient.invalidateQueries({ queryKey: ["public-news"] });
       if (tab === "exhibitions")
         queryClient.invalidateQueries({ queryKey: ["public-exhibitions"] });
+      if (tab === "gallery") queryClient.invalidateQueries({ queryKey: ["public-gallery"] });
     },
     onError: (e: Error) => toast.error(e.message),
   });
@@ -1129,6 +1227,7 @@ function Collection({ tab, demo }: { tab: CollectionTab; demo: boolean }) {
       if (tab === "news") queryClient.invalidateQueries({ queryKey: ["public-news"] });
       if (tab === "exhibitions")
         queryClient.invalidateQueries({ queryKey: ["public-exhibitions"] });
+      if (tab === "gallery") queryClient.invalidateQueries({ queryKey: ["public-gallery"] });
     },
     onError: (e: Error) => toast.error(e.message),
   });
@@ -1150,6 +1249,7 @@ function Collection({ tab, demo }: { tab: CollectionTab; demo: boolean }) {
     if (tab === "posts" && row["slug"]) return `/blog/${String(row["slug"])}`;
     if (tab === "products" && row["slug"]) return `/machines/${String(row["slug"])}`;
     if (tab === "news" || tab === "exhibitions") return "/news";
+    if (tab === "gallery") return "/gallery";
     return null;
   };
   const SectionIcon = TABS.find((item) => item.id === tab)?.Icon ?? FileText;
@@ -1973,7 +2073,7 @@ function Enquiries({
     },
     onSuccess: (result) => {
       toast.success(
-        result?.notified ? "Lead assigned and sales executive notified." : "Lead assignment saved.",
+        result?.notified ? "Lead assigned and sales person notified." : "Lead assignment saved.",
       );
       queryClient.invalidateQueries({ queryKey: ["admin", "enquiries"] });
       queryClient.invalidateQueries({ queryKey: ["admin", "overview"] });
@@ -2379,10 +2479,10 @@ function Team({
   }
 
   const roleLabel: Record<TeamMember["role"], string> = {
-    admin: "Administrator",
+    admin: "Super Admin",
     editor: "Content Editor",
     sales_manager: "Sales Manager",
-    sales: "Sales Executive",
+    sales: "Sales Person",
   };
 
   return (
@@ -2445,10 +2545,10 @@ function Team({
                       title={member.id === userId ? "You cannot change your own role." : undefined}
                       className="rounded-full border border-brand/30 bg-background px-3 py-1.5 font-mono text-[9px] uppercase tracking-wider text-brand outline-none"
                     >
-                      <option value="admin">Administrator</option>
+                      <option value="admin">Super Admin</option>
                       <option value="editor">Content Editor</option>
                       <option value="sales_manager">Sales Manager</option>
-                      <option value="sales">Sales Executive</option>
+                      <option value="sales">Sales Person</option>
                     </select>
                   ) : (
                     <span className="rounded-full border border-brand/30 bg-brand/5 px-3 py-1 font-mono text-[9px] uppercase tracking-wider text-brand">
@@ -2529,8 +2629,8 @@ function Team({
                 }
                 className="mt-1.5 w-full rounded-xl border border-border bg-background px-3 py-2.5 text-sm text-foreground outline-none focus:border-brand"
               >
-                <option value="sales">Sales Executive</option>
-                {role === "admin" && <option value="admin">Administrator</option>}
+                <option value="sales">Sales Person</option>
+                {role === "admin" && <option value="admin">Super Admin</option>}
                 {role === "admin" && <option value="sales_manager">Sales Manager</option>}
                 {role === "admin" && <option value="editor">Content Editor</option>}
               </select>
@@ -2553,6 +2653,305 @@ function Team({
           </p>
         </form>
       </div>
+    </div>
+  );
+}
+
+type AnnouncementForm = {
+  message: string;
+  redirect_url: string;
+  is_visible: boolean;
+  active_until: string;
+};
+
+function announcementToForm(announcement: Announcement): AnnouncementForm {
+  let activeUntil = "";
+  if (announcement.active_until) {
+    const date = new Date(announcement.active_until);
+    if (!Number.isNaN(date.getTime())) {
+      const local = new Date(date.getTime() - date.getTimezoneOffset() * 60_000);
+      activeUntil = local.toISOString().slice(0, 16);
+    }
+  }
+  return {
+    message: announcement.message,
+    redirect_url: announcement.redirect_url,
+    is_visible: announcement.is_visible,
+    active_until: activeUntil,
+  };
+}
+
+function AnnouncementSettings({ demo }: { demo: boolean }) {
+  const queryClient = useQueryClient();
+  const [form, setForm] = useState<AnnouncementForm | null>(null);
+
+  const { data, isLoading, error, refetch } = useQuery<Announcement>({
+    queryKey: ["admin", "announcement"],
+    queryFn: async () => {
+      if (demo) {
+        return (
+          (getDemoRows("announcement_bar")[0] as unknown as Announcement | undefined) ??
+          DEFAULT_ANNOUNCEMENT
+        );
+      }
+      const { data, error } = await supabase
+        .from("announcement_bar")
+        .select("id, message, redirect_url, is_visible, active_until, updated_at")
+        .eq("id", 1)
+        .maybeSingle();
+      if (error) throw error;
+      return data ?? DEFAULT_ANNOUNCEMENT;
+    },
+  });
+
+  useEffect(() => {
+    if (data && !form) setForm(announcementToForm(data));
+  }, [data, form]);
+
+  const save = useMutation({
+    mutationFn: async (values: AnnouncementForm) => {
+      const message = values.message.trim();
+      const redirectUrl = values.redirect_url.trim();
+      if (!message) throw new Error("Announcement text is required.");
+      if (redirectUrl && !safeAnnouncementUrl(redirectUrl)) {
+        throw new Error("Use a website path beginning with / or a full https:// URL.");
+      }
+
+      const activeUntil = values.active_until ? new Date(values.active_until).toISOString() : null;
+      const payload: Announcement = {
+        id: 1,
+        message,
+        redirect_url: redirectUrl,
+        is_visible: values.is_visible,
+        active_until: activeUntil,
+        updated_at: new Date().toISOString(),
+      };
+
+      if (demo) {
+        saveDemoRow("announcement_bar", payload as unknown as Row);
+        return payload;
+      }
+      const { data, error } = await supabase
+        .from("announcement_bar")
+        .upsert(payload, { onConflict: "id" })
+        .select("id, message, redirect_url, is_visible, active_until, updated_at")
+        .single();
+      if (error) throw error;
+      return data;
+    },
+    onSuccess: (saved) => {
+      toast.success(saved.is_visible ? "Announcement published." : "Announcement saved as hidden.");
+      setForm(announcementToForm(saved));
+      queryClient.setQueryData(["admin", "announcement"], saved);
+      queryClient.setQueryData(["public-announcement"], isAnnouncementActive(saved) ? saved : null);
+      void queryClient.invalidateQueries({ queryKey: ["public-announcement"] });
+    },
+    onError: (saveError: Error) => toast.error(saveError.message),
+  });
+
+  const values =
+    form ?? (data ? announcementToForm(data) : announcementToForm(DEFAULT_ANNOUNCEMENT));
+  const initialValues = data ? announcementToForm(data) : announcementToForm(DEFAULT_ANNOUNCEMENT);
+  const dirty = Boolean(form && JSON.stringify(form) !== JSON.stringify(initialValues));
+  const redirectIsInvalid = Boolean(
+    values.redirect_url.trim() && !safeAnnouncementUrl(values.redirect_url),
+  );
+  const preview: Announcement = {
+    id: 1,
+    message: values.message,
+    redirect_url: values.redirect_url,
+    is_visible: values.is_visible,
+    active_until: values.active_until ? new Date(values.active_until).toISOString() : null,
+  };
+  const previewIsActive = isAnnouncementActive(preview);
+
+  return (
+    <div className="max-w-4xl">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+        <div>
+          <p className="font-mono text-[10px] uppercase tracking-[0.24em] text-brand">
+            / website announcement
+          </p>
+          <h1 className="mt-2 font-display text-3xl font-bold tracking-tight">Announcement bar</h1>
+          <p className="mt-2 max-w-2xl text-sm leading-relaxed text-muted-foreground">
+            Publish a moving update across the top of every public page. Add a destination link and
+            let it switch off automatically at the selected time.
+          </p>
+        </div>
+        <span
+          className={`w-fit rounded-full border px-3 py-1.5 font-mono text-[9px] font-semibold uppercase tracking-[0.18em] ${
+            previewIsActive
+              ? "border-brand/35 bg-brand/10 text-brand"
+              : "border-border bg-card text-muted-foreground"
+          }`}
+        >
+          {previewIsActive ? "Live on website" : values.is_visible ? "Expired" : "Hidden"}
+        </span>
+      </div>
+
+      <div className="mt-8 overflow-hidden rounded-2xl border border-border bg-card shadow-card">
+        <div className="border-b border-border px-5 py-4">
+          <div className="font-mono text-[9px] uppercase tracking-[0.2em] text-muted-foreground">
+            Live appearance preview
+          </div>
+        </div>
+        <div className="p-4 sm:p-6">
+          <div className="overflow-hidden rounded-lg border border-brand/25">
+            <div className="announcement-bar">
+              <div className="announcement-label" aria-hidden="true">
+                <Megaphone className="h-3.5 w-3.5" />
+                <span>Modtech update</span>
+              </div>
+              <div className="announcement-viewport">
+                <div className="announcement-track">
+                  {Array.from({ length: 4 }, (_, index) => (
+                    <span key={index} className="announcement-segment">
+                      <span className="announcement-signal" />
+                      <span>{values.message.trim() || "Your announcement will appear here"}</span>
+                      {values.redirect_url.trim() && (
+                        <span className="font-semibold text-brand-foreground/75">Explore ↗</span>
+                      )}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {isLoading ? (
+        <div className="mt-6 h-72 animate-pulse rounded-2xl bg-card" />
+      ) : error ? (
+        <div className="mt-6 rounded-2xl border border-destructive/30 bg-destructive/5 p-6 text-sm text-destructive">
+          Could not load the announcement settings.
+          <button
+            type="button"
+            onClick={() => void refetch()}
+            className="ml-3 font-mono text-[10px] uppercase tracking-wider underline underline-offset-4"
+          >
+            Try again
+          </button>
+        </div>
+      ) : (
+        <form
+          className="mt-6 grid gap-6 rounded-2xl border border-border bg-card p-5 shadow-card sm:p-6"
+          onSubmit={(event) => {
+            event.preventDefault();
+            save.mutate(values);
+          }}
+        >
+          <div className="flex flex-col gap-4 rounded-xl border border-border bg-background/55 p-4 sm:flex-row sm:items-center sm:justify-between">
+            <div>
+              <div className="font-display text-sm font-semibold">Show announcement</div>
+              <p className="mt-1 text-xs text-muted-foreground">
+                Turn this off to hide the bar without deleting its content.
+              </p>
+            </div>
+            <button
+              type="button"
+              role="switch"
+              aria-checked={values.is_visible}
+              onClick={() => setForm({ ...values, is_visible: !values.is_visible })}
+              className={`relative h-7 w-12 shrink-0 overflow-hidden rounded-full border transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2 focus-visible:ring-offset-card ${
+                values.is_visible
+                  ? "border-brand bg-brand shadow-glow"
+                  : "border-border bg-secondary"
+              }`}
+            >
+              <span
+                className={`absolute left-1 top-1 h-5 w-5 rounded-full bg-white shadow-sm ring-1 ring-black/5 transition-transform duration-200 ${
+                  values.is_visible ? "translate-x-5" : "translate-x-0"
+                }`}
+              />
+              <span className="sr-only">Toggle announcement visibility</span>
+            </button>
+          </div>
+
+          <label className="block">
+            <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-muted-foreground">
+              Announcement text
+            </span>
+            <textarea
+              required
+              rows={3}
+              maxLength={220}
+              value={values.message}
+              onChange={(event) => setForm({ ...values, message: event.target.value })}
+              className="mt-2 w-full resize-y rounded-xl border border-border bg-background px-4 py-3 text-sm leading-relaxed outline-none ring-brand/40 transition focus:border-brand focus:ring-2"
+              placeholder="Add an update, notice, event or latest blog announcement"
+            />
+            <span className="mt-1.5 flex justify-between text-xs text-muted-foreground">
+              <span>Keep it short and action-oriented for the best scrolling experience.</span>
+              <span>{values.message.length}/220</span>
+            </span>
+          </label>
+
+          <label className="block">
+            <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-muted-foreground">
+              Redirect URL
+            </span>
+            <input
+              type="text"
+              value={values.redirect_url}
+              onChange={(event) => setForm({ ...values, redirect_url: event.target.value })}
+              className={`mt-2 w-full rounded-xl border bg-background px-4 py-3 text-sm outline-none ring-brand/40 transition focus:ring-2 ${
+                redirectIsInvalid ? "border-destructive" : "border-border focus:border-brand"
+              }`}
+              placeholder="/blog/post-slug or https://example.com/event"
+            />
+            <p
+              className={`mt-1.5 text-xs ${redirectIsInvalid ? "text-destructive" : "text-muted-foreground"}`}
+            >
+              {redirectIsInvalid
+                ? "Use an internal path beginning with / or a full http(s) URL."
+                : "Optional. Clicking the bar opens this blog, event or notice page."}
+            </p>
+          </label>
+
+          <div>
+            <div className="flex items-end justify-between gap-4">
+              <label className="min-w-0 flex-1">
+                <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-muted-foreground">
+                  Display until
+                </span>
+                <input
+                  type="datetime-local"
+                  value={values.active_until}
+                  onChange={(event) => setForm({ ...values, active_until: event.target.value })}
+                  className="mt-2 w-full rounded-xl border border-border bg-background px-4 py-3 text-sm outline-none ring-brand/40 transition focus:border-brand focus:ring-2"
+                />
+              </label>
+              {values.active_until && (
+                <button
+                  type="button"
+                  onClick={() => setForm({ ...values, active_until: "" })}
+                  className="mb-1 shrink-0 font-mono text-[10px] uppercase tracking-wider text-muted-foreground underline underline-offset-4 transition hover:text-brand"
+                >
+                  No expiry
+                </button>
+              )}
+            </div>
+            <p className="mt-1.5 text-xs text-muted-foreground">
+              Leave blank to keep it live until you switch it off manually.
+            </p>
+          </div>
+
+          <button
+            type="submit"
+            disabled={save.isPending || redirectIsInvalid}
+            className="inline-flex w-fit items-center gap-2 rounded-full bg-brand px-6 py-3 font-mono text-xs font-semibold uppercase tracking-wider text-brand-foreground shadow-glow transition hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:opacity-55"
+          >
+            {save.isPending ? (
+              <Loader2 className="h-4 w-4 animate-spin" />
+            ) : (
+              <Save className="h-4 w-4" />
+            )}
+            Save announcement
+          </button>
+        </form>
+      )}
+      <UnsavedChangesGuard dirty={dirty} />
     </div>
   );
 }

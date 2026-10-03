@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 36 24" role="img" aria-label="Flag of Russia">
+  <rect width="36" height="24" rx="2" fill="#fff"/>
+  <path fill="#1955a6" d="M0 8h36v8H0z"/>
+  <path fill="#d52b1e" d="M0 16h36v6a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2z"/>
+</svg>

@@ -1,26 +1,101 @@
 import { useEffect, useState } from "react";
-import { Mail, Menu, X } from "lucide-react";
+import { useQuery } from "@tanstack/react-query";
+import { ArrowUpRight, Mail, Megaphone, Menu, X } from "lucide-react";
 import { Link, useLocation } from "@tanstack/react-router";
 import { BrandLogo } from "@/components/brand-logo";
 import { ThemeToggle } from "@/components/theme-toggle";
+import {
+  fetchPublicAnnouncement,
+  isAnnouncementActive,
+  safeAnnouncementUrl,
+} from "@/lib/announcement";
 
 const NAV_ITEMS = [
   { to: "/", label: "Home" },
   { to: "/about", label: "About Us" },
   { to: "/divisions", label: "Divisions" },
-  { to: "/machines", label: "Machines" },
   { to: "/solutions", label: "Solutions" },
   { to: "/industries", label: "Industries" },
   { to: "/process", label: "Process" },
-  { to: "/news", label: "News" },
-  { to: "/blog", label: "Blog" },
+  { to: "/gallery", label: "Gallery" },
+  { to: "/news", label: "News & Insights" },
   { to: "/contact", label: "Contact" },
 ] as const;
+
+function AnnouncementBar() {
+  const { data: announcement } = useQuery({
+    queryKey: ["public-announcement"],
+    queryFn: fetchPublicAnnouncement,
+    staleTime: 60_000,
+    refetchInterval: 60_000,
+  });
+  const [now, setNow] = useState(() => Date.now());
+
+  useEffect(() => {
+    if (!announcement?.active_until) return;
+    const end = new Date(announcement.active_until).getTime();
+    if (!Number.isFinite(end) || end <= Date.now()) return;
+    const timer = window.setTimeout(
+      () => setNow(Date.now()),
+      Math.min(end - Date.now() + 100, 2_147_483_647),
+    );
+    return () => window.clearTimeout(timer);
+  }, [announcement?.active_until]);
+
+  if (!isAnnouncementActive(announcement, now)) return null;
+
+  const href = safeAnnouncementUrl(announcement!.redirect_url);
+  const external = Boolean(href && /^https?:\/\//i.test(href));
+  const message = announcement!.message.trim();
+  const segments = Array.from({ length: 4 }, (_, index) => (
+    <span key={index} aria-hidden="true" className="announcement-segment">
+      <span className="announcement-signal" />
+      <span>{message}</span>
+      {href && (
+        <span className="inline-flex items-center gap-1.5 font-semibold text-brand-foreground/75">
+          Explore <ArrowUpRight className="h-3 w-3" />
+        </span>
+      )}
+    </span>
+  ));
+  const trackClass =
+    "announcement-track focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-brand-foreground/60";
+
+  return (
+    <div className="announcement-bar" aria-label={`Announcement: ${message}`}>
+      <div className="announcement-label" aria-hidden="true">
+        <Megaphone className="h-3.5 w-3.5" />
+        <span className="hidden sm:inline">Modtech update</span>
+        <span className="sm:hidden">Update</span>
+      </div>
+      <div className="announcement-viewport">
+        {href ? (
+          <a
+            href={href}
+            target={external ? "_blank" : undefined}
+            rel={external ? "noopener noreferrer" : undefined}
+            className={trackClass}
+            aria-label={`${message}. Open announcement.`}
+          >
+            {segments}
+          </a>
+        ) : (
+          <div className={trackClass}>{segments}</div>
+        )}
+      </div>
+    </div>
+  );
+}
 
 export function SiteHeader() {
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
   const location = useLocation();
+  const isNavItemActive = (to: (typeof NAV_ITEMS)[number]["to"]) =>
+    to === "/"
+      ? location.pathname === "/"
+      : location.pathname.startsWith(to) ||
+        (to === "/divisions" && location.pathname.startsWith("/machines"));
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 24);
@@ -45,26 +120,7 @@ export function SiteHeader() {
       data-scrolled={scrolled}
       className="nav-shell fixed inset-x-0 top-0 z-40 border-b border-transparent"
     >
-      <div className="hidden border-b border-border/40 bg-carbon-2/40 xl:block">
-        <div className="mx-auto flex max-w-[90rem] items-center justify-between gap-6 whitespace-nowrap px-5 py-1.5 sm:px-8">
-          <div className="flex min-w-0 items-center gap-5 font-mono text-[10.5px] uppercase tracking-[0.22em] text-muted-foreground">
-            <span className="inline-flex items-center gap-1.5">
-              <span className="h-1 w-1 rounded-full bg-brand" />
-              Indian Robotics & Casting Manufacturer
-            </span>
-            <span className="opacity-40">|</span>
-            <span>24/7 Engineering Support</span>
-          </div>
-          <div className="flex items-center gap-4 font-mono text-[10.5px] uppercase tracking-[0.18em] text-muted-foreground">
-            <a
-              href="mailto:sales.automation@modtechworld.com"
-              className="inline-flex items-center gap-1.5 transition hover:text-brand"
-            >
-              <Mail className="h-3 w-3" /> sales.automation@modtechworld.com
-            </a>
-          </div>
-        </div>
-      </div>
+      <AnnouncementBar />
 
       <div
         className={`mx-auto grid max-w-[90rem] grid-cols-[minmax(0,1fr)_auto] items-center gap-4 px-5 sm:px-8 xl:grid-cols-[auto_minmax(0,1fr)_auto] ${scrolled ? "py-3" : "py-4"} transition-[padding] duration-300`}
@@ -87,14 +143,10 @@ export function SiteHeader() {
             <Link
               key={item.to}
               to={item.to}
-              activeOptions={{ exact: item.to === "/" }}
-              activeProps={{
-                className: "nav-link whitespace-nowrap rounded-md px-2 py-2 text-brand 2xl:px-2.5",
-              }}
-              inactiveProps={{
-                className:
-                  "nav-link whitespace-nowrap rounded-md px-2 py-2 text-foreground/75 hover:text-brand 2xl:px-2.5",
-              }}
+              data-active={isNavItemActive(item.to)}
+              className={`nav-link whitespace-nowrap rounded-md px-2 py-2 2xl:px-2.5 ${
+                isNavItemActive(item.to) ? "text-brand" : "text-foreground/75 hover:text-brand"
+              }`}
             >
               {item.label}
             </Link>
@@ -130,15 +182,12 @@ export function SiteHeader() {
                 key={item.to}
                 to={item.to}
                 onClick={() => setOpen(false)}
-                activeOptions={{ exact: item.to === "/" }}
-                activeProps={{
-                  className:
-                    "rounded-lg bg-brand/12 px-4 py-2.5 font-display text-[15px] font-semibold text-brand",
-                }}
-                inactiveProps={{
-                  className:
-                    "rounded-lg px-4 py-2.5 font-display text-[15px] font-medium text-foreground/85 transition hover:bg-secondary/40 hover:text-brand",
-                }}
+                data-active={isNavItemActive(item.to)}
+                className={`rounded-lg px-4 py-2.5 font-display text-[15px] transition ${
+                  isNavItemActive(item.to)
+                    ? "bg-brand/12 font-semibold text-brand"
+                    : "font-medium text-foreground/85 hover:bg-secondary/40 hover:text-brand"
+                }`}
               >
                 {item.label}
               </Link>

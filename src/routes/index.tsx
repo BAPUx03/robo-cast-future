@@ -113,7 +113,7 @@ function HomePage() {
                 size="lg"
                 className="h-12 px-6 font-mono text-xs uppercase tracking-wider"
               >
-                <Link to="/machines">
+                <Link to="/divisions">
                   {content.primary_cta} <ArrowRight />
                 </Link>
               </Button>

@@ -41,7 +41,7 @@ export const Route = createFileRoute("/machines/$slug")({
         <h1 className="font-display text-4xl font-bold">Machine not found</h1>
         <p className="mt-3 text-muted-foreground">The machine you’re looking for doesn’t exist.</p>
         <Link
-          to="/machines"
+          to="/divisions"
           className="mt-6 inline-flex items-center gap-2 rounded-full bg-brand px-6 py-3 font-mono text-xs font-semibold uppercase tracking-wider text-brand-foreground shadow-glow"
         >
           <ArrowLeft className="h-4 w-4" /> Back to machines
@@ -93,6 +93,7 @@ function MachineDetail() {
           <div className="reveal-on-scroll">
             <Link
               to="/machines"
+              search={{ division }}
               className="inline-flex items-center gap-2 font-mono text-[11px] uppercase tracking-[0.25em] text-brand transition hover:gap-3"
             >
               <ArrowLeft className="h-3.5 w-3.5" /> All machines
@@ -201,6 +202,7 @@ function MachineDetail() {
               </div>
               <Link
                 to="/machines"
+                search={{ division }}
                 className="hidden font-mono text-[11px] uppercase tracking-wider text-brand hover:gap-3 sm:inline-flex sm:items-center sm:gap-2"
               >
                 See all <ArrowRight className="h-3.5 w-3.5" />

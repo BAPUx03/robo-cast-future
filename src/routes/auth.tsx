@@ -16,7 +16,9 @@ import {
 export const Route = createFileRoute("/auth")({
   ssr: false,
   beforeLoad: () => {
-    if (DEMO_MODE) throw redirect({ to: "/admin" });
+    if (DEMO_MODE) {
+      throw redirect({ to: "/admin", search: { section: undefined } });
+    }
   },
   head: () => ({
     meta: [
@@ -251,7 +253,7 @@ function AuthPage() {
         <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
           {method === "reset"
             ? "Verify your work email with a one-time code, then choose a new password."
-            : "Secure access for Modtech administrators, content editors and sales teams."}
+            : "Secure access for Modtech super admins, content editors and sales teams."}
         </p>
 
         {DEMO_MODE && (
