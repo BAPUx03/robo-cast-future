@@ -3,7 +3,6 @@ import { useQuery } from "@tanstack/react-query";
 import { ArrowUpRight, Mail, Megaphone, Menu, X } from "lucide-react";
 import { Link, useLocation } from "@tanstack/react-router";
 import { BrandLogo } from "@/components/brand-logo";
-import { DesktopMachineMenu, MobileMachineMenu } from "@/components/machine-menu";
 import { ThemeToggle } from "@/components/theme-toggle";
 import {
   fetchPublicAnnouncement,
@@ -94,7 +93,6 @@ export function SiteHeader() {
   const location = useLocation();
   const isNavItemActive = (to: (typeof NAV_ITEMS)[number]["to"]) =>
     to === "/" ? location.pathname === "/" : location.pathname.startsWith(to);
-  const isMachinesActive = location.pathname.startsWith("/machines");
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 24);
@@ -138,7 +136,7 @@ export function SiteHeader() {
         </Link>
 
         <nav className="hidden min-w-0 items-center justify-center gap-0 font-display text-[12px] font-medium xl:flex 2xl:text-[13px]">
-          {NAV_ITEMS.map((item, index) => (
+          {NAV_ITEMS.map((item) => (
             <div key={item.to} className="contents">
               <Link
                 to={item.to}
@@ -149,7 +147,6 @@ export function SiteHeader() {
               >
                 {item.label}
               </Link>
-              {index === 2 && <DesktopMachineMenu active={isMachinesActive} />}
             </div>
           ))}
         </nav>
@@ -178,7 +175,7 @@ export function SiteHeader() {
       {open && (
         <div className="max-h-[calc(100dvh-4.5rem)] overflow-y-auto overscroll-contain border-t border-border bg-card/95 backdrop-blur-xl xl:hidden">
           <nav className="mx-auto flex max-w-7xl flex-col gap-1 px-5 py-4 sm:px-8">
-            {NAV_ITEMS.map((item, index) => (
+            {NAV_ITEMS.map((item) => (
               <div key={item.to} className="contents">
                 <Link
                   to={item.to}
@@ -192,9 +189,6 @@ export function SiteHeader() {
                 >
                   {item.label}
                 </Link>
-                {index === 2 && (
-                  <MobileMachineMenu active={isMachinesActive} onNavigate={() => setOpen(false)} />
-                )}
               </div>
             ))}
             <div className="mt-3 flex flex-col gap-2 border-t border-border pt-3">
