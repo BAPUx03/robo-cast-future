@@ -14,6 +14,7 @@ import {
 const NAV_ITEMS = [
   { to: "/", label: "Home" },
   { to: "/about", label: "About Us" },
+  { to: "/divisions", label: "Divisions" },
   { to: "/solutions", label: "Solutions" },
   { to: "/industries", label: "Industries" },
   { to: "/process", label: "Process" },
@@ -148,7 +149,7 @@ export function SiteHeader() {
               >
                 {item.label}
               </Link>
-              {index === 1 && <DesktopMachineMenu active={isMachinesActive} />}
+              {index === 2 && <DesktopMachineMenu active={isMachinesActive} />}
             </div>
           ))}
         </nav>
@@ -191,7 +192,7 @@ export function SiteHeader() {
                 >
                   {item.label}
                 </Link>
-                {index === 1 && (
+                {index === 2 && (
                   <MobileMachineMenu active={isMachinesActive} onNavigate={() => setOpen(false)} />
                 )}
               </div>

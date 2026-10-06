@@ -12,7 +12,7 @@ const publicRequestSchema = z.object({
 });
 
 export const requestAuthEmail = createServerFn({ method: "POST" })
-  .inputValidator((input: unknown) => publicRequestSchema.parse(input))
+  .validator((input: unknown) => publicRequestSchema.parse(input))
   .handler(async ({ data }) => {
     const { sendAuthEmailForExistingUser } = await import("@/lib/auth-email.server");
     const result = await sendAuthEmailForExistingUser(data.email, data.flow);

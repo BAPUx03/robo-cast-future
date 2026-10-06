@@ -41,7 +41,7 @@ async function requesterRole(userId: string) {
 
 export const inviteTeamMember = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((input: unknown) => inviteSchema.parse(input))
+  .validator((input: unknown) => inviteSchema.parse(input))
   .handler(async ({ data, context }) => {
     const roles = await requesterRole(context.userId);
     const isAdmin = roles.includes("admin");
@@ -99,7 +99,7 @@ export const inviteTeamMember = createServerFn({ method: "POST" })
 
 export const assignLead = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((input: unknown) => assignmentSchema.parse(input))
+  .validator((input: unknown) => assignmentSchema.parse(input))
   .handler(async ({ data, context }) => {
     const roles = await requesterRole(context.userId);
     if (!roles.includes("admin") && !roles.includes("sales_manager")) {
@@ -181,7 +181,7 @@ export const assignLead = createServerFn({ method: "POST" })
 
 export const updateTeamMember = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((input: unknown) => updateMemberSchema.parse(input))
+  .validator((input: unknown) => updateMemberSchema.parse(input))
   .handler(async ({ data, context }) => {
     const roles = await requesterRole(context.userId);
     const isAdmin = roles.includes("admin");
