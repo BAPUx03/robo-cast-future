@@ -11,12 +11,14 @@ const sql = postgres(process.env.DATABASE_URL, {
 });
 
 const expectedTables = [
+  "announcement_bar",
   "profiles",
   "user_roles",
   "blog_posts",
   "products",
   "news_items",
   "exhibitions",
+  "gallery_items",
   "site_content",
   "site_settings",
   "enquiries",
@@ -53,13 +55,20 @@ try {
     where schemaname = 'public'
   `;
 
+  const tableNames = tables.map((row) => row.table_name);
+  const missingTables = expectedTables.filter((table) => !tableNames.includes(table));
+  const rlsEnabled = rls.filter((row) => row.rowsecurity).length;
+  const passed = missingTables.length === 0 && rlsEnabled === expectedTables.length;
+
   console.log(
     JSON.stringify(
       {
         connected: true,
-        tables: tables.map((row) => row.table_name),
+        passed,
+        tables: tableNames,
+        missingTables,
         roles: roles.map((row) => row.enumlabel),
-        rlsEnabled: rls.filter((row) => row.rowsecurity).length,
+        rlsEnabled,
         expectedTables: expectedTables.length,
         policyCount,
       },
@@ -67,6 +76,7 @@ try {
       2,
     ),
   );
+  if (!passed) process.exitCode = 1;
 } catch (error) {
   console.error(
     JSON.stringify({

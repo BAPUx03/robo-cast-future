@@ -1,16 +1,28 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import {
+  Activity,
   ArrowLeft,
   ArrowRight,
   ArrowUpRight,
+  Boxes,
   CheckCircle2,
+  CircleGauge,
   ClipboardCheck,
+  Cpu,
+  Factory,
   Layers3,
+  MoveHorizontal,
+  Ruler,
   Settings2,
+  ShieldCheck,
+  SlidersHorizontal,
+  Sparkles,
+  Wrench,
 } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { PageShell } from "@/components/page-shell";
 import { useRevealOnScroll } from "@/hooks/use-reveal-on-scroll";
+import type { MachineSpecificationTable } from "@/content/official-machine-specifications";
 import {
   categoryMeta,
   machineDivision,
@@ -40,6 +52,45 @@ const preferredPrimarySpecs = [
 ];
 
 const preferredControlSpecs = ["control", "operation", "mode", "software", "configuration"];
+
+const heroSpecIcons = [CircleGauge, Ruler, Cpu, Activity];
+
+const detailNavigation = [
+  { target: "overview", label: "Overview", icon: Activity },
+  { target: "models", label: "Models & range", icon: Layers3 },
+  { target: "features", label: "Key features", icon: Sparkles },
+  { target: "applications", label: "Applications", icon: Factory },
+  { target: "specifications", label: "Specifications", icon: ClipboardCheck },
+];
+
+function useActiveDetailSection(sectionIds: string[]) {
+  const [activeSection, setActiveSection] = useState(sectionIds[0] ?? "overview");
+  const sectionKey = sectionIds.join("|");
+
+  useEffect(() => {
+    const elements = sectionIds
+      .map((sectionId) => document.getElementById(sectionId))
+      .filter((element): element is HTMLElement => Boolean(element));
+    if (!elements.length || typeof IntersectionObserver === "undefined") return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const visibleEntry = entries
+          .filter((entry) => entry.isIntersecting)
+          .sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
+        if (visibleEntry) setActiveSection(visibleEntry.target.id);
+      },
+      { rootMargin: "-24% 0px -62% 0px", threshold: [0, 0.15, 0.4] },
+    );
+
+    elements.forEach((element) => observer.observe(element));
+    return () => observer.disconnect();
+    // sectionKey captures the stable list without retriggering on each render.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [sectionKey]);
+
+  return activeSection;
+}
 
 function preferredSpec(machine: Machine, labels: string[]) {
   for (const label of labels) {
@@ -156,6 +207,18 @@ function MachineDetail() {
     ...relatedPool.filter((item) => machineSection(item) === machineSection(m)),
     ...relatedPool.filter((item) => machineSection(item) !== machineSection(m)),
   ].slice(0, 3);
+  const navigationItems = detailNavigation
+    .filter((item) => item.target !== "models" || modelRange.length > 1)
+    .map((item) =>
+      item.target === "models" && isExactVariantFamily ? { ...item, label: "Variants" } : item,
+    );
+  const activeSection = useActiveDetailSection(navigationItems.map((item) => item.target));
+  const quickSpecs = m.specs.slice(0, 4);
+  const specificationModelCount = m.specificationTables?.[0]?.columns.length ?? 0;
+  const specificationParameterCount =
+    m.specificationTables?.reduce((total, specificationTable) => {
+      return total + specificationTable.rows.length;
+    }, 0) ?? m.specs.length;
 
   return (
     <PageShell>
@@ -169,9 +232,11 @@ function MachineDetail() {
           />
           <div className="absolute inset-0 bg-gradient-to-b from-carbon/85 via-carbon/85 to-carbon" />
           <div className="absolute inset-0 bg-grid bg-grid-fade opacity-30" />
+          <div className="absolute -left-24 top-20 h-72 w-72 rounded-full bg-brand/10 blur-3xl" />
+          <div className="absolute -right-20 bottom-0 h-96 w-96 rounded-full bg-cyan/10 blur-3xl" />
         </div>
 
-        <div className="relative mx-auto grid max-w-7xl items-center gap-10 px-5 py-16 sm:px-8 sm:py-20 lg:grid-cols-[1.05fr_1fr]">
+        <div className="relative mx-auto grid max-w-7xl items-center gap-10 px-5 py-14 sm:px-8 sm:py-20 lg:grid-cols-[1.05fr_1fr] lg:gap-16 lg:py-24">
           <div className="reveal-on-scroll">
             <Link
               to="/machines"
@@ -196,7 +261,10 @@ function MachineDetail() {
                 </a>
               )}
             </div>
-            <h1 className="mt-5 font-display text-4xl font-bold leading-[1.05] tracking-tight sm:text-6xl">
+            <p className="mt-7 inline-flex items-center gap-2 font-mono text-[9px] font-semibold uppercase tracking-[0.2em] text-brand-soft">
+              <Sparkles className="h-3.5 w-3.5" /> Engineered around your process
+            </p>
+            <h1 className="mt-3 max-w-2xl font-display text-4xl font-bold leading-[1.02] tracking-[-0.045em] text-foreground sm:text-6xl lg:text-[4.25rem]">
               {m.title}
             </h1>
             <p className="mt-5 max-w-xl text-base leading-relaxed text-muted-foreground sm:text-lg">
@@ -216,27 +284,52 @@ function MachineDetail() {
                 Talk to engineering <ArrowUpRight className="h-4 w-4" />
               </Link>
             </div>
+
+            {quickSpecs.length > 0 && (
+              <dl className="mt-8 grid max-w-2xl grid-cols-2 gap-2 sm:grid-cols-4">
+                {quickSpecs.map((spec, index) => {
+                  const SpecIcon = heroSpecIcons[index % heroSpecIcons.length];
+                  return (
+                    <div
+                      key={spec.label}
+                      className="group rounded-xl border border-white/10 bg-white/[0.035] px-3 py-3 backdrop-blur transition duration-300 hover:-translate-y-0.5 hover:border-brand/40 hover:bg-brand/[0.06]"
+                    >
+                      <div className="flex items-center gap-2 text-brand">
+                        <SpecIcon className="h-3.5 w-3.5" />
+                        <dt className="truncate font-mono text-[8px] uppercase tracking-[0.14em] text-muted-foreground">
+                          {spec.label}
+                        </dt>
+                      </div>
+                      <dd className="mt-2 text-xs font-semibold leading-snug text-foreground sm:text-sm">
+                        {spec.value}
+                      </dd>
+                    </div>
+                  );
+                })}
+              </dl>
+            )}
           </div>
 
           <MachineGallery key={m.slug} machine={m} />
         </div>
       </section>
 
-      <nav className="sticky top-[4.5rem] z-20 border-y border-border bg-background/90 px-5 backdrop-blur-xl sm:px-8">
-        <div className="mx-auto flex max-w-7xl gap-5 overflow-x-auto py-3 font-mono text-[9px] uppercase tracking-[0.17em] text-muted-foreground sm:gap-8">
-          {[
-            ["overview", "Overview"],
-            ["models", isExactVariantFamily ? "Variants" : "Models & range"],
-            ["features", "Key features"],
-            ["applications", "Applications"],
-            ["specifications", "Specifications"],
-          ].map(([target, label], index) => (
+      <nav className="sticky top-[4.5rem] z-20 border-y border-border bg-background/92 px-5 shadow-[0_12px_30px_-22px_rgba(0,0,0,0.75)] backdrop-blur-xl sm:px-8">
+        <div className="mx-auto flex max-w-7xl gap-1 overflow-x-auto py-2 font-mono text-[9px] uppercase tracking-[0.14em] text-muted-foreground sm:gap-2">
+          {navigationItems.map(({ target, label, icon: NavigationIcon }, index) => (
             <a
               key={target}
               href={`#${target}`}
-              className="inline-flex shrink-0 items-center gap-2 transition hover:text-brand"
+              aria-current={activeSection === target ? "location" : undefined}
+              className={`inline-flex shrink-0 items-center gap-2 rounded-full border px-3 py-2 transition duration-300 sm:px-4 ${
+                activeSection === target
+                  ? "border-brand/40 bg-brand/10 text-brand shadow-[0_0_24px_-12px_var(--brand)]"
+                  : "border-transparent hover:border-border hover:bg-card/60 hover:text-foreground"
+              }`}
             >
-              <span className="text-brand">0{index + 1}</span> {label}
+              <NavigationIcon className="h-3.5 w-3.5" />
+              <span className="text-brand">0{index + 1}</span>
+              {label}
             </a>
           ))}
         </div>
@@ -447,12 +540,21 @@ function MachineDetail() {
                 {m.applications.map((application, index) => (
                   <li
                     key={application}
-                    className="flex items-center gap-3 rounded-xl border border-border bg-card/60 px-4 py-3 text-sm text-foreground/90"
+                    className="group flex items-center gap-3 rounded-xl border border-border bg-card/60 px-4 py-3 text-sm text-foreground/90 shadow-card transition duration-300 hover:-translate-y-0.5 hover:border-brand/40 hover:bg-brand/[0.05]"
                   >
-                    <span className="font-mono text-[9px] font-semibold text-brand">
-                      {(index + 1).toString().padStart(2, "0")}
+                    <span className="grid h-8 w-8 shrink-0 place-items-center rounded-lg border border-brand/20 bg-brand/10 text-brand transition group-hover:scale-105 group-hover:border-brand/40">
+                      {index % 2 === 0 ? (
+                        <Factory className="h-3.5 w-3.5" />
+                      ) : (
+                        <Boxes className="h-3.5 w-3.5" />
+                      )}
                     </span>
-                    {application}
+                    <span>
+                      <span className="block font-mono text-[8px] uppercase tracking-[0.14em] text-brand/75">
+                        Application {(index + 1).toString().padStart(2, "0")}
+                      </span>
+                      <span className="mt-0.5 block font-medium">{application}</span>
+                    </span>
                   </li>
                 ))}
               </ul>
@@ -460,74 +562,175 @@ function MachineDetail() {
           </section>
 
           <section id="specifications" className="scroll-mt-36 pt-14">
-            <div className="reveal-on-scroll grid gap-8 lg:grid-cols-[0.72fr_1.28fr] lg:gap-16">
-              <div>
-                <div className="flex items-center gap-3">
-                  <span className="grid h-10 w-10 place-items-center rounded-xl bg-brand/10 text-brand">
-                    <ClipboardCheck className="h-4 w-4" />
-                  </span>
-                  <p className="font-mono text-[10px] uppercase tracking-[0.24em] text-brand">
-                    05 / Technical specifications
+            <div
+              className={`reveal-on-scroll gap-8 ${
+                m.specificationTables?.length
+                  ? "block"
+                  : "grid lg:grid-cols-[0.72fr_1.28fr] lg:gap-16"
+              }`}
+            >
+              <div
+                className={
+                  m.specificationTables?.length
+                    ? "grid gap-6 lg:grid-cols-[1fr_auto] lg:items-end"
+                    : undefined
+                }
+              >
+                <div className="max-w-2xl">
+                  <div className="flex items-center gap-3">
+                    <span className="grid h-11 w-11 place-items-center rounded-xl border border-brand/20 bg-brand/10 text-brand shadow-[0_0_28px_-14px_var(--brand)]">
+                      <ClipboardCheck className="h-5 w-5" />
+                    </span>
+                    <p className="font-mono text-[10px] uppercase tracking-[0.24em] text-brand">
+                      05 / Technical specifications
+                    </p>
+                  </div>
+                  <h2 className="mt-4 font-display text-3xl font-bold tracking-tight sm:text-4xl">
+                    Every model. Every critical detail.
+                  </h2>
+                  <p className="mt-4 text-sm leading-relaxed text-muted-foreground sm:text-base">
+                    Compare machine capacity, controls, utilities and available options in one
+                    verified view. Final configuration is confirmed against the approved project
+                    datasheet.
                   </p>
                 </div>
-                <h2 className="mt-4 font-display text-3xl font-bold tracking-tight">
-                  Configuration at a glance.
-                </h2>
-                <p className="mt-4 text-sm leading-relaxed text-muted-foreground">
-                  Values shown describe the standard or published platform. Final capacity,
-                  utilities and safety configuration are confirmed against the approved client
-                  requirement and project datasheet.
-                </p>
+
+                {m.specificationTables?.length ? (
+                  <dl className="grid grid-cols-3 gap-2 lg:min-w-[27rem]">
+                    {[
+                      { value: specificationModelCount, label: "Models", icon: Layers3 },
+                      {
+                        value: specificationParameterCount,
+                        label: "Parameters",
+                        icon: SlidersHorizontal,
+                      },
+                      {
+                        value: m.specificationTables.length,
+                        label: "Data groups",
+                        icon: ShieldCheck,
+                      },
+                    ].map(({ value, label, icon: MetricIcon }) => {
+                      return (
+                        <div
+                          key={label}
+                          className="rounded-xl border border-border bg-card/70 px-3 py-3 text-center shadow-card"
+                        >
+                          <MetricIcon className="mx-auto h-4 w-4 text-brand" />
+                          <dd className="mt-2 font-display text-xl font-bold text-foreground">
+                            {String(value).padStart(2, "0")}
+                          </dd>
+                          <dt className="mt-0.5 font-mono text-[8px] uppercase tracking-[0.14em] text-muted-foreground">
+                            {label}
+                          </dt>
+                        </div>
+                      );
+                    })}
+                  </dl>
+                ) : null}
               </div>
 
-              <div className="overflow-hidden rounded-2xl border border-border bg-card shadow-card">
-                <div className="overflow-x-auto">
-                  <table className="min-w-full border-collapse text-left">
-                    <thead className="border-b border-border bg-secondary/35">
-                      <tr className="font-mono text-[9px] uppercase tracking-[0.17em] text-muted-foreground">
-                        <th className="w-14 px-5 py-3 font-medium" scope="col">
-                          No.
-                        </th>
-                        <th className="px-5 py-3 font-medium" scope="col">
-                          Technical parameter
-                        </th>
-                        <th className="px-5 py-3 text-right font-medium" scope="col">
-                          Standard / published value
-                        </th>
-                      </tr>
-                    </thead>
-                    <tbody className="divide-y divide-border">
-                      {m.specs.map((spec, index) => (
-                        <tr key={spec.label} className="transition hover:bg-brand/[0.04]">
-                          <td className="px-5 py-4 font-mono text-[9px] text-brand/70">
-                            {(index + 1).toString().padStart(2, "0")}
-                          </td>
-                          <th
-                            scope="row"
-                            className="px-5 py-4 font-mono text-[10px] font-medium uppercase tracking-[0.17em] text-muted-foreground"
-                          >
-                            {spec.label}
+              {m.specificationTables?.length ? (
+                <div className="mt-8 space-y-6">
+                  {m.specificationTables.map((specificationTable, index) => (
+                    <SpecificationTableCard
+                      key={specificationTable.title}
+                      specificationTable={specificationTable}
+                      index={index}
+                    />
+                  ))}
+
+                  <div className="rounded-2xl border border-brand/25 bg-brand/[0.06] p-4 sm:flex sm:items-center sm:justify-between sm:gap-4">
+                    <p className="text-xs leading-relaxed text-muted-foreground">
+                      Need the approved specification for your tooling and utilities?
+                    </p>
+                    <Link
+                      to="/contact"
+                      className="mt-3 inline-flex items-center gap-2 rounded-full bg-brand px-5 py-2.5 font-mono text-[10px] font-semibold uppercase tracking-wider text-brand-foreground shadow-glow transition hover:-translate-y-0.5 sm:mt-0"
+                    >
+                      Request datasheet <ArrowRight className="h-4 w-4" />
+                    </Link>
+                  </div>
+                </div>
+              ) : (
+                <div className="overflow-hidden rounded-2xl border border-border bg-card shadow-card">
+                  <div className="hidden overflow-x-auto sm:block">
+                    <table className="min-w-full border-collapse text-left">
+                      <thead className="border-b border-border bg-secondary/35">
+                        <tr className="font-mono text-[9px] uppercase tracking-[0.17em] text-muted-foreground">
+                          <th className="w-14 px-5 py-3 font-medium" scope="col">
+                            No.
                           </th>
-                          <td className="px-5 py-4 text-right font-display text-sm font-semibold text-foreground">
-                            {spec.value}
-                          </td>
+                          <th className="px-5 py-3 font-medium" scope="col">
+                            Technical parameter
+                          </th>
+                          <th className="px-5 py-3 text-right font-medium" scope="col">
+                            Standard / published value
+                          </th>
                         </tr>
-                      ))}
-                    </tbody>
-                  </table>
+                      </thead>
+                      <tbody className="divide-y divide-border">
+                        {m.specs.map((spec, index) => (
+                          <tr key={spec.label} className="transition hover:bg-brand/[0.04]">
+                            <td className="px-5 py-4 font-mono text-[9px] text-brand/70">
+                              {(index + 1).toString().padStart(2, "0")}
+                            </td>
+                            <th
+                              scope="row"
+                              className="px-5 py-4 font-mono text-[10px] font-medium uppercase tracking-[0.17em] text-muted-foreground"
+                            >
+                              {spec.label}
+                            </th>
+                            <td className="px-5 py-4 text-right font-display text-sm font-semibold text-foreground">
+                              {spec.value}
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                  <dl className="divide-y divide-border sm:hidden">
+                    {m.specs.map((spec, index) => (
+                      <div
+                        key={spec.label}
+                        className={`px-4 py-4 ${index % 2 === 1 ? "bg-secondary/[0.12]" : "bg-card"}`}
+                      >
+                        <dt className="flex items-center gap-2 font-mono text-[8px] font-semibold uppercase tracking-[0.12em] text-muted-foreground">
+                          <span className="grid h-6 w-6 place-items-center rounded-md border border-brand/20 bg-brand/10 text-brand">
+                            {String(index + 1).padStart(2, "0")}
+                          </span>
+                          {spec.label}
+                        </dt>
+                        <dd className="mt-2 pl-8 font-display text-base font-semibold leading-relaxed text-foreground">
+                          {spec.value}
+                        </dd>
+                      </div>
+                    ))}
+                  </dl>
+                  <div className="border-t border-border bg-secondary/25 p-4 sm:flex sm:items-center sm:justify-between sm:gap-4">
+                    <div>
+                      <p className="text-xs leading-relaxed text-muted-foreground">
+                        Need the approved project specification?
+                      </p>
+                      {m.officialSourceUrl && (
+                        <a
+                          href={m.officialSourceUrl}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="mt-2 inline-flex items-center gap-1.5 font-mono text-[9px] font-semibold uppercase tracking-[0.13em] text-brand transition hover:gap-2"
+                        >
+                          Official product reference <ArrowUpRight className="h-3.5 w-3.5" />
+                        </a>
+                      )}
+                    </div>
+                    <Link
+                      to="/contact"
+                      className="mt-3 inline-flex items-center gap-2 rounded-full bg-brand px-5 py-2.5 font-mono text-[10px] font-semibold uppercase tracking-wider text-brand-foreground shadow-glow transition hover:-translate-y-0.5 sm:mt-0"
+                    >
+                      Request datasheet <ArrowRight className="h-4 w-4" />
+                    </Link>
+                  </div>
                 </div>
-                <div className="border-t border-border bg-secondary/25 p-4 sm:flex sm:items-center sm:justify-between sm:gap-4">
-                  <p className="text-xs leading-relaxed text-muted-foreground">
-                    Need the approved project specification?
-                  </p>
-                  <Link
-                    to="/contact"
-                    className="mt-3 inline-flex items-center gap-2 rounded-full bg-brand px-5 py-2.5 font-mono text-[10px] font-semibold uppercase tracking-wider text-brand-foreground shadow-glow transition hover:-translate-y-0.5 sm:mt-0"
-                  >
-                    Request datasheet <ArrowRight className="h-4 w-4" />
-                  </Link>
-                </div>
-              </div>
+              )}
             </div>
           </section>
         </div>
@@ -589,6 +792,180 @@ function MachineDetail() {
   );
 }
 
+function SpecificationTableCard({
+  specificationTable,
+  index,
+}: {
+  specificationTable: MachineSpecificationTable;
+  index: number;
+}) {
+  const normalizedTitle = specificationTable.title.toLowerCase();
+  const TableIcon = normalizedTitle.includes("optional")
+    ? Wrench
+    : normalizedTitle.includes("control")
+      ? SlidersHorizontal
+      : CircleGauge;
+
+  return (
+    <article
+      className="reveal-on-scroll overflow-hidden rounded-2xl border border-border bg-card shadow-card transition duration-500 hover:border-brand/30 hover:shadow-deep"
+      data-reveal-delay={Math.min(index * 90, 180)}
+    >
+      <header className="relative overflow-hidden border-b border-border bg-gradient-to-r from-secondary/60 via-secondary/25 to-brand/[0.08] px-4 py-4 sm:px-6 sm:py-5">
+        <div className="pointer-events-none absolute -right-16 -top-20 h-44 w-44 rounded-full border border-brand/15" />
+        <div className="pointer-events-none absolute -right-8 -top-12 h-28 w-28 rounded-full border border-brand/10" />
+        <div className="relative flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+          <div className="flex min-w-0 items-center gap-3.5">
+            <span className="grid h-11 w-11 shrink-0 place-items-center rounded-xl border border-brand/25 bg-brand/10 text-brand shadow-[0_0_24px_-12px_var(--brand)]">
+              <TableIcon className="h-5 w-5" />
+            </span>
+            <div className="min-w-0">
+              <p className="font-display text-lg font-bold tracking-tight text-foreground sm:text-xl">
+                {specificationTable.title}
+              </p>
+              <p className="mt-1 flex flex-wrap items-center gap-x-3 gap-y-1 font-mono text-[8px] uppercase tracking-[0.15em] text-muted-foreground sm:text-[9px]">
+                <span className="inline-flex items-center gap-1.5 text-brand">
+                  <ShieldCheck className="h-3 w-3" /> Verified model data
+                </span>
+                <span>{specificationTable.rows.length} parameters</span>
+              </p>
+            </div>
+          </div>
+          <a
+            href={specificationTable.sourceUrl}
+            target="_blank"
+            rel="noreferrer"
+            className="inline-flex w-fit items-center gap-2 rounded-full border border-brand/35 bg-background/20 px-3.5 py-2 font-mono text-[9px] font-semibold uppercase tracking-[0.13em] text-brand transition duration-300 hover:-translate-y-0.5 hover:border-brand hover:bg-brand hover:text-brand-foreground"
+          >
+            Official product page <ArrowUpRight className="h-3.5 w-3.5" />
+          </a>
+        </div>
+
+        <div className="relative mt-4 flex gap-2 overflow-x-auto pb-1">
+          {specificationTable.columns.map((column, columnIndex) => (
+            <span
+              key={column}
+              className="inline-flex shrink-0 items-center gap-2 rounded-full border border-border bg-background/35 px-3 py-1.5 font-mono text-[8px] uppercase tracking-[0.12em] text-foreground/85"
+            >
+              <span className="text-brand">{String(columnIndex + 1).padStart(2, "0")}</span>
+              {column}
+            </span>
+          ))}
+        </div>
+      </header>
+
+      <div className="border-b border-border bg-carbon/55 px-4 py-2.5 md:hidden">
+        <p className="flex items-center gap-2 font-mono text-[8px] uppercase tracking-[0.14em] text-carbon-foreground/70">
+          <MoveHorizontal className="h-3.5 w-3.5 text-brand" /> All model values shown below
+        </p>
+      </div>
+
+      <div className="hidden overflow-x-auto md:block">
+        <table className="w-full min-w-[68rem] border-collapse text-left">
+          <thead>
+            <tr className="border-b border-border bg-carbon text-carbon-foreground">
+              <th
+                scope="col"
+                className="sticky left-0 z-20 min-w-64 border-r border-white/10 bg-carbon px-5 py-4 font-mono text-[9px] font-semibold uppercase tracking-[0.14em]"
+              >
+                <span className="flex items-center gap-2">
+                  <SlidersHorizontal className="h-3.5 w-3.5 text-brand" /> Technical parameter
+                </span>
+              </th>
+              {specificationTable.columns.map((column, columnIndex) => (
+                <th
+                  key={column}
+                  scope="col"
+                  className="min-w-44 border-r border-white/10 px-4 py-4 text-center last:border-r-0"
+                >
+                  <span className="block font-mono text-[8px] font-medium uppercase tracking-[0.14em] text-brand">
+                    Model {String(columnIndex + 1).padStart(2, "0")}
+                  </span>
+                  <span className="mt-1 block font-display text-sm font-bold">{column}</span>
+                </th>
+              ))}
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-border">
+            {specificationTable.rows.map((row, rowIndex) => {
+              const rowBackground = rowIndex % 2 === 1 ? "bg-secondary/[0.13]" : "bg-card";
+              return (
+                <tr
+                  key={row.label}
+                  className={`${rowBackground} group transition duration-200 hover:bg-brand/[0.055]`}
+                >
+                  <th
+                    scope="row"
+                    className="sticky left-0 z-10 min-w-64 border-r border-border bg-inherit px-5 py-3.5 font-mono text-[9px] font-medium uppercase leading-relaxed tracking-[0.1em] text-muted-foreground transition duration-200"
+                  >
+                    <span className="flex items-start gap-3">
+                      <span className="mt-0.5 text-[8px] text-brand/70">
+                        {String(rowIndex + 1).padStart(2, "0")}
+                      </span>
+                      {row.label}
+                    </span>
+                  </th>
+                  {row.values.map((value, valueIndex) => (
+                    <td
+                      key={`${row.label}-${specificationTable.columns[valueIndex]}`}
+                      className="border-r border-border/70 px-4 py-3.5 text-center text-xs font-medium leading-relaxed text-foreground/90 last:border-r-0"
+                    >
+                      {value}
+                    </td>
+                  ))}
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+      </div>
+
+      <div className="divide-y divide-border md:hidden">
+        {specificationTable.rows.map((row, rowIndex) => (
+          <section
+            key={row.label}
+            className={`px-4 py-4 ${rowIndex % 2 === 1 ? "bg-secondary/[0.12]" : "bg-card"}`}
+          >
+            <div className="flex items-start gap-3">
+              <span className="mt-0.5 grid h-6 w-6 shrink-0 place-items-center rounded-md border border-brand/20 bg-brand/10 font-mono text-[8px] font-semibold text-brand">
+                {String(rowIndex + 1).padStart(2, "0")}
+              </span>
+              <h4 className="font-mono text-[9px] font-semibold uppercase leading-relaxed tracking-[0.11em] text-foreground/80">
+                {row.label}
+              </h4>
+            </div>
+            <dl className="mt-3 grid grid-cols-2 gap-2">
+              {row.values.map((value, valueIndex) => (
+                <div
+                  key={`${row.label}-${specificationTable.columns[valueIndex]}`}
+                  className="min-w-0 rounded-lg border border-border bg-background/35 px-3 py-2.5"
+                >
+                  <dt className="truncate font-mono text-[7px] uppercase tracking-[0.1em] text-brand">
+                    {specificationTable.columns[valueIndex]}
+                  </dt>
+                  <dd className="mt-1.5 break-words text-[11px] font-semibold leading-relaxed text-foreground/90">
+                    {value}
+                  </dd>
+                </div>
+              ))}
+            </dl>
+          </section>
+        ))}
+      </div>
+
+      {specificationTable.note && (
+        <div className="flex gap-3 border-t border-border bg-amber/[0.055] px-4 py-4 sm:px-6">
+          <ShieldCheck className="mt-0.5 h-4 w-4 shrink-0 text-amber" />
+          <p className="text-xs leading-relaxed text-muted-foreground">
+            <span className="font-semibold text-foreground">Configuration note: </span>
+            {specificationTable.note}
+          </p>
+        </div>
+      )}
+    </article>
+  );
+}
+
 function MachineGallery({ machine }: { machine: Machine }) {
   const images = machine.images?.length ? machine.images : [machine.image];
   const [activeIndex, setActiveIndex] = useState(0);
@@ -597,27 +974,49 @@ function MachineGallery({ machine }: { machine: Machine }) {
 
   return (
     <div
-      className="reveal-on-scroll relative overflow-hidden rounded-2xl border border-border bg-card shadow-deep"
+      className="machine-gallery-orbit reveal-on-scroll relative overflow-hidden rounded-3xl border border-brand/20 bg-card shadow-deep"
       data-reveal-delay="120"
     >
       <div
         className={`relative aspect-[4/3] overflow-hidden ${isCastingImage ? "bg-[#f6f7e5]" : "bg-secondary"}`}
       >
         <img
+          key={activeImage}
           src={activeImage}
           alt={`${machine.title} — view ${activeIndex + 1}`}
-          className={`h-full w-full transition-opacity duration-300 ${isCastingImage ? `object-contain drop-shadow-[0_20px_20px_rgba(10,30,24,0.16)] ${machine.slug === "c-frame-wax-injector" ? "p-0 mix-blend-darken" : `p-6 sm:p-10 ${usesLightBackdropBlend(activeImage) ? "mix-blend-darken" : ""}`}` : "object-cover"}`}
+          className={`machine-image-enter h-full w-full ${isCastingImage ? `object-contain drop-shadow-[0_20px_20px_rgba(10,30,24,0.16)] ${machine.slug === "c-frame-wax-injector" ? "p-0 mix-blend-darken" : `p-6 sm:p-10 ${usesLightBackdropBlend(activeImage) ? "mix-blend-darken" : ""}`}` : "object-cover"}`}
         />
-        <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-card/40 via-transparent to-transparent" />
+        <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-carbon/35 via-transparent to-transparent" />
+        <span className="absolute left-3 top-3 inline-flex items-center gap-2 rounded-full border border-white/25 bg-carbon/75 px-3 py-1.5 font-mono text-[8px] uppercase tracking-[0.15em] text-carbon-foreground backdrop-blur-md">
+          <Sparkles className="h-3 w-3 text-brand" /> Product visual
+        </span>
         {images.length > 1 && (
-          <span className="absolute bottom-3 right-3 rounded-full border border-border bg-card/85 px-3 py-1 font-mono text-[10px] uppercase tracking-widest text-foreground backdrop-blur">
-            {activeIndex + 1} / {images.length}
-          </span>
+          <div className="absolute bottom-3 right-3 flex items-center gap-1.5">
+            <button
+              type="button"
+              onClick={() => setActiveIndex((activeIndex - 1 + images.length) % images.length)}
+              aria-label="Show previous product view"
+              className="grid h-9 w-9 place-items-center rounded-full border border-white/20 bg-carbon/80 text-carbon-foreground backdrop-blur transition hover:border-brand hover:bg-brand hover:text-brand-foreground"
+            >
+              <ArrowLeft className="h-3.5 w-3.5" />
+            </button>
+            <span className="rounded-full border border-white/20 bg-carbon/80 px-3 py-2 font-mono text-[9px] uppercase tracking-widest text-carbon-foreground backdrop-blur">
+              {String(activeIndex + 1).padStart(2, "0")} / {String(images.length).padStart(2, "0")}
+            </span>
+            <button
+              type="button"
+              onClick={() => setActiveIndex((activeIndex + 1) % images.length)}
+              aria-label="Show next product view"
+              className="grid h-9 w-9 place-items-center rounded-full border border-white/20 bg-carbon/80 text-carbon-foreground backdrop-blur transition hover:border-brand hover:bg-brand hover:text-brand-foreground"
+            >
+              <ArrowRight className="h-3.5 w-3.5" />
+            </button>
+          </div>
         )}
       </div>
 
       {images.length > 1 && (
-        <div className="border-t border-border bg-card/95 p-3">
+        <div className="border-t border-border bg-card/95 p-3 sm:p-4">
           <div className="mb-2 flex items-center justify-between px-1">
             <span className="font-mono text-[9px] uppercase tracking-[0.22em] text-muted-foreground">
               Product views
@@ -626,7 +1025,10 @@ function MachineGallery({ machine }: { machine: Machine }) {
               Select an angle
             </span>
           </div>
-          <div className="flex gap-2 overflow-x-auto" aria-label={`${machine.title} image gallery`}>
+          <div
+            className="flex gap-2 overflow-x-auto pb-1"
+            aria-label={`${machine.title} image gallery`}
+          >
             {images.map((image, index) => (
               <button
                 key={image}
@@ -634,10 +1036,10 @@ function MachineGallery({ machine }: { machine: Machine }) {
                 onClick={() => setActiveIndex(index)}
                 aria-label={`Show ${machine.title} view ${index + 1}`}
                 aria-pressed={activeIndex === index}
-                className={`h-16 w-20 shrink-0 overflow-hidden rounded-lg border bg-[#f6f7e5] transition sm:h-20 sm:w-24 ${
+                className={`h-16 w-20 shrink-0 overflow-hidden rounded-xl border bg-[#f6f7e5] transition duration-300 sm:h-20 sm:w-24 ${
                   activeIndex === index
-                    ? "border-brand ring-2 ring-brand/30"
-                    : "border-border opacity-65 hover:border-brand/60 hover:opacity-100"
+                    ? "border-brand opacity-100 ring-2 ring-brand/30 shadow-[0_0_22px_-10px_var(--brand)]"
+                    : "border-border opacity-60 hover:-translate-y-0.5 hover:border-brand/60 hover:opacity-100"
                 }`}
               >
                 <img
@@ -649,6 +1051,17 @@ function MachineGallery({ machine }: { machine: Machine }) {
               </button>
             ))}
           </div>
+        </div>
+      )}
+
+      {images.length === 1 && (
+        <div className="flex items-center justify-between gap-3 border-t border-border bg-card/95 px-4 py-3">
+          <p className="font-mono text-[8px] uppercase tracking-[0.15em] text-muted-foreground">
+            Representative machine configuration
+          </p>
+          <span className="inline-flex shrink-0 items-center gap-1.5 font-mono text-[8px] uppercase tracking-[0.13em] text-brand">
+            <ShieldCheck className="h-3 w-3" /> Verified product
+          </span>
         </div>
       )}
     </div>

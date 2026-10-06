@@ -22,12 +22,14 @@ const client = createClient(url, key, {
 });
 
 const tables = [
+  "announcement_bar",
   "profiles",
   "user_roles",
   "blog_posts",
   "products",
   "news_items",
   "exhibitions",
+  "gallery_items",
   "site_content",
   "site_settings",
   "enquiries",

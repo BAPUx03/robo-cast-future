@@ -1,6 +1,5 @@
 const caseErector = "/productsimg/products/case-erector.png";
 const casePacker = "/productsimg/products/case-packer-robot-cell.png";
-const machineTending = "/productsimg/products/machine-tending-cnc-cell.png";
 const palletizer = "/productsimg/products/palletizing-robot-cell.png";
 const pickPlaceRobotCell = "/productsimg/products/pick-place-robot-cell.png";
 const visionInspectionCell = "/productsimg/products/vision-inspection-cell.png";
@@ -11,9 +10,10 @@ const robotLinear = "/productsimg/robots/robot-linear.jpg";
 const robotPalletizer = "/productsimg/robots/robot-palletizer.jpg";
 const robotScara = "/productsimg/robots/robot-scara.jpg";
 import caseErectorFloor from "@/assets/automation/installations/case-erector-floor.png";
+import caseErectorOpen from "@/assets/automation/installations/case-erector-open.png";
+import casePackerFloor from "@/assets/automation/installations/case-packer-floor.png";
 import palletizingFloor from "@/assets/automation/installations/palletizing-floor.png";
 import pickPlaceFloor from "@/assets/automation/installations/pick-place-floor.png";
-import machineTendingFloor from "@/assets/automation/installations/machine-tending-floor.png";
 import casePackerLine from "@/assets/automation/applications/case-packer-line.png";
 import palletizingLine from "@/assets/automation/applications/palletizing-line.png";
 import palletizingCell from "@/assets/automation/applications/palletizing-cell.png";
@@ -32,7 +32,6 @@ import abb from "@/assets/automation/partners/abb-robotics.jpeg";
 export const automationImages = {
   caseErector,
   casePacker,
-  machineTending,
   palletizer,
   pickPlaceRobotCell,
   visionInspectionCell,
@@ -43,9 +42,10 @@ export const automationImages = {
   robotPalletizer,
   robotScara,
   caseErectorFloor,
+  caseErectorOpen,
+  casePackerFloor,
   palletizingFloor,
   pickPlaceFloor,
-  machineTendingFloor,
   casePackerLine,
   palletizingLine,
   palletizingCell,
@@ -81,7 +81,7 @@ export const automationSolutions: AutomationSolution[] = [
     slug: "robotic-case-erector",
     title: "Robotic Case Erector",
     image: caseErector,
-    gallery: [caseErectorFloor, casePackerLine],
+    gallery: [caseErectorFloor, caseErectorOpen],
     summary:
       "A compact start-of-line cell that erects corrugated cases and seals their bottoms. A six-axis robot handles multiple case magazines while the flap folder and sealing head keep the line moving.",
     valueAdds: [
@@ -104,7 +104,7 @@ export const automationSolutions: AutomationSolution[] = [
     slug: "robotic-case-packer",
     title: "Robotic Case Packer",
     image: casePacker,
-    gallery: [casePackerLine, pickPlaceFloor],
+    gallery: [casePackerFloor, casePackerLine],
     summary:
       "A complete box-filling line in which a precise six-axis robot loads products into cases. Sealing, labelling and inkjet coding can be integrated around the product and case format.",
     valueAdds: [
@@ -170,36 +170,8 @@ export const automationSolutions: AutomationSolution[] = [
     applications: ["Bin picking", "Sorting", "Assembly", "Inspection"],
   },
   {
-    slug: "machine-tending",
-    title: "Machine Tending",
-    image: machineTending,
-    gallery: [machineTendingFloor, machineTendingCnc],
-    summary:
-      "Robots load raw material and unload finished parts from CNC machines, injection presses, wax injection cells and laminate presses for consistent cycle times and safer production.",
-    valueAdds: [
-      "Improved machine uptime",
-      "Consistent part handling",
-      "Reduced operator fatigue",
-      "Safer workstation design",
-      "Scalable single- or multi-machine cells",
-    ],
-    includes: [
-      "Industrial robot and end-of-arm tooling",
-      "Machine interface and safety controls",
-      "Part presentation or conveyor",
-      "Recipe and diagnostics HMI",
-      "Installation and operator training",
-    ],
-    applications: [
-      "CNC machining",
-      "Plastic injection",
-      "Wax injection",
-      "Laminates and press tending",
-    ],
-  },
-  {
     slug: "vision-system",
-    title: "Robotic Vision System",
+    title: "Vision System",
     image: visionInspectionCell,
     gallery: [visionInspection],
     summary:
@@ -216,36 +188,17 @@ export const automationSolutions: AutomationSolution[] = [
       "Purpose-built lighting",
       "Inspection software and calibration",
       "Conveyor encoder integration",
-      "Robot and PLC interface",
+      "Robot-controller interface",
     ],
     applications: ["Inspection", "Traceability", "Packaging", "Conveyor tracking"],
   },
-];
-
-export const tendingCells = [
-  {
-    name: "Plastic Injection Part Take-Out",
-    images: [machineTendingFloor],
-    video: "https://youtu.be/QEIFrphd8FY",
-  },
-  {
-    name: "CNC Machine Tending",
-    images: [machineTending, machineTendingFloor],
-    video: "https://youtu.be/6-B0KG4wOtc",
-  },
-  {
-    name: "Wax Injection Cell",
-    images: [robot6Axis, machineTendingFloor],
-    video: "https://youtu.be/yUD12phHkuM",
-  },
-  { name: "Laminate & Press Tending", images: [robotLinear, machineTendingFloor] },
 ];
 
 export const robotTypes = [
   {
     name: "Articulated Robot (5/6-Axis)",
     image: robot6Axis,
-    desc: "Flexible industrial handling for packaging, palletizing and machine tending.",
+    desc: "Flexible industrial handling for packaging, palletizing and pick-and-place.",
   },
   {
     name: "Collaborative Robot",

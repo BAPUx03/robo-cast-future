@@ -62,6 +62,8 @@ function mergeProduct(row: ProductRow, base?: Machine): Machine {
     highlights: stringList(row.highlights, base?.highlights ?? []),
     applications: stringList(row.applications, base?.applications ?? []),
     specs: specifications(row.specs, base?.specs ?? []),
+    specificationTables: base?.specificationTables,
+    officialSourceUrl: base?.officialSourceUrl,
   };
 }
 

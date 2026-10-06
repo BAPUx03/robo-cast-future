@@ -129,18 +129,6 @@ export const defaultGalleryItems: GalleryItem[] = [
     published: true,
   },
   {
-    id: "default-machine-tending",
-    title: "Machine-tending integration",
-    category: "facility",
-    location: "Applications centre",
-    image_url: automationImages.machineTendingFloor,
-    alt_text: "Machine-tending robot cell inside the Modtech applications centre",
-    caption: "Application engineering for safer, repeatable machine loading and unloading.",
-    featured: false,
-    sort_order: 60,
-    published: true,
-  },
-  {
     id: "default-casting",
     title: "Investment casting expertise",
     category: "facility",
@@ -149,7 +137,7 @@ export const defaultGalleryItems: GalleryItem[] = [
     alt_text: "Investment casting production environment",
     caption: "Process knowledge and equipment engineering across the complete casting workflow.",
     featured: false,
-    sort_order: 70,
+    sort_order: 60,
     published: true,
   },
 ];

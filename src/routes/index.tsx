@@ -201,7 +201,7 @@ function HomePage() {
             />
             <DivisionChapter
               title="Robotics & Automation"
-              description="Custom robot cells for packaging, material handling and machine tending, built around each product, process and factory layout."
+              description="Custom robot cells for packaging, palletizing, pick-and-place and vision inspection, built around each product, process and factory layout."
               image={automationImages.casePacker}
               alt="Modtech robotic case packing system"
               division="robotics"
@@ -210,7 +210,7 @@ function HomePage() {
                 "Robotic case erecting & packing",
                 "Robotic palletizing",
                 "Pick & place",
-                "Machine tending & vision systems",
+                "Vision systems",
               ]}
               reverse
             />

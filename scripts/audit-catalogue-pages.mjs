@@ -71,7 +71,7 @@ const expectedFilteredCatalogues = {
     ],
   },
   robotics: {
-    products: 6,
+    products: 5,
     sections: ["end-of-line-packaging", "flexible-industrial-automation"],
   },
 };

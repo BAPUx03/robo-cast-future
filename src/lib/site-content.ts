@@ -33,7 +33,7 @@ export const SITE_CONTENT_PAGES: SiteContentPage[] = [
         key: "description",
         label: "Hero description",
         defaultValue:
-          "Modtech designs and builds investment casting machinery and customised turnkey automation—from robotic case handling and palletizing to machine tending and vision-guided cells.",
+          "Modtech designs and builds investment casting machinery and customised turnkey automation—from robotic case handling and palletizing to pick-and-place and vision-guided cells.",
         multiline: true,
       },
       { key: "primary_cta", label: "Primary button", defaultValue: "Explore machines" },
@@ -137,7 +137,7 @@ export const SITE_CONTENT_PAGES: SiteContentPage[] = [
         key: "description",
         label: "Hero description",
         defaultValue:
-          "Turnkey end-of-line packaging and machine tending automation—designed, built and commissioned from our Ahmedabad facility for FMCG, pharma, food & beverage, plastics, foundry and investment casting.",
+          "Turnkey end-of-line packaging, palletizing, pick-and-place and vision automation—designed, built and commissioned from our Ahmedabad facility.",
         multiline: true,
       },
     ],

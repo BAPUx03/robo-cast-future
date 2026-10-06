@@ -533,6 +533,10 @@
 
   /* Scroll-driven reveal: opacity/translate animate to visible state */
   .reveal-on-scroll {
+    opacity: 1;
+    transform: none;
+  }
+  .reveal-ready .reveal-on-scroll {
     opacity: 0;
     transform: translateY(28px);
     transition:
@@ -543,6 +547,32 @@
   .reveal-on-scroll.is-visible {
     opacity: 1;
     transform: translateY(0);
+  }
+
+  .machine-gallery-orbit::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    border-radius: inherit;
+    padding: 1px;
+    pointer-events: none;
+    background: linear-gradient(
+      115deg,
+      transparent 18%,
+      color-mix(in oklab, var(--brand) 70%, transparent) 44%,
+      color-mix(in oklab, var(--cyan) 45%, transparent) 52%,
+      transparent 78%
+    );
+    background-size: 220% 100%;
+    mask:
+      linear-gradient(#000 0 0) content-box,
+      linear-gradient(#000 0 0);
+    mask-composite: exclude;
+    animation: machine-border-sweep 7s ease-in-out infinite;
+  }
+  .machine-image-enter {
+    animation: machine-image-enter 0.55s cubic-bezier(0.2, 0.7, 0.2, 1) both;
   }
 
   .home-hero-media video {
@@ -1178,6 +1208,8 @@
     .blink-dot,
     .reveal,
     .reveal-on-scroll,
+    .machine-gallery-orbit::before,
+    .machine-image-enter,
     .parallax-slow,
     .parallax-mid,
     .parallax-fast,
@@ -1383,6 +1415,29 @@
   to {
     opacity: 1;
     transform: translateY(0);
+  }
+}
+@keyframes machine-border-sweep {
+  0%,
+  100% {
+    background-position: 180% 0;
+    opacity: 0.35;
+  }
+  50% {
+    background-position: -80% 0;
+    opacity: 0.9;
+  }
+}
+@keyframes machine-image-enter {
+  from {
+    opacity: 0;
+    transform: scale(0.975);
+    filter: saturate(0.8);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+    filter: saturate(1);
   }
 }
 @keyframes fade-in {

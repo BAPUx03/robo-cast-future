@@ -27,13 +27,13 @@ export const Route = createFileRoute("/machines")({
       {
         name: "description",
         content:
-          "Browse Modtech's investment-casting equipment, robotic packaging systems, machine tending cells and vision solutions.",
+          "Browse Modtech's investment-casting equipment, robotic packaging systems, palletizing, pick-and-place and vision solutions.",
       },
       { property: "og:title", content: "Modtech Machines & Cells" },
       {
         property: "og:description",
         content:
-          "Wax injectors, shell-room systems, case handling, palletizing, machine tending and vision solutions.",
+          "Wax injectors, shell-room systems, case handling, palletizing, pick-and-place and vision solutions.",
       },
     ],
   }),

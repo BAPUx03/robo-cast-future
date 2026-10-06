@@ -6,6 +6,7 @@ import { useEffect } from "react";
  */
 export function useRevealOnScroll() {
   useEffect(() => {
+    document.documentElement.classList.add("reveal-ready");
     const els = Array.from(document.querySelectorAll<HTMLElement>(".reveal-on-scroll"));
     if (!els.length) return;
 

@@ -8,7 +8,7 @@ export const Route = createFileRoute("/solutions")({
       {
         name: "description",
         content:
-          "Turnkey robotic packaging, palletizing, pick-and-place, machine tending and vision solutions engineered by Modtech.",
+          "Turnkey robotic packaging, palletizing, pick-and-place and vision solutions engineered by Modtech.",
       },
       { property: "og:title", content: "Modtech Services & Automation Solutions" },
       {

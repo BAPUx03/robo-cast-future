@@ -1,5 +1,5 @@
 import { createFileRoute, Link, redirect } from "@tanstack/react-router";
-import { ArrowRight, Check, Package, Play } from "lucide-react";
+import { ArrowRight, Check, Package } from "lucide-react";
 import { PageShell, PageHero } from "@/components/page-shell";
 import { useRevealOnScroll } from "@/hooks/use-reveal-on-scroll";
 import {
@@ -9,7 +9,6 @@ import {
   automationPartners,
   automationImages,
   robotTypes,
-  tendingCells,
 } from "@/content/automation-data";
 import { useSiteContent } from "@/lib/site-content";
 
@@ -23,13 +22,13 @@ export const Route = createFileRoute("/automation")({
       {
         name: "description",
         content:
-          "Robotic case erectors, case packers, palletizing, pick & place, machine tending and vision systems — turnkey end-of-line packaging automation by Modtech.",
+          "Robotic case erectors, case packers, palletizing, pick & place and vision systems — turnkey end-of-line packaging automation by Modtech.",
       },
       { property: "og:title", content: "Modtech Robotics & Automation" },
       {
         property: "og:description",
         content:
-          "Turnkey robotic packaging and machine tending cells for FMCG, pharma, food & beverage, plastics and casting.",
+          "Turnkey robotic packaging systems for FMCG, pharma, food & beverage, plastics and casting.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
@@ -160,49 +159,6 @@ export function SolutionsContent() {
                 )}
               </article>
             ))}
-          </div>
-
-          {/* Machine tending cells */}
-          <div className="reveal-on-scroll mt-16">
-            <div className="text-center">
-              <h2 className="font-display text-2xl font-bold tracking-tight sm:text-3xl">
-                Real installations, <span className="text-gradient-brand">running today</span>.
-              </h2>
-            </div>
-            <ul className="mt-10 grid gap-5 sm:grid-cols-2">
-              {tendingCells.map((c) => (
-                <li
-                  key={c.name}
-                  className="group overflow-hidden rounded-2xl border border-border bg-card shadow-card"
-                >
-                  <div className="grid grid-cols-2 gap-px bg-border">
-                    {c.images.map((img, ii) => (
-                      <div key={ii} className="relative aspect-[4/3] overflow-hidden bg-carbon-2">
-                        <img
-                          src={img}
-                          alt={`${c.name} ${ii + 1}`}
-                          loading="lazy"
-                          className="h-full w-full object-cover transition duration-700 group-hover:scale-105"
-                        />
-                      </div>
-                    ))}
-                  </div>
-                  <div className="flex items-center justify-between gap-3 p-5">
-                    <h3 className="font-display text-sm font-bold tracking-tight">{c.name}</h3>
-                    {c.video && (
-                      <a
-                        href={c.video}
-                        target="_blank"
-                        rel="noreferrer"
-                        className="inline-flex shrink-0 items-center gap-1.5 rounded-full border border-brand/40 px-3 py-1.5 font-mono text-[10px] uppercase tracking-wider text-brand transition hover:bg-brand hover:text-brand-foreground"
-                      >
-                        <Play className="h-3 w-3" /> Watch
-                      </a>
-                    )}
-                  </div>
-                </li>
-              ))}
-            </ul>
           </div>
         </div>
       </section>
