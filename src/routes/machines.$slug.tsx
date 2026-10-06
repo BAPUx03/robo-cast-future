@@ -28,6 +28,63 @@ const usesLightBackdropBlend = (image: string) =>
   image.includes("manual-wax-injector") ||
   image.includes("wax-extruder-");
 
+const preferredPrimarySpecs = [
+  "model",
+  "variant",
+  "clamp force",
+  "capacity",
+  "mould envelope",
+  "wax flow",
+  "robot platform",
+  "robot",
+];
+
+const preferredControlSpecs = ["control", "operation", "mode", "software", "configuration"];
+
+function preferredSpec(machine: Machine, labels: string[]) {
+  for (const label of labels) {
+    const match = machine.specs.find((spec) => spec.label.toLowerCase() === label);
+    if (match) return match;
+  }
+  return machine.specs[0];
+}
+
+function rangeCopy(sectionId: ReturnType<typeof machineSection>, exactVariants: boolean) {
+  if (exactVariants) {
+    return {
+      eyebrow: "Available variants",
+      title: "Choose the right version for your installation.",
+      description:
+        "Compare the available versions of this machine, then open a model for its complete gallery and specification.",
+    };
+  }
+
+  if (sectionId === "wax-injection-machines" || sectionId === "ceramic-injectors") {
+    return {
+      eyebrow: "Model range",
+      title: "Compare machines in this product family.",
+      description:
+        "Each model is engineered around a different tooling envelope, production volume and automation requirement.",
+    };
+  }
+
+  if (sectionId === "end-of-line-packaging" || sectionId === "flexible-industrial-automation") {
+    return {
+      eyebrow: "System configurations",
+      title: "Explore systems for the complete production line.",
+      description:
+        "Select a system to compare its process role, control platform and typical applications.",
+    };
+  }
+
+  return {
+    eyebrow: "Product range",
+    title: "Explore equipment for this process stage.",
+    description:
+      "Compare the available equipment and open any product for its detailed configuration.",
+  };
+}
+
 export const Route = createFileRoute("/machines/$slug")({
   loader: async ({ params }) => {
     const catalogue = await fetchPublishedMachines();
@@ -85,6 +142,13 @@ function MachineDetail() {
   const division = machineDivision(m);
   const sectionId = machineSection(m);
   const section = productSectionMeta[sectionId];
+  const isExactVariantFamily = m.slug.startsWith("wax-extruder-");
+  const modelRange = catalogue.filter((item) =>
+    isExactVariantFamily
+      ? item.slug.startsWith("wax-extruder-")
+      : machineSection(item) === sectionId,
+  );
+  const modelRangeCopy = rangeCopy(sectionId, isExactVariantFamily);
   const relatedPool = catalogue.filter(
     (item) => item.slug !== m.slug && machineDivision(item) === division,
   );
@@ -123,6 +187,14 @@ function MachineDetail() {
               <span className="rounded-md border border-border bg-card/70 px-2.5 py-1 font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
                 {categoryMeta[division].label}
               </span>
+              {modelRange.length > 1 && (
+                <a
+                  href="#models"
+                  className="rounded-md border border-brand/30 bg-brand/[0.08] px-2.5 py-1 font-mono text-[10px] uppercase tracking-widest text-brand transition hover:border-brand/60 hover:bg-brand/[0.14]"
+                >
+                  {modelRange.length} {isExactVariantFamily ? "variants" : "models"}
+                </a>
+              )}
             </div>
             <h1 className="mt-5 font-display text-4xl font-bold leading-[1.05] tracking-tight sm:text-6xl">
               {m.title}
@@ -154,6 +226,7 @@ function MachineDetail() {
         <div className="mx-auto flex max-w-7xl gap-5 overflow-x-auto py-3 font-mono text-[9px] uppercase tracking-[0.17em] text-muted-foreground sm:gap-8">
           {[
             ["overview", "Overview"],
+            ["models", isExactVariantFamily ? "Variants" : "Models & range"],
             ["features", "Key features"],
             ["applications", "Applications"],
             ["specifications", "Specifications"],
@@ -173,7 +246,7 @@ function MachineDetail() {
         <div className="pointer-events-none absolute right-0 top-0 h-80 w-80 rounded-full bg-brand/[0.05] blur-3xl" />
         <div className="relative mx-auto max-w-7xl">
           <section id="overview" className="scroll-mt-36 reveal-on-scroll">
-            <div className="grid gap-8 border-b border-border pb-14 lg:grid-cols-[0.7fr_1.3fr] lg:gap-16">
+            <div className="grid gap-8 pb-14 lg:grid-cols-[0.7fr_1.3fr] lg:gap-16">
               <div>
                 <p className="font-mono text-[10px] uppercase tracking-[0.24em] text-brand">
                   01 / Overview
@@ -195,6 +268,134 @@ function MachineDetail() {
             </div>
           </section>
 
+          {modelRange.length > 1 && (
+            <section id="models" className="scroll-mt-36 border-y border-border py-14">
+              <div className="reveal-on-scroll grid gap-7 lg:grid-cols-[0.72fr_1.28fr] lg:gap-16">
+                <div>
+                  <p className="font-mono text-[10px] uppercase tracking-[0.24em] text-brand">
+                    02 / {modelRangeCopy.eyebrow}
+                  </p>
+                  <h2 className="mt-3 font-display text-3xl font-bold tracking-tight">
+                    {modelRangeCopy.title}
+                  </h2>
+                  <p className="mt-4 max-w-lg text-sm leading-relaxed text-muted-foreground">
+                    {modelRangeCopy.description}
+                  </p>
+                  <p className="mt-4 inline-flex items-center gap-2 rounded-full border border-border bg-card/55 px-3 py-1.5 font-mono text-[9px] uppercase tracking-[0.16em] text-muted-foreground">
+                    <Layers3 className="h-3.5 w-3.5 text-brand" /> {section.label}
+                  </p>
+                </div>
+
+                <div className="overflow-hidden rounded-2xl border border-border bg-card shadow-card">
+                  <div className="overflow-x-auto">
+                    <table className="min-w-[46rem] w-full border-collapse text-left">
+                      <thead className="border-b border-border bg-secondary/35">
+                        <tr className="font-mono text-[9px] uppercase tracking-[0.16em] text-muted-foreground">
+                          <th className="px-4 py-3 font-medium" scope="col">
+                            Model / equipment
+                          </th>
+                          <th className="px-4 py-3 font-medium" scope="col">
+                            Primary specification
+                          </th>
+                          <th className="px-4 py-3 font-medium" scope="col">
+                            Control / configuration
+                          </th>
+                          <th className="px-4 py-3 text-right font-medium" scope="col">
+                            Details
+                          </th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-border">
+                        {modelRange.map((model) => {
+                          const primary = preferredSpec(model, preferredPrimarySpecs);
+                          const control = preferredSpec(model, preferredControlSpecs);
+                          const current = model.slug === m.slug;
+                          return (
+                            <tr
+                              key={model.slug}
+                              className={`transition ${
+                                current ? "bg-brand/[0.08]" : "hover:bg-brand/[0.04]"
+                              }`}
+                            >
+                              <th className="px-4 py-3.5" scope="row">
+                                <span className="flex items-center gap-3">
+                                  <span className="h-10 w-12 shrink-0 overflow-hidden rounded-lg border border-border bg-[#f6f7e5]">
+                                    <img
+                                      src={model.image}
+                                      alt=""
+                                      loading="lazy"
+                                      className={`h-full w-full object-contain p-1 ${
+                                        usesLightBackdropBlend(model.image)
+                                          ? "mix-blend-darken"
+                                          : ""
+                                      }`}
+                                    />
+                                  </span>
+                                  <span>
+                                    <span className="block font-display text-sm font-semibold text-foreground">
+                                      {model.title}
+                                    </span>
+                                    <span className="mt-0.5 block font-mono text-[8px] uppercase tracking-[0.14em] text-brand">
+                                      {model.code}
+                                      {current ? " · Current model" : ""}
+                                    </span>
+                                  </span>
+                                </span>
+                              </th>
+                              <td className="px-4 py-3.5 text-xs text-foreground/85">
+                                {primary ? (
+                                  <>
+                                    <span className="block text-[10px] text-muted-foreground">
+                                      {primary.label}
+                                    </span>
+                                    <span className="font-medium">{primary.value}</span>
+                                  </>
+                                ) : (
+                                  "Project specific"
+                                )}
+                              </td>
+                              <td className="px-4 py-3.5 text-xs text-foreground/85">
+                                {control ? (
+                                  <>
+                                    <span className="block text-[10px] text-muted-foreground">
+                                      {control.label}
+                                    </span>
+                                    <span className="font-medium">{control.value}</span>
+                                  </>
+                                ) : (
+                                  "Application specific"
+                                )}
+                              </td>
+                              <td className="px-4 py-3.5 text-right">
+                                {current ? (
+                                  <span className="inline-flex rounded-full bg-brand px-3 py-1.5 font-mono text-[8px] font-semibold uppercase tracking-[0.13em] text-brand-foreground">
+                                    Selected
+                                  </span>
+                                ) : (
+                                  <Link
+                                    to="/machines/$slug"
+                                    params={{ slug: model.slug }}
+                                    className="inline-flex items-center gap-1.5 rounded-full border border-brand/35 px-3 py-1.5 font-mono text-[8px] font-semibold uppercase tracking-[0.13em] text-brand transition hover:bg-brand hover:text-brand-foreground"
+                                  >
+                                    View model <ArrowRight className="h-3 w-3" />
+                                  </Link>
+                                )}
+                              </td>
+                            </tr>
+                          );
+                        })}
+                      </tbody>
+                    </table>
+                  </div>
+                  <div className="border-t border-border bg-secondary/20 px-4 py-3 text-xs leading-relaxed text-muted-foreground">
+                    Final model, utilities, tooling and safety package are confirmed against the
+                    approved project requirement.
+                  </div>
+                </div>
+              </div>
+            </section>
+          )}
+
           <section id="features" className="scroll-mt-36 py-14">
             <div className="reveal-on-scroll flex items-center gap-3">
               <span className="grid h-10 w-10 place-items-center rounded-xl bg-brand/10 text-brand">
@@ -202,7 +403,7 @@ function MachineDetail() {
               </span>
               <div>
                 <p className="font-mono text-[10px] uppercase tracking-[0.24em] text-brand">
-                  02 / Key features
+                  03 / Key features
                 </p>
                 <h2 className="mt-1 font-display text-2xl font-bold tracking-tight">
                   Built around the process.
@@ -232,7 +433,7 @@ function MachineDetail() {
             <div className="reveal-on-scroll grid gap-7 lg:grid-cols-[0.8fr_1.2fr] lg:items-center">
               <div>
                 <p className="font-mono text-[10px] uppercase tracking-[0.24em] text-brand">
-                  03 / Applications
+                  04 / Applications
                 </p>
                 <h2 className="mt-2 font-display text-2xl font-bold tracking-tight sm:text-3xl">
                   Where this machine fits.
@@ -266,7 +467,7 @@ function MachineDetail() {
                     <ClipboardCheck className="h-4 w-4" />
                   </span>
                   <p className="font-mono text-[10px] uppercase tracking-[0.24em] text-brand">
-                    04 / Technical specifications
+                    05 / Technical specifications
                   </p>
                 </div>
                 <h2 className="mt-4 font-display text-3xl font-bold tracking-tight">
@@ -280,24 +481,41 @@ function MachineDetail() {
               </div>
 
               <div className="overflow-hidden rounded-2xl border border-border bg-card shadow-card">
-                <dl className="divide-y divide-border">
-                  {m.specs.map((spec, index) => (
-                    <div
-                      key={spec.label}
-                      className="grid gap-1 px-5 py-4 transition hover:bg-brand/[0.04] sm:grid-cols-[2.5rem_1fr_1.2fr] sm:items-center sm:gap-4"
-                    >
-                      <span className="hidden font-mono text-[9px] text-brand/70 sm:block">
-                        {(index + 1).toString().padStart(2, "0")}
-                      </span>
-                      <dt className="font-mono text-[10px] uppercase tracking-[0.17em] text-muted-foreground">
-                        {spec.label}
-                      </dt>
-                      <dd className="font-display text-sm font-semibold text-foreground sm:text-right">
-                        {spec.value}
-                      </dd>
-                    </div>
-                  ))}
-                </dl>
+                <div className="overflow-x-auto">
+                  <table className="min-w-full border-collapse text-left">
+                    <thead className="border-b border-border bg-secondary/35">
+                      <tr className="font-mono text-[9px] uppercase tracking-[0.17em] text-muted-foreground">
+                        <th className="w-14 px-5 py-3 font-medium" scope="col">
+                          No.
+                        </th>
+                        <th className="px-5 py-3 font-medium" scope="col">
+                          Technical parameter
+                        </th>
+                        <th className="px-5 py-3 text-right font-medium" scope="col">
+                          Standard / published value
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-border">
+                      {m.specs.map((spec, index) => (
+                        <tr key={spec.label} className="transition hover:bg-brand/[0.04]">
+                          <td className="px-5 py-4 font-mono text-[9px] text-brand/70">
+                            {(index + 1).toString().padStart(2, "0")}
+                          </td>
+                          <th
+                            scope="row"
+                            className="px-5 py-4 font-mono text-[10px] font-medium uppercase tracking-[0.17em] text-muted-foreground"
+                          >
+                            {spec.label}
+                          </th>
+                          <td className="px-5 py-4 text-right font-display text-sm font-semibold text-foreground">
+                            {spec.value}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
                 <div className="border-t border-border bg-secondary/25 p-4 sm:flex sm:items-center sm:justify-between sm:gap-4">
                   <p className="text-xs leading-relaxed text-muted-foreground">
                     Need the approved project specification?
