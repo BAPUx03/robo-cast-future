@@ -3,7 +3,7 @@ type BrevoSender = {
   id?: number;
 };
 
-export async function getBrevoSender(apiKey: string, name = "Modtech Machinery") {
+export async function getBrevoSender(apiKey: string, name = "Modtech Machine") {
   const response = await fetch("https://api.brevo.com/v3/senders", {
     headers: { accept: "application/json", "api-key": apiKey },
   });

@@ -18,13 +18,13 @@ export const Route = createFileRoute("/blog/$slug")({
   ssr: false,
   head: () => ({
     meta: [
-      { title: "Article — Modtech Machinery" },
+      { title: "Article — Modtech Machine" },
       {
         name: "description",
         content:
-          "Insights on investment casting machinery, robotics and automation from Modtech Machinery.",
+          "Insights on investment casting machinery, robotics and automation from Modtech Machine.",
       },
-      { property: "og:title", content: "Modtech Machinery Insight" },
+      { property: "og:title", content: "Modtech Machine Insight" },
       { property: "og:description", content: "Engineering notes from the Modtech shop floor." },
     ],
   }),
@@ -114,7 +114,7 @@ function BlogArticle() {
               : "This post may have been moved or unpublished."}
           </p>
           <Link
-            to="/news"
+            to="/blog"
             className="mt-6 inline-flex items-center gap-2 rounded-full bg-brand px-5 py-2.5 font-mono text-xs uppercase tracking-wider text-brand-foreground"
           >
             <ArrowLeft className="h-4 w-4" /> Back to insights
@@ -146,10 +146,10 @@ function BlogArticle() {
           <div className="mx-auto max-w-3xl">
             <nav aria-label="Breadcrumb">
               <Link
-                to="/news"
+                to="/blog"
                 className="inline-flex items-center gap-2 font-mono text-[10px] uppercase tracking-[0.25em] text-brand hover:underline"
               >
-                <ArrowLeft className="h-3.5 w-3.5" /> News & insights
+                <ArrowLeft className="h-3.5 w-3.5" /> All blogs
               </Link>
             </nav>
             <div className="mt-5 flex flex-wrap items-center gap-3 font-mono text-[10px] uppercase tracking-[0.2em] text-muted-foreground">
@@ -256,7 +256,7 @@ function BlogArticle() {
             </div>
 
             <Link
-              to="/news"
+              to="/blog"
               className="mt-8 inline-flex items-center gap-2 font-mono text-[10px] uppercase tracking-[0.2em] text-brand transition hover:gap-3"
             >
               <BookOpen className="h-4 w-4" /> Browse all insights
@@ -272,7 +272,7 @@ function BlogArticle() {
                   <h2 className="font-display text-2xl font-bold">Related engineering insights</h2>
                 </div>
                 <Link
-                  to="/news"
+                  to="/blog"
                   className="hidden items-center gap-2 font-mono text-[10px] uppercase tracking-[0.18em] text-brand sm:inline-flex"
                 >
                   View all <ArrowRight className="h-3.5 w-3.5" />

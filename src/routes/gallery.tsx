@@ -26,13 +26,13 @@ export const Route = createFileRoute("/gallery")({
   ssr: false,
   head: () => ({
     meta: [
-      { title: "Gallery - Inside Modtech Machinery" },
+      { title: "Gallery - Inside Modtech Machine" },
       {
         name: "description",
         content:
-          "Explore Modtech Machinery's offices, engineering facilities, factory floors and automation projects.",
+          "Explore Modtech Machine's offices, engineering facilities, factory floors and automation projects.",
       },
-      { property: "og:title", content: "Inside Modtech Machinery - Gallery" },
+      { property: "og:title", content: "Inside Modtech Machine - Gallery" },
       {
         property: "og:description",
         content: "A visual tour of our people, facilities and engineering work.",

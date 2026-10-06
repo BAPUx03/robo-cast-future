@@ -1,6 +1,6 @@
-# Modtech Machinery Website
+# Modtech Machine Website
 
-Independent website and administration platform for Modtech Machinery's Investment Casting and Robotics & Automation divisions.
+Independent website and administration platform for Modtech Machine's Investment Casting and Robotics & Automation divisions.
 
 ## Stack
 

@@ -54,13 +54,13 @@ const REPRESENTATIVES = [
 export const Route = createFileRoute("/contact")({
   head: () => ({
     meta: [
-      { title: "Contact — Modtech Machinery" },
+      { title: "Contact — Modtech Machine" },
       {
         name: "description",
         content:
-          "Talk to Modtech Machinery engineering. We'll come back with a system blueprint for your line.",
+          "Talk to Modtech Machine engineering. We'll come back with a system blueprint for your line.",
       },
-      { property: "og:title", content: "Contact Modtech Machinery" },
+      { property: "og:title", content: "Contact Modtech Machine" },
       {
         property: "og:description",
         content: "Tell us about the part, the volume and the cycle time.",

@@ -12,8 +12,8 @@ function decode(value) {
 const listingResponse = await fetch(new URL("/machines", base));
 if (!listingResponse.ok) throw new Error(`Machine listing returned ${listingResponse.status}.`);
 const listingHtml = await listingResponse.text();
-const discovered = [...listingHtml.matchAll(/href=["'](\/machines\/[^"'#?]+)["']/g)].map(
-  (match) => match[1],
+const discovered = [...listingHtml.matchAll(/data-machine-slug="([^"]+)"/g)].map(
+  (match) => `/machines/${match[1]}`,
 );
 const listingDivisions = [...listingHtml.matchAll(/data-machine-division="([^"]+)"/g)].map(
   (match) => match[1],
@@ -24,18 +24,19 @@ const divisionCounts = Object.fromEntries(
     listingDivisions.filter((item) => item === division).length,
   ]),
 );
-const paths = [...new Set(discovered)].sort();
+const pathSet = new Set(discovered);
+let paths = [...pathSet].sort();
 const duplicateLinks = discovered.length - paths.length;
 const results = [];
 const issues = [];
 if (
   listingDivisions.length !== paths.length ||
   divisionCounts.casting !== 22 ||
-  divisionCounts.robotics !== 6
+  divisionCounts.robotics !== 0
 ) {
   issues.push({
     path: "/machines",
-    expectedDivisions: { casting: 22, robotics: 6 },
+    expectedDivisions: { casting: 22, robotics: 0 },
     divisionCounts,
     classifiedCards: listingDivisions.length,
   });
@@ -79,8 +80,11 @@ for (const [division, expected] of Object.entries(expectedFilteredCatalogues)) {
   const response = await fetch(new URL(`/machines?division=${division}`, base));
   const html = await response.text();
   const productLinks = [
-    ...new Set([...html.matchAll(/href=["'](\/machines\/[^"'#?]+)["']/g)].map((match) => match[1])),
+    ...new Set(
+      [...html.matchAll(/data-machine-slug="([^"]+)"/g)].map((match) => `/machines/${match[1]}`),
+    ),
   ];
+  productLinks.forEach((path) => pathSet.add(path));
   const cardDivisions = [...html.matchAll(/data-machine-division="([^"]+)"/g)].map(
     (match) => match[1],
   );
@@ -112,6 +116,8 @@ for (const [division, expected] of Object.entries(expectedFilteredCatalogues)) {
     });
   }
 }
+
+paths = [...pathSet].sort();
 
 for (const path of paths) {
   const response = await fetch(new URL(path, base));
@@ -161,9 +167,9 @@ for (const path of paths) {
     status: response.status,
     title,
     heading,
-    hasOverview: html.includes("/ overview"),
-    hasApplications: html.includes("/ applications"),
-    hasSpecs: html.includes("/ specs"),
+    hasOverview: html.includes('id="overview"'),
+    hasApplications: html.includes('id="applications"'),
+    hasSpecs: html.includes('id="specifications"'),
     hasQuoteAction: html.includes("Request a quote"),
     localImages: imageSources.length,
     brokenImages,
@@ -171,8 +177,8 @@ for (const path of paths) {
   };
   const valid =
     response.ok &&
-    title.includes("Modtech Machinery") &&
-    title !== "Machine — Modtech Machinery" &&
+    title.includes("Modtech Machine") &&
+    title !== "Machine — Modtech Machine" &&
     heading.length > 0 &&
     checks.hasOverview &&
     checks.hasApplications &&

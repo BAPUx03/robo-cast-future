@@ -94,7 +94,7 @@ fallback is needed, configure Supabase custom SMTP with:
 - Port: `587`
 - Username: the SMTP login shown in Brevo's SMTP tab
 - Password: a Brevo SMTP key (not the HTTP API key)
-- Sender name: `Modtech Machinery`
+- Sender name: `Modtech Machine`
 - Sender email: a sender/domain verified in Brevo
 
 Then configure the Magic Link and Reset Password templates using the files under `docs/`.

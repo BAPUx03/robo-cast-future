@@ -16,4 +16,4 @@ CREATE TRIGGER site_settings_touch BEFORE UPDATE ON public.site_settings FOR EAC
 INSERT INTO public.site_settings (key, value) VALUES
   ('admin_notify_email',''),
   ('sender_email',''),
-  ('sender_name','Modtech Machinery');
+  ('sender_name','Modtech Machine');

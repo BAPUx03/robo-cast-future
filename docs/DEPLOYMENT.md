@@ -1,6 +1,6 @@
 # Deployment guide
 
-Modtech Machinery is a full-stack TanStack Start application. It needs a JavaScript server or serverless/edge functions because login OTP, password recovery, team invitations, enquiries and admin actions run on the server. Static-only services such as GitHub Pages, an S3 website or plain HTML cPanel hosting cannot run the complete application.
+Modtech Machine is a full-stack TanStack Start application. It needs a JavaScript server or serverless/edge functions because login OTP, password recovery, team invitations, enquiries and admin actions run on the server. Static-only services such as GitHub Pages, an S3 website or plain HTML cPanel hosting cannot run the complete application.
 
 ## Environment variables
 

@@ -23,7 +23,7 @@ export const Route = createFileRoute("/machines")({
   }),
   head: () => ({
     meta: [
-      { title: "Machines & Cells — Modtech Machinery" },
+      { title: "Machines & Cells — Modtech Machine" },
       {
         name: "description",
         content:
@@ -242,6 +242,7 @@ function MachineCard({
       data-reveal-delay={(index % 6) * 70}
       data-active={activeDivision === machineDivision(machine) ? "true" : "false"}
       data-machine-division={machineDivision(machine)}
+      data-machine-slug={machine.slug}
     >
       <div
         className={`relative aspect-[4/3] overflow-hidden border-b border-border/70 ${

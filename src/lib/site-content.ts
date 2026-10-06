@@ -76,11 +76,11 @@ export const SITE_CONTENT_PAGES: SiteContentPage[] = [
   },
   {
     id: "news",
-    label: "News page",
-    description: "News and exhibitions page introduction.",
+    label: "Blogs page",
+    description: "Blogs, insights and exhibitions page introduction.",
     fields: [
-      { key: "eyebrow", label: "Hero eyebrow", defaultValue: "/ latest @ modtech" },
-      { key: "title", label: "Hero title", defaultValue: "News, case studies &" },
+      { key: "eyebrow", label: "Hero eyebrow", defaultValue: "/ blogs @ modtech" },
+      { key: "title", label: "Hero title", defaultValue: "Blogs, case studies &" },
       { key: "accent", label: "Hero accent title", defaultValue: "factory stories." },
       {
         key: "description",
@@ -192,10 +192,14 @@ export const SITE_CONTENT_PAGES: SiteContentPage[] = [
           "India's engineering partner for robotics, automation and investment casting machinery—engineered, built and integrated under one roof.",
         multiline: true,
       },
-      { key: "primary_email", label: "Primary email", defaultValue: "info@modtechworld.com" },
+      {
+        key: "primary_email",
+        label: "Casting machine enquiries email",
+        defaultValue: "info@modtechworld.com",
+      },
       {
         key: "automation_email",
-        label: "Automation email",
+        label: "Robotics & automation enquiries email",
         defaultValue: "sales.automation@modtechworld.com",
       },
       {

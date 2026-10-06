@@ -1,19 +1,13 @@
-import { createFileRoute, Outlet, redirect } from "@tanstack/react-router";
+import { createFileRoute, Outlet } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/blog")({
   ssr: false,
-  beforeLoad: ({ location }) => {
-    const normalizedPath = location.pathname.replace(/\/+$/, "") || "/";
-    if (normalizedPath === "/blog") {
-      throw redirect({ to: "/news", replace: true });
-    }
-  },
   head: () => ({
     meta: [
-      { title: "News & Insights — Modtech Machinery" },
+      { title: "Blogs — Modtech Machine" },
       {
         name: "description",
-        content: "Engineering articles, case studies and company news from Modtech Machinery.",
+        content: "Engineering blogs, case studies and company updates from Modtech Machine.",
       },
     ],
   }),

@@ -8,7 +8,7 @@ export function BrandLogo({ className = "h-8" }: { className?: string }) {
   return (
     <span
       role="img"
-      aria-label="Modtech Machinery"
+      aria-label="Modtech Machine"
       className={`block w-auto shrink-0 bg-current ${className}`}
       style={{
         aspectRatio: "25359 / 15968",

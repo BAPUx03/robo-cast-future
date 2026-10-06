@@ -14,7 +14,7 @@ function escapeHtml(value: string) {
 }
 
 function emailShell(kicker: string, heading: string, content: string) {
-  return `<!doctype html><html><body style="margin:0;padding:0;background:#f4f6f6;font-family:Arial,Helvetica,sans-serif;color:#111a1d"><span style="display:none;opacity:0;color:transparent;height:0;overflow:hidden">${escapeHtml(heading)}</span><table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#f4f6f6;padding:28px 12px"><tr><td align="center"><table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:560px;background:#fff;border:1px solid #e2e8e6;border-radius:16px;overflow:hidden"><tr><td style="background:#0d1417;padding:26px 30px"><div style="font-size:22px;font-weight:bold;letter-spacing:1px;color:#fff">MOD<span style="color:${BRAND}">TECH</span></div><div style="margin-top:6px;font-size:10px;letter-spacing:3px;text-transform:uppercase;color:${BRAND}">Machinery &middot; Secure team access</div></td></tr><tr><td style="padding:32px 30px"><div style="font-size:11px;letter-spacing:2px;text-transform:uppercase;color:#3ab77c">${escapeHtml(kicker)}</div><h1 style="margin:8px 0 12px;font-size:22px;color:#111a1d">${escapeHtml(heading)}</h1>${content}</td></tr><tr><td style="background:#f4f6f6;padding:18px 30px;text-align:center;font-size:11px;color:#7b8b8f">Modtech Machinery &middot; Secure team access</td></tr></table></td></tr></table></body></html>`;
+  return `<!doctype html><html><body style="margin:0;padding:0;background:#f4f6f6;font-family:Arial,Helvetica,sans-serif;color:#111a1d"><span style="display:none;opacity:0;color:transparent;height:0;overflow:hidden">${escapeHtml(heading)}</span><table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#f4f6f6;padding:28px 12px"><tr><td align="center"><table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:560px;background:#fff;border:1px solid #e2e8e6;border-radius:16px;overflow:hidden"><tr><td style="background:#0d1417;padding:26px 30px"><div style="font-size:22px;font-weight:bold;letter-spacing:1px;color:#fff">MOD<span style="color:${BRAND}">TECH</span></div><div style="margin-top:6px;font-size:10px;letter-spacing:3px;text-transform:uppercase;color:${BRAND}">Machine &middot; Secure team access</div></td></tr><tr><td style="padding:32px 30px"><div style="font-size:11px;letter-spacing:2px;text-transform:uppercase;color:#3ab77c">${escapeHtml(kicker)}</div><h1 style="margin:8px 0 12px;font-size:22px;color:#111a1d">${escapeHtml(heading)}</h1>${content}</td></tr><tr><td style="background:#f4f6f6;padding:18px 30px;text-align:center;font-size:11px;color:#7b8b8f">Modtech Machine &middot; Secure team access</td></tr></table></td></tr></table></body></html>`;
 }
 
 function authEmail(flow: AuthEmailFlow, token: string, fullName = "") {
@@ -102,7 +102,7 @@ export async function sendAuthEmailForExistingUser(
   const sender = await getBrevoSender(apiKey);
   const responseBody = await sendBrevoEmail(apiKey, {
     sender,
-    replyTo: { email: "info@modtechworld.com", name: "Modtech Machinery" },
+    replyTo: { email: "info@modtechworld.com", name: "Modtech Machine" },
     to: [{ email: normalizedEmail, name: fullName || profile.full_name || normalizedEmail }],
     tags: [`modtech-auth-${flow}`],
     ...content,

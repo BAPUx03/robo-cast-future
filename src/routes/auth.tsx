@@ -22,12 +22,12 @@ export const Route = createFileRoute("/auth")({
   },
   head: () => ({
     meta: [
-      { title: "Team Sign In — Modtech Machinery" },
+      { title: "Team Sign In — Modtech Machine" },
       {
         name: "description",
-        content: "Secure sign in for the Modtech Machinery administration and sales team.",
+        content: "Secure sign in for the Modtech Machine administration and sales team.",
       },
-      { property: "og:title", content: "Modtech Machinery Team Sign In" },
+      { property: "og:title", content: "Modtech Machine Team Sign In" },
       { name: "robots", content: "noindex" },
     ],
   }),

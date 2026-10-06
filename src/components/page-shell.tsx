@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import { Mail, MapPin, Linkedin } from "lucide-react";
+import { ArrowUpRight, Bot, Factory, Linkedin, Mail, MapPin } from "lucide-react";
 import { SiteHeader } from "@/components/site-header";
 import { BrandLogo } from "@/components/brand-logo";
 import { useSiteContent } from "@/lib/site-content";
@@ -109,6 +109,20 @@ function WhatsAppIcon({ className }: { className?: string }) {
 
 function SiteFooter() {
   const content = useSiteContent("global");
+  const enquiryContacts = [
+    {
+      label: "Investment Casting Machines",
+      description: "New machine requirements",
+      email: content.primary_email,
+      Icon: Factory,
+    },
+    {
+      label: "Robotics & Automation",
+      description: "Automation project enquiries",
+      email: content.automation_email,
+      Icon: Bot,
+    },
+  ];
   const links: Array<{
     to:
       | "/"
@@ -118,7 +132,7 @@ function SiteFooter() {
       | "/industries"
       | "/process"
       | "/gallery"
-      | "/news"
+      | "/blog"
       | "/contact";
     label: string;
   }> = [
@@ -128,7 +142,7 @@ function SiteFooter() {
     { to: "/industries", label: "Industries Served" },
     { to: "/process", label: "Process" },
     { to: "/gallery", label: "Gallery" },
-    { to: "/news", label: "News & Insights" },
+    { to: "/blog", label: "Blogs" },
     { to: "/contact", label: "Contact Us" },
   ];
   const socials = [
@@ -140,9 +154,9 @@ function SiteFooter() {
   ];
   return (
     <footer className="relative border-t border-border bg-carbon-2 px-5 py-14 sm:px-8">
-      <div className="mx-auto grid max-w-7xl gap-10 lg:grid-cols-[1.2fr_1fr_1fr]">
+      <div className="mx-auto grid max-w-7xl gap-10 lg:grid-cols-[1.05fr_0.72fr_1.3fr] lg:gap-12">
         <div>
-          <Link to="/" className="inline-flex flex-col gap-3" aria-label="Modtech Machinery — home">
+          <Link to="/" className="inline-flex flex-col gap-3" aria-label="Modtech Machine — home">
             <BrandLogo className="h-11 text-foreground" />
             <span className="font-mono text-[10px] uppercase tracking-[0.18em] text-brand">
               Investment Casting · Robotics &amp; Automation
@@ -178,34 +192,53 @@ function SiteFooter() {
         </div>
 
         <div>
-          <ul className="space-y-3 text-sm text-muted-foreground">
-            <li>
-              <a
-                href={`mailto:${content.primary_email}`}
-                className="inline-flex min-w-0 items-center gap-2 break-all transition hover:text-brand"
-              >
-                <Mail className="h-4 w-4 text-brand" /> {content.primary_email}
-              </a>
-            </li>
-            <li>
-              <a
-                href={`mailto:${content.automation_email}`}
-                className="inline-flex min-w-0 items-center gap-2 break-all transition hover:text-brand"
-              >
-                <Mail className="h-4 w-4 text-brand" /> {content.automation_email}
-              </a>
-            </li>
-            <li className="inline-flex items-start gap-2">
-              <MapPin className="mt-0.5 h-4 w-4 shrink-0 text-brand" />
-              <span>{content.address}</span>
-            </li>
+          <div className="flex items-center justify-between gap-4 border-b border-border pb-3">
+            <h2 className="font-display text-sm font-semibold text-foreground">
+              Project enquiries
+            </h2>
+            <span className="font-mono text-[8px] uppercase tracking-[0.18em] text-brand">
+              Choose a division
+            </span>
+          </div>
+
+          <ul className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-1 xl:grid-cols-2">
+            {enquiryContacts.map((contact) => (
+              <li key={contact.label}>
+                <a
+                  href={`mailto:${contact.email}?subject=${encodeURIComponent(`${contact.label} enquiry`)}`}
+                  className="group relative flex h-full min-w-0 flex-col overflow-hidden rounded-2xl border border-border bg-card/65 p-4 transition duration-300 hover:-translate-y-1 hover:border-brand/50 hover:bg-card hover:shadow-deep focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand"
+                  aria-label={`Email Modtech for ${contact.label}`}
+                >
+                  <span className="flex items-start justify-between gap-4">
+                    <span className="grid h-9 w-9 place-items-center rounded-xl border border-brand/25 bg-brand/10 text-brand transition duration-300 group-hover:scale-105 group-hover:bg-brand group-hover:text-brand-foreground">
+                      <contact.Icon className="h-4 w-4" />
+                    </span>
+                    <ArrowUpRight className="h-4 w-4 text-muted-foreground transition duration-300 group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-brand" />
+                  </span>
+                  <span className="mt-4 font-display text-sm font-semibold leading-snug text-foreground">
+                    {contact.label}
+                  </span>
+                  <span className="mt-1 font-mono text-[8px] uppercase tracking-[0.14em] text-muted-foreground">
+                    {contact.description}
+                  </span>
+                  <span className="mt-3 inline-flex min-w-0 items-center gap-1.5 break-all text-[11px] font-medium tracking-[-0.015em] text-brand xl:text-[10px] 2xl:text-[11px]">
+                    <Mail className="h-3.5 w-3.5 shrink-0" /> {contact.email}
+                  </span>
+                </a>
+              </li>
+            ))}
           </ul>
+
+          <div className="mt-5 flex items-start gap-2 text-sm leading-relaxed text-muted-foreground">
+            <MapPin className="mt-0.5 h-4 w-4 shrink-0 text-brand" />
+            <span>{content.address}</span>
+          </div>
         </div>
       </div>
 
       <div className="mx-auto mt-10 flex max-w-7xl flex-col items-center justify-between gap-3 border-t border-border/60 pt-6 sm:flex-row">
         <p className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
-          © {new Date().getFullYear()} Modtech Machinery · All rights reserved
+          © {new Date().getFullYear()} Modtech Machine · All rights reserved
         </p>
         <p className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
           {content.footer_line}

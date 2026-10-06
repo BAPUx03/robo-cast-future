@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, redirect } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   ArrowRight,
@@ -146,26 +146,28 @@ function newsToStory(item: PublicNewsItem, index: number): UnifiedStory {
 }
 
 export const Route = createFileRoute("/news")({
-  ssr: false,
+  beforeLoad: () => {
+    throw redirect({ to: "/blog", replace: true });
+  },
   head: () => ({
     meta: [
-      { title: "News & Insights — Modtech Machinery" },
+      { title: "Blogs — Modtech Machine" },
       {
         name: "description",
         content:
-          "Modtech news, engineering articles, case studies and exhibition updates in one place.",
+          "Modtech engineering blogs, company updates, case studies and exhibitions in one place.",
       },
-      { property: "og:title", content: "Modtech News & Engineering Insights" },
+      { property: "og:title", content: "Modtech Blogs & Engineering Insights" },
       {
         property: "og:description",
-        content: "Factory stories, technical knowledge and event updates from Modtech Machinery.",
+        content: "Engineering knowledge, factory stories and updates from Modtech Machine.",
       },
     ],
   }),
-  component: NewsInsightsPage,
+  component: () => null,
 });
 
-function NewsInsightsPage() {
+export function BlogsPage() {
   useRevealOnScroll();
   const [query, setQuery] = useState("");
   const [contentType, setContentType] = useState<ContentFilter>("all");
@@ -258,7 +260,7 @@ function NewsInsightsPage() {
 
         <div className="mx-auto max-w-7xl">
           <div className="reveal inline-flex items-center gap-2 rounded-full border border-brand/25 bg-brand/10 px-4 py-2 font-mono text-[10px] uppercase tracking-[0.22em] text-brand backdrop-blur">
-            <Sparkles className="h-3.5 w-3.5" /> News · Insights · Events
+            <Sparkles className="h-3.5 w-3.5" /> Blogs · Insights · Events
           </div>
           <div className="mt-8 grid gap-10 lg:grid-cols-[1fr_0.72fr] lg:items-end">
             <div>
@@ -270,12 +272,12 @@ function NewsInsightsPage() {
                 className="reveal mt-6 max-w-2xl text-base leading-relaxed text-foreground/65 sm:text-lg"
                 data-reveal-delay="100"
               >
-                Company news, engineering knowledge, real-world case studies and exhibition updates
-                — now in one focused hub.
+                Engineering knowledge, company updates, real-world case studies and exhibition
+                highlights — now in one focused blog hub.
               </p>
             </div>
             <div className="reveal grid grid-cols-3 gap-3" data-reveal-delay="180">
-              <HeroStat value={newsCount} label="News" Icon={Newspaper} />
+              <HeroStat value={newsCount} label="Updates" Icon={Newspaper} />
               <HeroStat value={insightCount} label="Insights" Icon={BookOpen} />
               <HeroStat value={eventItems.length} label="Events" Icon={CalendarDays} />
             </div>
@@ -306,8 +308,8 @@ function NewsInsightsPage() {
               <input
                 value={query}
                 onChange={(event) => setQuery(event.target.value)}
-                placeholder="Search news, articles, case studies or topics..."
-                aria-label="Search news and insights"
+                placeholder="Search blogs, case studies or topics..."
+                aria-label="Search blogs and insights"
                 className="w-full rounded-xl border border-border bg-background py-3.5 pl-11 pr-4 text-sm outline-none ring-brand/40 transition focus:border-brand focus:ring-2"
               />
             </label>
@@ -320,7 +322,11 @@ function NewsInsightsPage() {
                     active={contentType === value}
                     onClick={() => setContentType(value)}
                   >
-                    {value === "all" ? "All stories" : value === "news" ? "News" : "Insights"}
+                    {value === "all"
+                      ? "All blogs"
+                      : value === "news"
+                        ? "Company updates"
+                        : "Insights"}
                   </FilterChip>
                 ))}
               </FilterGroup>
@@ -391,7 +397,7 @@ function NewsInsightsPage() {
                     Latest stories
                   </p>
                   <h3 id="latest-stories-heading" className="mt-2 font-display text-2xl font-bold">
-                    News, articles & case studies
+                    Blogs, insights & case studies
                   </h3>
                 </div>
                 <span className="text-xs text-muted-foreground">{remaining.length} stories</span>
@@ -420,7 +426,7 @@ function NewsInsightsPage() {
               </h2>
             </div>
             <p className="max-w-md text-sm leading-relaxed text-foreground/55 sm:text-right">
-              See Modtech machinery and connect with our engineers at upcoming industry events.
+              See Modtech Machine and connect with our engineers at upcoming industry events.
             </p>
           </div>
 
@@ -588,7 +594,7 @@ function StoryCard({
               </>
             ) : (
               <>
-                <Newspaper className="h-3.5 w-3.5" /> News update
+                <Newspaper className="h-3.5 w-3.5" /> Company update
               </>
             )}
           </span>

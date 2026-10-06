@@ -24,13 +24,13 @@ import { useSiteContent } from "@/lib/site-content";
 export const Route = createFileRoute("/industries")({
   head: () => ({
     meta: [
-      { title: "Industries Served — Modtech Machinery" },
+      { title: "Industries Served — Modtech Machine" },
       {
         name: "description",
         content:
-          "Modtech Machinery powers production lines across Automotive, Aerospace, Defence, Energy, Medical, Railways and more.",
+          "Modtech Machine powers production lines across Automotive, Aerospace, Defence, Energy, Medical, Railways and more.",
       },
-      { property: "og:title", content: "Industries Served — Modtech Machinery" },
+      { property: "og:title", content: "Industries Served — Modtech Machine" },
       {
         property: "og:description",
         content:

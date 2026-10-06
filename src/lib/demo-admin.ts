@@ -31,7 +31,7 @@ const initialData: DemoData = {
       slug: "repeatable-investment-casting-workflows",
       kind: "article",
       category: "casting",
-      author: "Modtech Machinery",
+      author: "Modtech Machine",
       read_minutes: 5,
       cover_url: "",
       excerpt: "A practical guide to improving process consistency across the foundry floor.",
@@ -159,7 +159,7 @@ const initialData: DemoData = {
   site_settings: [
     { key: "admin_notify_email", value: "sales@modtech.example" },
     { key: "sender_email", value: "noreply@modtech.example" },
-    { key: "sender_name", value: "Modtech Machinery" },
+    { key: "sender_name", value: "Modtech Machine" },
   ],
 };
 

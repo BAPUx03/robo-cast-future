@@ -9,7 +9,7 @@ import { useSiteContent } from "@/lib/site-content";
 export const Route = createFileRoute("/process")({
   head: () => ({
     meta: [
-      { title: "Process — From Concept to Production | Modtech Machinery" },
+      { title: "Process — From Concept to Production | Modtech Machine" },
       {
         name: "description",
         content:

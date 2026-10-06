@@ -3,6 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { ArrowUpRight, Mail, Megaphone, Menu, X } from "lucide-react";
 import { Link, useLocation } from "@tanstack/react-router";
 import { BrandLogo } from "@/components/brand-logo";
+import { DesktopMachineMenu, MobileMachineMenu } from "@/components/machine-menu";
 import { ThemeToggle } from "@/components/theme-toggle";
 import {
   fetchPublicAnnouncement,
@@ -13,12 +14,11 @@ import {
 const NAV_ITEMS = [
   { to: "/", label: "Home" },
   { to: "/about", label: "About Us" },
-  { to: "/divisions", label: "Divisions" },
   { to: "/solutions", label: "Solutions" },
   { to: "/industries", label: "Industries" },
   { to: "/process", label: "Process" },
   { to: "/gallery", label: "Gallery" },
-  { to: "/news", label: "News & Insights" },
+  { to: "/blog", label: "Blogs" },
   { to: "/contact", label: "Contact" },
 ] as const;
 
@@ -92,10 +92,8 @@ export function SiteHeader() {
   const [open, setOpen] = useState(false);
   const location = useLocation();
   const isNavItemActive = (to: (typeof NAV_ITEMS)[number]["to"]) =>
-    to === "/"
-      ? location.pathname === "/"
-      : location.pathname.startsWith(to) ||
-        (to === "/divisions" && location.pathname.startsWith("/machines"));
+    to === "/" ? location.pathname === "/" : location.pathname.startsWith(to);
+  const isMachinesActive = location.pathname.startsWith("/machines");
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 24);
@@ -128,7 +126,7 @@ export function SiteHeader() {
         <Link
           to="/"
           className="group inline-flex min-w-0 items-center gap-3.5 justify-self-start"
-          aria-label="Modtech Machinery — home"
+          aria-label="Modtech Machine — home"
         >
           <BrandLogo className="h-9 text-foreground transition-colors group-hover:text-brand sm:h-10" />
           <span className="hidden h-9 w-px bg-border 2xl:block" />
@@ -139,17 +137,19 @@ export function SiteHeader() {
         </Link>
 
         <nav className="hidden min-w-0 items-center justify-center gap-0 font-display text-[12px] font-medium xl:flex 2xl:text-[13px]">
-          {NAV_ITEMS.map((item) => (
-            <Link
-              key={item.to}
-              to={item.to}
-              data-active={isNavItemActive(item.to)}
-              className={`nav-link whitespace-nowrap rounded-md px-2 py-2 2xl:px-2.5 ${
-                isNavItemActive(item.to) ? "text-brand" : "text-foreground/75 hover:text-brand"
-              }`}
-            >
-              {item.label}
-            </Link>
+          {NAV_ITEMS.map((item, index) => (
+            <div key={item.to} className="contents">
+              <Link
+                to={item.to}
+                data-active={isNavItemActive(item.to)}
+                className={`nav-link whitespace-nowrap rounded-md px-2 py-2 2xl:px-2.5 ${
+                  isNavItemActive(item.to) ? "text-brand" : "text-foreground/75 hover:text-brand"
+                }`}
+              >
+                {item.label}
+              </Link>
+              {index === 1 && <DesktopMachineMenu active={isMachinesActive} />}
+            </div>
           ))}
         </nav>
 
@@ -177,20 +177,24 @@ export function SiteHeader() {
       {open && (
         <div className="max-h-[calc(100dvh-4.5rem)] overflow-y-auto overscroll-contain border-t border-border bg-card/95 backdrop-blur-xl xl:hidden">
           <nav className="mx-auto flex max-w-7xl flex-col gap-1 px-5 py-4 sm:px-8">
-            {NAV_ITEMS.map((item) => (
-              <Link
-                key={item.to}
-                to={item.to}
-                onClick={() => setOpen(false)}
-                data-active={isNavItemActive(item.to)}
-                className={`rounded-lg px-4 py-2.5 font-display text-[15px] transition ${
-                  isNavItemActive(item.to)
-                    ? "bg-brand/12 font-semibold text-brand"
-                    : "font-medium text-foreground/85 hover:bg-secondary/40 hover:text-brand"
-                }`}
-              >
-                {item.label}
-              </Link>
+            {NAV_ITEMS.map((item, index) => (
+              <div key={item.to} className="contents">
+                <Link
+                  to={item.to}
+                  onClick={() => setOpen(false)}
+                  data-active={isNavItemActive(item.to)}
+                  className={`rounded-lg px-4 py-2.5 font-display text-[15px] transition ${
+                    isNavItemActive(item.to)
+                      ? "bg-brand/12 font-semibold text-brand"
+                      : "font-medium text-foreground/85 hover:bg-secondary/40 hover:text-brand"
+                  }`}
+                >
+                  {item.label}
+                </Link>
+                {index === 1 && (
+                  <MobileMachineMenu active={isMachinesActive} onNavigate={() => setOpen(false)} />
+                )}
+              </div>
             ))}
             <div className="mt-3 flex flex-col gap-2 border-t border-border pt-3">
               <a

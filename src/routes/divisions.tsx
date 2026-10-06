@@ -11,7 +11,7 @@ import { fetchPublishedMachines } from "@/lib/catalogue";
 export const Route = createFileRoute("/divisions")({
   head: () => ({
     meta: [
-      { title: "Divisions — Robotics & Investment Casting | Modtech Machinery" },
+      { title: "Divisions — Robotics & Investment Casting | Modtech Machine" },
       {
         name: "description",
         content:

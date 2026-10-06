@@ -4,7 +4,7 @@ import { SolutionsContent } from "@/routes/automation";
 export const Route = createFileRoute("/solutions")({
   head: () => ({
     meta: [
-      { title: "Services & Solutions — Modtech Machinery" },
+      { title: "Services & Solutions — Modtech Machine" },
       {
         name: "description",
         content:

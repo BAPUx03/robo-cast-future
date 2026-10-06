@@ -16,7 +16,7 @@ export type EnquiryInput = z.infer<typeof enquirySchema>;
 
 const BRAND = "#4DD091";
 const CARBON = "#0d1417";
-const SITE = "Modtech Machinery";
+const SITE = "Modtech Machine";
 
 function esc(v: string) {
   return v.replace(
@@ -41,7 +41,7 @@ async function enquiryFingerprint() {
 
 function shell(inner: string, preview: string, logoUrl = "", siteUrl = "") {
   const logo = logoUrl
-    ? `<img src="${esc(logoUrl)}" width="150" alt="Modtech Machinery" style="display:block;max-width:150px;height:auto;margin:0 0 10px"/>`
+    ? `<img src="${esc(logoUrl)}" width="150" alt="Modtech Machine" style="display:block;max-width:150px;height:auto;margin:0 0 10px"/>`
     : "";
   const footerBrand = siteUrl
     ? `<a href="${esc(siteUrl)}" style="color:#43555a;text-decoration:none;font-weight:bold">${SITE}</a>`

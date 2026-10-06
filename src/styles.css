@@ -5,7 +5,7 @@
 @custom-variant dark (&:is(.dark *));
 
 /*
- * Modtech Machinery — Industrial Robotics Design System
+ * Modtech Machine — Industrial Robotics Design System
  * Dark-first. Brand mint #4DD091 with carbon, steel, and copper accents.
  * All colors in oklch.
  */
@@ -1089,6 +1089,69 @@
     animation: gallery-image-in 0.5s cubic-bezier(0.2, 0.7, 0.2, 1) both;
   }
 
+  .testimonial-viewport {
+    overflow: hidden;
+    mask-image: linear-gradient(90deg, transparent, #000 5%, #000 95%, transparent);
+  }
+  .testimonial-track {
+    display: flex;
+    width: max-content;
+    gap: 1rem;
+    animation: testimonial-marquee 54s linear infinite;
+    will-change: transform;
+  }
+  .testimonial-viewport:hover .testimonial-track,
+  .testimonial-viewport:focus-within .testimonial-track {
+    animation-play-state: paused;
+  }
+  .testimonial-marquee-group {
+    display: flex;
+    gap: 1rem;
+  }
+  .testimonial-card {
+    position: relative;
+    width: clamp(18.5rem, 27vw, 22rem);
+    flex: none;
+    overflow: hidden;
+    border: 1px solid color-mix(in oklab, var(--foreground) 14%, transparent);
+    border-radius: 1.25rem;
+    background: linear-gradient(
+      145deg,
+      color-mix(in oklab, var(--card) 96%, var(--brand) 4%),
+      color-mix(in oklab, var(--card) 96%, transparent)
+    );
+    padding: 1.4rem;
+    box-shadow: 0 24px 60px -38px rgb(0 0 0 / 0.9);
+    transition:
+      transform 0.45s cubic-bezier(0.2, 0.7, 0.2, 1),
+      border-color 0.35s ease,
+      box-shadow 0.45s ease;
+  }
+  .testimonial-card::before {
+    content: "";
+    position: absolute;
+    inset: 0 auto auto 0;
+    width: 100%;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--brand), var(--cyan), transparent);
+    opacity: 0.6;
+    transform: scaleX(0.35);
+    transition:
+      opacity 0.35s ease,
+      transform 0.5s cubic-bezier(0.2, 0.7, 0.2, 1);
+  }
+  .testimonial-card:hover {
+    transform: translateY(-6px);
+    border-color: color-mix(in oklab, var(--brand) 48%, transparent);
+    box-shadow:
+      0 30px 70px -38px rgb(0 0 0 / 0.95),
+      0 0 45px -30px color-mix(in oklab, var(--brand) 70%, transparent);
+  }
+  .testimonial-card:hover::before {
+    opacity: 1;
+    transform: scaleX(1);
+  }
+
   @media (hover: hover) {
     .gallery-card-caption {
       opacity: 0;
@@ -1110,6 +1173,7 @@
     .announcement-bar::before,
     .announcement-track,
     .announcement-signal,
+    .testimonial-track,
     .representative-flag,
     .blink-dot,
     .reveal,
@@ -1138,7 +1202,8 @@
     .gallery-card-media,
     .gallery-card-caption,
     .gallery-lightbox,
-    .gallery-lightbox-image {
+    .gallery-lightbox-image,
+    .testimonial-card {
       transition: none !important;
       animation: none !important;
       transform: none !important;
@@ -1206,6 +1271,15 @@
   to {
     opacity: 1;
     transform: scale(1);
+  }
+}
+
+@keyframes testimonial-marquee {
+  from {
+    transform: translate3d(0, 0, 0);
+  }
+  to {
+    transform: translate3d(calc(-50% - 0.5rem), 0, 0);
   }
 }
 

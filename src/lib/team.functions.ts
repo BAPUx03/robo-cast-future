@@ -151,14 +151,14 @@ export const assignLead = createServerFn({ method: "POST" })
         const siteUrl = (config["site_url"] || "").replace(/\/$/, "");
         const controlCentreUrl = siteUrl ? `${siteUrl}/admin?section=enquiries` : "";
         const logo = config["email_logo_url"]
-          ? `<img src="${escapeHtml(config["email_logo_url"])}" width="145" alt="Modtech Machinery" style="display:block;max-width:145px;height:auto;margin-bottom:10px"/>`
+          ? `<img src="${escapeHtml(config["email_logo_url"])}" width="145" alt="Modtech Machine" style="display:block;max-width:145px;height:auto;margin-bottom:10px"/>`
           : "";
         const leadName = escapeHtml(lead.name);
         const leadCompany = escapeHtml(lead.company ?? "");
         const leadEmail = escapeHtml(lead.email);
         const { getBrevoSender, sendBrevoEmail } = await import("@/lib/brevo.server");
         try {
-          const senderName = config["sender_name"] || "Modtech Machinery";
+          const senderName = config["sender_name"] || "Modtech Machine";
           const sender = await getBrevoSender(process.env["BREVO_API_KEY"]!, senderName);
           await sendBrevoEmail(process.env["BREVO_API_KEY"]!, {
             sender,

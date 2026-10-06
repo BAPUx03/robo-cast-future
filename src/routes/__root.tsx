@@ -32,26 +32,26 @@ export const Route = createRootRoute({
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Modtech Machinery | Robotics & Casting Automation" },
+      { title: "Modtech Machine | Robotics & Casting Automation" },
       {
         name: "description",
         content:
-          "Modern robotics, automation, and investment casting machinery from Modtech Machinery.",
+          "Modern robotics, automation, and investment casting machinery from Modtech Machine.",
       },
-      { name: "author", content: "Modtech Machinery" },
-      { property: "og:title", content: "Modtech Machinery | Robotics & Casting Automation" },
+      { name: "author", content: "Modtech Machine" },
+      { property: "og:title", content: "Modtech Machine | Robotics & Casting Automation" },
       {
         property: "og:description",
         content:
-          "Modern robotics, automation, and investment casting machinery from Modtech Machinery.",
+          "Modern robotics, automation, and investment casting machinery from Modtech Machine.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
-      { name: "twitter:title", content: "Modtech Machinery | Robotics & Casting Automation" },
+      { name: "twitter:title", content: "Modtech Machine | Robotics & Casting Automation" },
       {
         name: "twitter:description",
         content:
-          "Modern robotics, automation, and investment casting machinery from Modtech Machinery.",
+          "Modern robotics, automation, and investment casting machinery from Modtech Machine.",
       },
     ],
     links: [

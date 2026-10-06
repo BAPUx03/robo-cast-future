@@ -1,9 +1,23 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
-import { ArrowLeft, ArrowRight, ArrowUpRight, CheckCircle2 } from "lucide-react";
+import {
+  ArrowLeft,
+  ArrowRight,
+  ArrowUpRight,
+  CheckCircle2,
+  ClipboardCheck,
+  Layers3,
+  Settings2,
+} from "lucide-react";
 import { useState } from "react";
 import { PageShell } from "@/components/page-shell";
 import { useRevealOnScroll } from "@/hooks/use-reveal-on-scroll";
-import { categoryMeta, machineDivision, machineSection, type Machine } from "@/content/site-data";
+import {
+  categoryMeta,
+  machineDivision,
+  machineSection,
+  productSectionMeta,
+  type Machine,
+} from "@/content/site-data";
 import { fetchPublishedMachines } from "@/lib/catalogue";
 
 const isCatalogueCutout = (machine: Machine) =>
@@ -23,7 +37,7 @@ export const Route = createFileRoute("/machines/$slug")({
   },
   head: ({ loaderData }) => {
     const m = loaderData?.machine;
-    const title = m ? `${m.title} — Modtech Machinery` : "Machine — Modtech Machinery";
+    const title = m ? `${m.title} — Modtech Machine` : "Machine — Modtech Machine";
     const desc = m?.tagline ?? "Engineered machinery for casting and automation lines.";
     return {
       meta: [
@@ -67,6 +81,8 @@ function MachineDetail() {
     catalogue: Machine[];
   };
   const division = machineDivision(m);
+  const sectionId = machineSection(m);
+  const section = productSectionMeta[sectionId];
   const relatedPool = catalogue.filter(
     (item) => item.slug !== m.slug && machineDivision(item) === division,
   );
@@ -132,62 +148,168 @@ function MachineDetail() {
         </div>
       </section>
 
-      <section className="relative bg-background px-5 py-16 sm:px-8 sm:py-20">
-        <div className="mx-auto grid max-w-7xl gap-10 lg:grid-cols-3">
-          <div className="reveal-on-scroll lg:col-span-2">
-            <h2 className="font-display text-3xl font-bold tracking-tight sm:text-4xl">
-              Engineered for repeatability.
-            </h2>
-            <p className="mt-4 leading-relaxed text-muted-foreground">{m.desc}</p>
+      <nav className="sticky top-[4.5rem] z-20 border-y border-border bg-background/90 px-5 backdrop-blur-xl sm:px-8">
+        <div className="mx-auto flex max-w-7xl gap-5 overflow-x-auto py-3 font-mono text-[9px] uppercase tracking-[0.17em] text-muted-foreground sm:gap-8">
+          {[
+            ["overview", "Overview"],
+            ["features", "Key features"],
+            ["applications", "Applications"],
+            ["specifications", "Specifications"],
+          ].map(([target, label], index) => (
+            <a
+              key={target}
+              href={`#${target}`}
+              className="inline-flex shrink-0 items-center gap-2 transition hover:text-brand"
+            >
+              <span className="text-brand">0{index + 1}</span> {label}
+            </a>
+          ))}
+        </div>
+      </nav>
 
-            <div className="mt-8 grid gap-3 sm:grid-cols-2">
-              {m.highlights.map((h) => (
-                <div
-                  key={h}
-                  className="flex items-start gap-3 rounded-xl border border-border bg-card/60 p-4"
+      <section className="relative overflow-hidden bg-background px-5 py-16 sm:px-8 sm:py-20">
+        <div className="pointer-events-none absolute right-0 top-0 h-80 w-80 rounded-full bg-brand/[0.05] blur-3xl" />
+        <div className="relative mx-auto max-w-7xl">
+          <section id="overview" className="scroll-mt-36 reveal-on-scroll">
+            <div className="grid gap-8 border-b border-border pb-14 lg:grid-cols-[0.7fr_1.3fr] lg:gap-16">
+              <div>
+                <p className="font-mono text-[10px] uppercase tracking-[0.24em] text-brand">
+                  01 / Overview
+                </p>
+                <h2 className="mt-3 font-display text-3xl font-bold tracking-tight sm:text-4xl">
+                  Engineered for repeatable production.
+                </h2>
+              </div>
+              <div>
+                <p className="text-base leading-8 text-muted-foreground sm:text-lg">{m.desc}</p>
+                <a
+                  href={`/machines?division=${division}#${sectionId}`}
+                  className="mt-5 inline-flex items-center gap-2 font-mono text-[10px] uppercase tracking-[0.18em] text-brand transition hover:gap-3"
                 >
-                  <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-brand" />
-                  <span className="text-sm text-foreground/90">{h}</span>
+                  <Layers3 className="h-3.5 w-3.5" /> {section.label}
+                  <ArrowRight className="h-3.5 w-3.5" />
+                </a>
+              </div>
+            </div>
+          </section>
+
+          <section id="features" className="scroll-mt-36 py-14">
+            <div className="reveal-on-scroll flex items-center gap-3">
+              <span className="grid h-10 w-10 place-items-center rounded-xl bg-brand/10 text-brand">
+                <Settings2 className="h-4 w-4" />
+              </span>
+              <div>
+                <p className="font-mono text-[10px] uppercase tracking-[0.24em] text-brand">
+                  02 / Key features
+                </p>
+                <h2 className="mt-1 font-display text-2xl font-bold tracking-tight">
+                  Built around the process.
+                </h2>
+              </div>
+            </div>
+            <div className="mt-7 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+              {m.highlights.map((highlight, index) => (
+                <div
+                  key={highlight}
+                  className="reveal-on-scroll group relative overflow-hidden rounded-2xl border border-border bg-card/65 p-5 shadow-card transition duration-300 hover:-translate-y-1 hover:border-brand/45"
+                  data-reveal-delay={(index % 4) * 65}
+                >
+                  <span className="absolute right-4 top-3 font-display text-4xl font-bold text-brand/[0.07] transition group-hover:text-brand/[0.13]">
+                    {(index + 1).toString().padStart(2, "0")}
+                  </span>
+                  <CheckCircle2 className="h-4 w-4 text-brand" />
+                  <p className="relative mt-7 text-sm font-medium leading-relaxed text-foreground/90">
+                    {highlight}
+                  </p>
                 </div>
               ))}
             </div>
+          </section>
 
-            <div className="mt-10">
-              <ul className="flex flex-wrap gap-2">
-                {m.applications.map((a) => (
+          <section id="applications" className="scroll-mt-36 border-y border-border py-14">
+            <div className="reveal-on-scroll grid gap-7 lg:grid-cols-[0.8fr_1.2fr] lg:items-center">
+              <div>
+                <p className="font-mono text-[10px] uppercase tracking-[0.24em] text-brand">
+                  03 / Applications
+                </p>
+                <h2 className="mt-2 font-display text-2xl font-bold tracking-tight sm:text-3xl">
+                  Where this machine fits.
+                </h2>
+                <p className="mt-3 max-w-lg text-sm leading-relaxed text-muted-foreground">
+                  Typical use cases for this platform. Tooling, handling and controls are engineered
+                  around the approved production requirement.
+                </p>
+              </div>
+              <ul className="grid gap-3 sm:grid-cols-2">
+                {m.applications.map((application, index) => (
                   <li
-                    key={a}
-                    className="rounded-full border border-border bg-card/60 px-3.5 py-1.5 font-mono text-[10px] uppercase tracking-wider text-muted-foreground"
+                    key={application}
+                    className="flex items-center gap-3 rounded-xl border border-border bg-card/60 px-4 py-3 text-sm text-foreground/90"
                   >
-                    {a}
+                    <span className="font-mono text-[9px] font-semibold text-brand">
+                      {(index + 1).toString().padStart(2, "0")}
+                    </span>
+                    {application}
                   </li>
                 ))}
               </ul>
             </div>
-          </div>
+          </section>
 
-          <aside className="reveal-on-scroll" data-reveal-delay="120">
-            <div className="rounded-2xl border border-border bg-card p-6 shadow-card">
-              <dl className="divide-y divide-border">
-                {m.specs.map((s) => (
-                  <div key={s.label} className="flex items-center justify-between gap-4 py-3">
-                    <dt className="font-mono text-[10.5px] uppercase tracking-[0.18em] text-muted-foreground">
-                      {s.label}
-                    </dt>
-                    <dd className="text-right font-display text-sm font-semibold text-foreground">
-                      {s.value}
-                    </dd>
-                  </div>
-                ))}
-              </dl>
-              <Link
-                to="/contact"
-                className="mt-5 inline-flex w-full items-center justify-center gap-2 rounded-full bg-brand px-5 py-2.5 font-mono text-[11px] font-semibold uppercase tracking-wider text-brand-foreground shadow-glow transition hover:translate-y-[-1px]"
-              >
-                Request datasheet <ArrowRight className="h-4 w-4" />
-              </Link>
+          <section id="specifications" className="scroll-mt-36 pt-14">
+            <div className="reveal-on-scroll grid gap-8 lg:grid-cols-[0.72fr_1.28fr] lg:gap-16">
+              <div>
+                <div className="flex items-center gap-3">
+                  <span className="grid h-10 w-10 place-items-center rounded-xl bg-brand/10 text-brand">
+                    <ClipboardCheck className="h-4 w-4" />
+                  </span>
+                  <p className="font-mono text-[10px] uppercase tracking-[0.24em] text-brand">
+                    04 / Technical specifications
+                  </p>
+                </div>
+                <h2 className="mt-4 font-display text-3xl font-bold tracking-tight">
+                  Configuration at a glance.
+                </h2>
+                <p className="mt-4 text-sm leading-relaxed text-muted-foreground">
+                  Values shown describe the standard or published platform. Final capacity,
+                  utilities and safety configuration are confirmed against the approved client
+                  requirement and project datasheet.
+                </p>
+              </div>
+
+              <div className="overflow-hidden rounded-2xl border border-border bg-card shadow-card">
+                <dl className="divide-y divide-border">
+                  {m.specs.map((spec, index) => (
+                    <div
+                      key={spec.label}
+                      className="grid gap-1 px-5 py-4 transition hover:bg-brand/[0.04] sm:grid-cols-[2.5rem_1fr_1.2fr] sm:items-center sm:gap-4"
+                    >
+                      <span className="hidden font-mono text-[9px] text-brand/70 sm:block">
+                        {(index + 1).toString().padStart(2, "0")}
+                      </span>
+                      <dt className="font-mono text-[10px] uppercase tracking-[0.17em] text-muted-foreground">
+                        {spec.label}
+                      </dt>
+                      <dd className="font-display text-sm font-semibold text-foreground sm:text-right">
+                        {spec.value}
+                      </dd>
+                    </div>
+                  ))}
+                </dl>
+                <div className="border-t border-border bg-secondary/25 p-4 sm:flex sm:items-center sm:justify-between sm:gap-4">
+                  <p className="text-xs leading-relaxed text-muted-foreground">
+                    Need the approved project specification?
+                  </p>
+                  <Link
+                    to="/contact"
+                    className="mt-3 inline-flex items-center gap-2 rounded-full bg-brand px-5 py-2.5 font-mono text-[10px] font-semibold uppercase tracking-wider text-brand-foreground shadow-glow transition hover:-translate-y-0.5 sm:mt-0"
+                  >
+                    Request datasheet <ArrowRight className="h-4 w-4" />
+                  </Link>
+                </div>
+              </div>
             </div>
-          </aside>
+          </section>
         </div>
       </section>
 

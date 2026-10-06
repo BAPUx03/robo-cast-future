@@ -63,7 +63,7 @@ CREATE TABLE public.blog_posts (
   category text NOT NULL DEFAULT 'casting',
   kind text NOT NULL DEFAULT 'blog',
   tags text[] NOT NULL DEFAULT '{}',
-  author text NOT NULL DEFAULT 'Modtech Machinery',
+  author text NOT NULL DEFAULT 'Modtech Machine',
   read_minutes int NOT NULL DEFAULT 4,
   pinned boolean NOT NULL DEFAULT false,
   published boolean NOT NULL DEFAULT true,

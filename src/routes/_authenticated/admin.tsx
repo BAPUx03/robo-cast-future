@@ -93,16 +93,16 @@ export const Route = createFileRoute("/_authenticated/admin")({
   },
   head: () => ({
     meta: [
-      { title: "Admin — Modtech Machinery" },
+      { title: "Admin — Modtech Machine" },
       {
         name: "description",
         content:
-          "Manage blog posts, products, news, exhibitions and enquiries for Modtech Machinery.",
+          "Manage blog posts, products, news, exhibitions and enquiries for Modtech Machine.",
       },
-      { property: "og:title", content: "Modtech Machinery Admin" },
+      { property: "og:title", content: "Modtech Machine Admin" },
       {
         property: "og:description",
-        content: "Content management for the Modtech Machinery website.",
+        content: "Content management for the Modtech Machine website.",
       },
       { name: "robots", content: "noindex" },
     ],
@@ -128,7 +128,7 @@ const TABS = [
   { id: "website", label: "Website Content", description: "Pages & contact text", Icon: Globe2 },
   { id: "posts", label: "Blog & Articles", description: "Editorial content", Icon: FileText },
   { id: "products", label: "Products", description: "Machine catalogue", Icon: Package },
-  { id: "news", label: "News", description: "Updates & resources", Icon: Newspaper },
+  { id: "news", label: "Blog Updates", description: "Short updates & resources", Icon: Newspaper },
   { id: "exhibitions", label: "Exhibitions", description: "Events calendar", Icon: CalendarDays },
   { id: "gallery", label: "Gallery", description: "Office & facility photos", Icon: Images },
   {
@@ -313,7 +313,7 @@ const SCHEMAS: Record<
       slug: "",
       kind: "blog",
       category: "casting",
-      author: "Modtech Machinery",
+      author: "Modtech Machine",
       read_minutes: 4,
       cover_url: "",
       excerpt: "",
@@ -491,7 +491,7 @@ const SCHEMAS: Record<
     blank: {
       title: "",
       category: "facility",
-      location: "Modtech Machinery",
+      location: "Modtech Machine",
       sort_order: 100,
       image_url: "",
       alt_text: "",
@@ -958,7 +958,7 @@ function WebsiteContent({ demo }: { demo: boolean }) {
     home: "/",
     about: "/about",
     machines: "/machines",
-    news: "/news",
+    news: "/blog",
     contact: "/contact",
     divisions: "/divisions",
     solutions: "/solutions",
@@ -1248,7 +1248,7 @@ function Collection({ tab, demo }: { tab: CollectionTab; demo: boolean }) {
   const previewUrl = (row: Row) => {
     if (tab === "posts" && row["slug"]) return `/blog/${String(row["slug"])}`;
     if (tab === "products" && row["slug"]) return `/machines/${String(row["slug"])}`;
-    if (tab === "news" || tab === "exhibitions") return "/news";
+    if (tab === "news" || tab === "exhibitions") return "/blog";
     if (tab === "gallery") return "/gallery";
     return null;
   };
@@ -2979,7 +2979,7 @@ const SETTING_FIELDS: {
     key: "sender_name",
     label: "Sender name",
     hint: "Shown as the From name in the inbox.",
-    placeholder: "Modtech Machinery",
+    placeholder: "Modtech Machine",
   },
   {
     key: "site_url",
