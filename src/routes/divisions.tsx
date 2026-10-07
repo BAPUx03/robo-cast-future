@@ -66,11 +66,11 @@ function DivisionsPage() {
           <div className="mt-8 grid gap-8 lg:grid-cols-[1.15fr_0.85fr] lg:items-end">
             <h1
               className="reveal max-w-4xl font-display text-[clamp(2.7rem,6vw,6.25rem)] font-bold leading-[0.94] tracking-[-0.045em]"
-              data-reveal-delay="80"
+              style={{ animationDelay: "80ms" }}
             >
               {content.title} <span className="block text-gradient-brand">{content.accent}</span>
             </h1>
-            <div className="reveal lg:pb-2" data-reveal-delay="160">
+            <div className="reveal lg:pb-2" style={{ animationDelay: "160ms" }}>
               <p className="max-w-xl text-base leading-relaxed text-foreground/70 sm:text-lg">
                 {content.description}
               </p>

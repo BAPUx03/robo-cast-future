@@ -96,18 +96,18 @@ function HomePage() {
           <div className="min-w-0 max-w-4xl">
             <h1
               className="reveal max-w-4xl font-display text-[clamp(2.5rem,6.4vw,6rem)] font-bold leading-[0.98]"
-              data-reveal-delay="80"
+              style={{ animationDelay: "80ms" }}
             >
               {content.title}
               <span className="mt-2 block text-brand">{content.accent}</span>
             </h1>
             <p
               className="reveal mt-7 max-w-2xl text-base leading-relaxed text-foreground/80 sm:text-lg"
-              data-reveal-delay="160"
+              style={{ animationDelay: "160ms" }}
             >
               {content.description}
             </p>
-            <div className="reveal mt-8 flex flex-wrap gap-3" data-reveal-delay="240">
+            <div className="reveal mt-8 flex flex-wrap gap-3" style={{ animationDelay: "240ms" }}>
               <Button
                 asChild
                 size="lg"
@@ -132,7 +132,7 @@ function HomePage() {
 
           <dl
             className="reveal grid grid-cols-3 border border-foreground/15 bg-carbon/65 backdrop-blur-md lg:grid-cols-1"
-            data-reveal-delay="320"
+            style={{ animationDelay: "320ms" }}
           >
             {stats.slice(0, 3).map((item) => (
               <div

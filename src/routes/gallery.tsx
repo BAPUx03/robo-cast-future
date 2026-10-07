@@ -134,14 +134,14 @@ function GalleryPage() {
               </h1>
               <p
                 className="reveal mt-6 max-w-2xl text-base leading-relaxed text-foreground/65 sm:text-lg"
-                data-reveal-delay="100"
+                style={{ animationDelay: "100ms" }}
               >
                 A closer look at our offices, engineering facilities, integration bays and the
                 people who turn demanding production challenges into reliable machinery.
               </p>
               <div
                 className="reveal mt-10 grid max-w-md grid-cols-2 border-y border-white/10 py-5"
-                data-reveal-delay="150"
+                style={{ animationDelay: "150ms" }}
               >
                 <HeroMetric value={items.length} label="Gallery images" Icon={Images} />
                 <HeroMetric
@@ -153,7 +153,7 @@ function GalleryPage() {
             </div>
             <div
               className="gallery-collage reveal grid h-[27rem] grid-cols-[1.25fr_0.75fr] grid-rows-2 gap-3 sm:h-[34rem]"
-              data-reveal-delay="180"
+              style={{ animationDelay: "180ms" }}
             >
               {heroCollageItems.map((item, index) => (
                 <button

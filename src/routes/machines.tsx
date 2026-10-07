@@ -125,27 +125,27 @@ function MachinesPage() {
             <div>
               <p
                 className="reveal font-mono text-[10px] uppercase tracking-[0.28em] text-brand"
-                data-reveal-delay="60"
+                style={{ animationDelay: "60ms" }}
               >
                 {divisionContent.kicker}
               </p>
               <h1
                 className="reveal mt-3 max-w-4xl font-display text-[clamp(2.5rem,5.5vw,5.7rem)] font-bold leading-[0.96] tracking-[-0.04em]"
-                data-reveal-delay="110"
+                style={{ animationDelay: "110ms" }}
               >
                 {categoryMeta[division].label}
                 <span className="block text-gradient-brand">machines & systems.</span>
               </h1>
               <p
                 className="reveal mt-6 max-w-2xl text-base leading-relaxed text-foreground/65 sm:text-lg"
-                data-reveal-delay="170"
+                style={{ animationDelay: "170ms" }}
               >
                 {divisionContent.description}
               </p>
             </div>
             <div
               className="reveal flex items-center gap-4 border-l border-brand/35 pl-5 lg:mb-1"
-              data-reveal-delay="220"
+              style={{ animationDelay: "220ms" }}
             >
               <span className="font-display text-5xl font-bold text-brand sm:text-6xl">
                 {divisionMachines.length.toString().padStart(2, "0")}

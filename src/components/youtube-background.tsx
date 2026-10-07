@@ -15,8 +15,6 @@ export function YouTubeBackground({ videoId, title, className = "" }: YouTubeBac
 
   useEffect(() => {
     setShowPoster(true);
-    const posterTimer = window.setTimeout(() => setShowPoster(false), 3500);
-    return () => window.clearTimeout(posterTimer);
   }, [videoId]);
 
   return (
@@ -31,13 +29,14 @@ export function YouTubeBackground({ videoId, title, className = "" }: YouTubeBac
         aria-hidden
         loading="eager"
         fetchPriority="high"
-        className={`absolute inset-0 z-10 h-full w-full object-cover transition-opacity duration-1000 ${
+        className={`absolute inset-0 z-10 h-full w-full object-cover transition-opacity duration-1000 motion-reduce:transition-none ${
           showPoster ? "opacity-100" : "opacity-0"
         }`}
       />
       <iframe
         src={source}
         title={title}
+        onLoad={() => setShowPoster(false)}
         tabIndex={-1}
         loading="eager"
         allow="autoplay; encrypted-media; picture-in-picture"

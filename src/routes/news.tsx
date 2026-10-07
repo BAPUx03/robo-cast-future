@@ -270,13 +270,13 @@ export function BlogsPage() {
               </h1>
               <p
                 className="reveal mt-6 max-w-2xl text-base leading-relaxed text-foreground/65 sm:text-lg"
-                data-reveal-delay="100"
+                style={{ animationDelay: "100ms" }}
               >
                 Engineering knowledge, company updates, real-world case studies and exhibition
                 highlights — now in one focused blog hub.
               </p>
             </div>
-            <div className="reveal grid grid-cols-3 gap-3" data-reveal-delay="180">
+            <div className="reveal grid grid-cols-3 gap-3" style={{ animationDelay: "180ms" }}>
               <HeroStat value={newsCount} label="Updates" Icon={Newspaper} />
               <HeroStat value={insightCount} label="Insights" Icon={BookOpen} />
               <HeroStat value={eventItems.length} label="Events" Icon={CalendarDays} />
