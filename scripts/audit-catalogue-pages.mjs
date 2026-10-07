@@ -31,12 +31,12 @@ const results = [];
 const issues = [];
 if (
   listingDivisions.length !== paths.length ||
-  divisionCounts.casting !== 22 ||
+  divisionCounts.casting !== 29 ||
   divisionCounts.robotics !== 0
 ) {
   issues.push({
     path: "/machines",
-    expectedDivisions: { casting: 22, robotics: 0 },
+    expectedDivisions: { casting: 29, robotics: 0 },
     divisionCounts,
     classifiedCards: listingDivisions.length,
   });
@@ -60,7 +60,7 @@ for (const page of ["/", "/divisions"]) {
 const filteredCatalogueChecks = {};
 const expectedFilteredCatalogues = {
   casting: {
-    products: 22,
+    products: 29,
     sections: [
       "wax-injection-machines",
       "wax-processing-conditioning",
@@ -184,7 +184,6 @@ for (const path of paths) {
     checks.hasApplications &&
     checks.hasSpecs &&
     checks.hasQuoteAction &&
-    imageSources.length > 0 &&
     brokenImages.length === 0 &&
     imagesMissingAlt === 0;
   if (!valid) issues.push({ path, ...checks });

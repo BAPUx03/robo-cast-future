@@ -10,6 +10,7 @@ import {
   ClipboardCheck,
   Cpu,
   Factory,
+  ImageOff,
   Layers3,
   MoveHorizontal,
   Ruler,
@@ -153,7 +154,7 @@ export const Route = createFileRoute("/machines/$slug")({
         { name: "description", content: desc },
         { property: "og:title", content: title },
         { property: "og:description", content: desc },
-        ...(m ? [{ property: "og:image", content: m.image } as const] : []),
+        ...(m?.image ? [{ property: "og:image", content: m.image } as const] : []),
       ],
     };
   },
@@ -224,12 +225,14 @@ function MachineDetail() {
     <PageShell>
       <section className="relative isolate overflow-hidden bg-carbon">
         <div className="pointer-events-none absolute inset-0 -z-10">
-          <img
-            src={m.image}
-            alt=""
-            aria-hidden
-            className="absolute inset-0 h-full w-full object-cover opacity-25 blur-2xl"
-          />
+          {m.image && (
+            <img
+              src={m.image}
+              alt=""
+              aria-hidden
+              className="absolute inset-0 h-full w-full object-cover opacity-25 blur-2xl"
+            />
+          )}
           <div className="absolute inset-0 bg-gradient-to-b from-carbon/85 via-carbon/85 to-carbon" />
           <div className="absolute inset-0 bg-grid bg-grid-fade opacity-30" />
           <div className="absolute -left-24 top-20 h-72 w-72 rounded-full bg-brand/10 blur-3xl" />
@@ -413,16 +416,22 @@ function MachineDetail() {
                               <th className="px-4 py-3.5" scope="row">
                                 <span className="flex items-center gap-3">
                                   <span className="h-10 w-12 shrink-0 overflow-hidden rounded-lg border border-border bg-[#f6f7e5]">
-                                    <img
-                                      src={model.image}
-                                      alt=""
-                                      loading="lazy"
-                                      className={`h-full w-full object-contain p-1 ${
-                                        usesLightBackdropBlend(model.image)
-                                          ? "mix-blend-darken"
-                                          : ""
-                                      }`}
-                                    />
+                                    {model.image ? (
+                                      <img
+                                        src={model.image}
+                                        alt=""
+                                        loading="lazy"
+                                        className={`h-full w-full object-contain p-1 ${
+                                          usesLightBackdropBlend(model.image)
+                                            ? "mix-blend-darken"
+                                            : ""
+                                        }`}
+                                      />
+                                    ) : (
+                                      <span className="grid h-full w-full place-items-center bg-secondary text-brand/70">
+                                        <ImageOff className="h-4 w-4" aria-hidden />
+                                      </span>
+                                    )}
                                   </span>
                                   <span>
                                     <span className="block font-display text-sm font-semibold text-foreground">
@@ -586,7 +595,9 @@ function MachineDetail() {
                     </p>
                   </div>
                   <h2 className="mt-4 font-display text-3xl font-bold tracking-tight sm:text-4xl">
-                    Every model. Every critical detail.
+                    {specificationModelCount > 1
+                      ? "Every model. Every critical detail."
+                      : "Complete published machine details."}
                   </h2>
                   <p className="mt-4 text-sm leading-relaxed text-muted-foreground sm:text-base">
                     Compare machine capacity, controls, utilities and available options in one
@@ -764,12 +775,23 @@ function MachineDetail() {
                   <div
                     className={`relative aspect-[16/10] overflow-hidden border-b border-border/70 ${isCatalogueCutout(r) ? "bg-[#f6f7e5]" : "bg-secondary"}`}
                   >
-                    <img
-                      src={r.image}
-                      alt={r.title}
-                      loading="lazy"
-                      className={`h-full w-full transition duration-700 group-hover:scale-105 ${isCatalogueCutout(r) ? `object-contain drop-shadow-[0_14px_14px_rgba(10,30,24,0.14)] ${r.slug === "c-frame-wax-injector" ? "p-0 mix-blend-darken" : `p-5 ${usesLightBackdropBlend(r.image) ? "mix-blend-darken" : ""}`}` : "object-cover"}`}
-                    />
+                    {r.image ? (
+                      <img
+                        src={r.image}
+                        alt={r.title}
+                        loading="lazy"
+                        className={`h-full w-full transition duration-700 group-hover:scale-105 ${isCatalogueCutout(r) ? `object-contain drop-shadow-[0_14px_14px_rgba(10,30,24,0.14)] ${r.slug === "c-frame-wax-injector" ? "p-0 mix-blend-darken" : `p-5 ${usesLightBackdropBlend(r.image) ? "mix-blend-darken" : ""}`}` : "object-cover"}`}
+                      />
+                    ) : (
+                      <div className="grid h-full w-full place-items-center bg-gradient-to-br from-secondary via-background to-secondary p-5 text-center">
+                        <div className="flex flex-col items-center gap-2 text-muted-foreground">
+                          <ImageOff className="h-7 w-7 text-brand/70" aria-hidden />
+                          <span className="font-mono text-[8px] uppercase tracking-[0.16em]">
+                            Official image unavailable
+                          </span>
+                        </div>
+                      </div>
+                    )}
                   </div>
                   <div className="p-5">
                     <div className="font-mono text-[10px] uppercase tracking-widest text-brand">
@@ -831,14 +853,20 @@ function SpecificationTableCard({
               </p>
             </div>
           </div>
-          <a
-            href={specificationTable.sourceUrl}
-            target="_blank"
-            rel="noreferrer"
-            className="inline-flex w-fit items-center gap-2 rounded-full border border-brand/35 bg-background/20 px-3.5 py-2 font-mono text-[9px] font-semibold uppercase tracking-[0.13em] text-brand transition duration-300 hover:-translate-y-0.5 hover:border-brand hover:bg-brand hover:text-brand-foreground"
-          >
-            Official product page <ArrowUpRight className="h-3.5 w-3.5" />
-          </a>
+          {specificationTable.sourceUrl ? (
+            <a
+              href={specificationTable.sourceUrl}
+              target="_blank"
+              rel="noreferrer"
+              className="inline-flex w-fit items-center gap-2 rounded-full border border-brand/35 bg-background/20 px-3.5 py-2 font-mono text-[9px] font-semibold uppercase tracking-[0.13em] text-brand transition duration-300 hover:-translate-y-0.5 hover:border-brand hover:bg-brand hover:text-brand-foreground"
+            >
+              Official product page <ArrowUpRight className="h-3.5 w-3.5" />
+            </a>
+          ) : (
+            <span className="inline-flex w-fit items-center gap-2 rounded-full border border-brand/30 bg-brand/[0.08] px-3.5 py-2 font-mono text-[9px] font-semibold uppercase tracking-[0.13em] text-brand">
+              Master document verified <ShieldCheck className="h-3.5 w-3.5" />
+            </span>
+          )}
         </div>
 
         <div className="relative mt-4 flex gap-2 overflow-x-auto pb-1">
@@ -861,7 +889,11 @@ function SpecificationTableCard({
       </div>
 
       <div className="hidden overflow-x-auto md:block">
-        <table className="w-full min-w-[68rem] border-collapse text-left">
+        <table
+          className={`w-full border-collapse text-left ${
+            specificationTable.columns.length > 2 ? "min-w-[68rem]" : "min-w-[44rem]"
+          }`}
+        >
           <thead>
             <tr className="border-b border-border bg-carbon text-carbon-foreground">
               <th
@@ -967,8 +999,31 @@ function SpecificationTableCard({
 }
 
 function MachineGallery({ machine }: { machine: Machine }) {
-  const images = machine.images?.length ? machine.images : [machine.image];
+  const images = (machine.images?.length ? machine.images : [machine.image]).filter(Boolean);
   const [activeIndex, setActiveIndex] = useState(0);
+
+  if (images.length === 0) {
+    return (
+      <div
+        className="machine-gallery-orbit reveal-on-scroll grid aspect-[4/3] place-items-center overflow-hidden rounded-3xl border border-brand/20 bg-gradient-to-br from-card via-background to-secondary p-8 text-center shadow-deep"
+        data-reveal-delay="120"
+      >
+        <div className="flex max-w-xs flex-col items-center gap-4 text-muted-foreground">
+          <ImageOff className="h-12 w-12 text-brand/70" aria-hidden />
+          <div>
+            <p className="font-mono text-[11px] font-semibold uppercase tracking-[0.18em] text-foreground">
+              Official image unavailable
+            </p>
+            <p className="mt-2 text-sm leading-relaxed">
+              No genuine machine photograph was supplied in the source documents or published on the
+              legacy website.
+            </p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   const activeImage = images[activeIndex] ?? images[0];
   const isCastingImage = activeImage.includes("/productsimg/casting/");
 

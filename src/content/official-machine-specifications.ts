@@ -7,18 +7,24 @@ export type MachineSpecificationTable = {
   title: string;
   columns: string[];
   rows: MachineSpecificationRow[];
-  sourceUrl: string;
+  sourceUrl?: string;
   note?: string;
 };
 
 const referenceNote =
   "Technical figures are based on the supplied Modtech master specification sheets and are for reference. Final values may change with the approved machine configuration; contact Modtech Sales for the project datasheet.";
 
+const publishedProductPageNote =
+  "These details are cross-checked against the published Modtech product page and supplied source documents. Final values and included features may change with the approved machine configuration; contact Modtech Sales for the project datasheet.";
+
+const castingMasterNote =
+  "Configuration and options are transcribed from the supplied MODTECH Casting Machines Master document. Final dimensions, capacities and included features are confirmed against the approved project datasheet.";
+
 const table = (
   title: string,
   columns: string[],
   rows: Array<[string, ...string[]]>,
-  sourceUrl: string,
+  sourceUrl: string | undefined,
   note?: string,
 ): MachineSpecificationTable => ({
   title,
@@ -27,6 +33,25 @@ const table = (
   sourceUrl,
   note,
 });
+
+/**
+ * Older Modtech product pages publish a single set of technical values rather
+ * than a model-by-model comparison. Normalising those values here lets every
+ * official catalogue item use the same accessible specification-table UI.
+ */
+export const publishedMachineSpecification = (
+  specs: Array<{ label: string; value: string }>,
+  sourceUrl: string,
+  title = "Published technical details",
+): MachineSpecificationTable[] => [
+  {
+    title,
+    columns: ["Published configuration"],
+    rows: specs.map(({ label, value }) => ({ label, values: [value] })),
+    sourceUrl,
+    note: publishedProductPageNote,
+  },
+];
 
 const fourPillarWaxModels = [
   "SOL-Mod-12T-4P",
@@ -420,6 +445,161 @@ export const officialMachineSpecifications: Record<string, MachineSpecificationT
         ["Electrical self-diagnostic", "Available", "Available", "Available"],
       ],
       "https://www.modtechworld.com/product-detail.php?id=18",
+    ),
+  ],
+  "shell-drying-conveyor": [
+    table(
+      "Documented configuration and options",
+      ["Shell drying conveyor"],
+      [
+        ["Construction", "Heavy-duty semi-enclosed track"],
+        ["Operation", "Continuous, forward and reverse"],
+        ["Positioning", "Encoder-based precision positioning"],
+        ["Bearings", "Low-maintenance sealed bearings"],
+        ["Drive control", "Intelligent / vector-controlled drive options"],
+        ["Tier configurations", "Single, double or triple tier"],
+        ["Carrier options", "Rotating hanger assemblies with 360° orientation"],
+        ["Expansion", "Modular construction for future extension"],
+        ["Drying integration", "Environmental controls and enclosed drying cabinet available"],
+        ["Software", "Automated shell-management software integration available"],
+      ],
+      undefined,
+      castingMasterNote,
+    ),
+  ],
+  "rain-sander": [
+    table(
+      "Documented configuration and options",
+      ["Rotary rainfall sander"],
+      [
+        ["Standard diameter range", "1,700–4,000 mm"],
+        ["Standard depth range", "1,400–3,000 mm"],
+        ["Stucco distribution", "Rotating head with controlled homogeneous rainfall"],
+        ["Media feed", "Lift-bucket system"],
+        ["Speed control", "Variable-speed, recipe adjustable"],
+        ["Construction", "Heavy-duty steel"],
+        ["Safety", "Removable drip trays and guarding"],
+        ["Automation", "Compatible with robotic shelling systems"],
+        ["Filling", "Manual or automatic options"],
+        ["Remote control", "Online start / stop available"],
+        ["Extraction", "Integrated dust-extraction hood available"],
+        ["Changeover", "Trolley for different stucco grades available"],
+        ["Layout", "Dual-level or multi-station options"],
+      ],
+      undefined,
+      castingMasterNote,
+    ),
+  ],
+  "stucco-elevator": [
+    table(
+      "Documented configuration and options",
+      ["Stucco elevator"],
+      [
+        ["Feed arrangement", "Ground-level loading hopper"],
+        ["Transfer", "Vertical heavy-duty bucket-belt assembly"],
+        ["Discharge", "Controlled high-level discharge to shell-room equipment"],
+        ["Operation", "Continuous and self-contained"],
+        ["Footprint", "Compact shell-room layout"],
+        ["Maintenance", "Low-maintenance construction"],
+        ["Discharge height", "Customisable to plant layout"],
+        ["Drive control", "Variable-speed drive available"],
+      ],
+      undefined,
+      castingMasterNote,
+    ),
+  ],
+  "vertical-sander": [
+    table(
+      "Documented configuration and options",
+      ["Vertical sander"],
+      [
+        ["Stucco flow", "Controlled and uniform vertical application"],
+        ["Reservoir", "Active upper reservoir with lower recovery reservoir"],
+        ["Media transfer", "Integrated auger or bucket elevator"],
+        ["Monitoring", "Sand-level sensing, usage alarm and process indication"],
+        ["Speed control", "Variable-speed operation"],
+        ["Automation", "Suitable for robotic and automated shell rooms"],
+        ["Dust extraction", "Integrated extraction system available"],
+        ["Recipe control", "Recipe-based flow control available"],
+        ["Cleaning", "Automatic sand-cleaning option"],
+      ],
+      undefined,
+      castingMasterNote,
+    ),
+  ],
+  "slurry-preparation-tank": [
+    table(
+      "Documented configuration and options",
+      ["Slurry preparation tank"],
+      [
+        ["Mixing principle", "Dual-motion rotating mixer and tank"],
+        ["Tank", "Stainless-steel ST or LT-series configuration"],
+        ["Speed control", "Variable-frequency drive (VFD)"],
+        ["Mixer access", "Pivoting or lifting arrangement"],
+        ["Production mode", "Continuous or batch preparation"],
+        ["Control", "Fixed control or programmable PLC"],
+        ["Operation", "Manual, semi-automatic or fully automatic"],
+        ["Protection", "Magnetic covers, liners and edge covers available"],
+        ["Monitoring", "Tank-stoppage alarm and process monitoring available"],
+      ],
+      undefined,
+      castingMasterNote,
+    ),
+  ],
+  "shell-hangers": [
+    table(
+      "Documented configuration and options",
+      ["Shell hanger"],
+      [
+        ["Configuration", "Single or multi-position"],
+        ["Construction", "Heavy-duty steel"],
+        ["Robot interface", "Secure T-bar gripper interface"],
+        ["Attachment", "Simple, repeatable locking mechanism"],
+        ["Compatibility", "Wide range of shell weights and geometries"],
+        ["Adapter options", "Wax adapters and conversion kits"],
+        ["Locking options", "Lock ring and lynch-pin arrangements"],
+        ["Customisation", "Alternative attachments and custom T-bar designs"],
+      ],
+      undefined,
+      castingMasterNote,
+    ),
+  ],
+  "ic-series-robot": [
+    table(
+      "Documented configuration and options",
+      ["IC-series robot"],
+      [
+        ["Payload range", "130–2,300 kg"],
+        ["Working envelope", "Large, project-configured"],
+        ["Motion", "Smooth digital servo-controlled movement"],
+        ["Wrist", "High-torque shell-handling assembly"],
+        ["Duty", "Heavy-duty continuous operation"],
+        ["Programming", "Recipe-based, user-friendly control"],
+        ["Supported brands", "KUKA, Kawasaki, FANUC, ABB, Yaskawa and equivalent"],
+        ["Level control", "Automatic slurry-level calibration available"],
+        ["Additional axis", "Integrated servo-driven seventh axis available"],
+        ["Protection", "Protective robot covers available"],
+      ],
+      undefined,
+      castingMasterNote,
+    ),
+  ],
+  "robot-gripper": [
+    table(
+      "Documented configuration and options",
+      ["Robot gripper"],
+      [
+        ["Actuation", "Pneumatic"],
+        ["Rotation", "Continuous 360°"],
+        ["Interface", "Rigid shell-hanger T-bar connection"],
+        ["Payload", "High-payload, project-configured"],
+        ["Construction", "Heavy-duty modular tooling"],
+        ["Repeatability", "Designed for continuous shell-room operation"],
+        ["Mechanical lock", "Available"],
+        ["Position sensors", "Available"],
+      ],
+      undefined,
+      castingMasterNote,
     ),
   ],
 };
