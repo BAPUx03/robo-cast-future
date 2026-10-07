@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { Link } from "@tanstack/react-router";
+import { useEffect, useRef, useState } from "react";
+import { Link, useLocation } from "@tanstack/react-router";
 import { Bot, ChevronDown, ChevronRight, Factory, MoveRight } from "lucide-react";
 import {
   functionalities,
@@ -51,9 +51,33 @@ export function DesktopDivisionMenu({ active }: { active: boolean }) {
   const [menuOpen, setMenuOpen] = useState(false);
   const [selectedDivision, setSelectedDivision] = useState<Mode>("casting");
   const [selectedSection, setSelectedSection] = useState<ProductSection>("wax-injection-machines");
+  const menuRef = useRef<HTMLDivElement>(null);
+  const location = useLocation();
   const visibleSections = sections.filter((section) => section.division === selectedDivision);
   const focusedSection =
     visibleSections.find((section) => section.id === selectedSection) ?? visibleSections[0];
+
+  useEffect(() => {
+    setMenuOpen(false);
+  }, [location.href]);
+
+  useEffect(() => {
+    if (!menuOpen) return;
+
+    const closeOnOutsidePointer = (event: PointerEvent) => {
+      if (!menuRef.current?.contains(event.target as Node)) setMenuOpen(false);
+    };
+    const closeOnEscape = (event: KeyboardEvent) => {
+      if (event.key === "Escape") setMenuOpen(false);
+    };
+
+    document.addEventListener("pointerdown", closeOnOutsidePointer, true);
+    document.addEventListener("keydown", closeOnEscape);
+    return () => {
+      document.removeEventListener("pointerdown", closeOnOutsidePointer, true);
+      document.removeEventListener("keydown", closeOnEscape);
+    };
+  }, [menuOpen]);
 
   function chooseDivision(division: Mode) {
     setSelectedDivision(division);
@@ -63,10 +87,10 @@ export function DesktopDivisionMenu({ active }: { active: boolean }) {
 
   return (
     <div
+      ref={menuRef}
       className="relative"
       onMouseEnter={() => setMenuOpen(true)}
       onMouseLeave={() => setMenuOpen(false)}
-      onFocusCapture={() => setMenuOpen(true)}
       onBlurCapture={(event) => {
         if (!event.currentTarget.contains(event.relatedTarget as Node | null)) {
           setMenuOpen(false);
