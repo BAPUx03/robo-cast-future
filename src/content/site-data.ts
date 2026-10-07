@@ -187,6 +187,7 @@ export type Machine = {
   applications: string[];
   specs: { label: string; value: string }[];
   specificationTables?: MachineSpecificationTable[];
+  videos?: { youtubeId: string; title: string }[];
   officialSourceUrl?: string;
 };
 
@@ -629,6 +630,7 @@ const castingMachines: Machine[] = [
       { label: "Control", value: "Recipe-based smart HMI" },
       { label: "Diagnostics", value: "Statistics, alarms and maintenance" },
     ],
+    videos: [{ youtubeId: "rArfx6gCAlY", title: "Modtech Wax Auto Cell" }],
     officialSourceUrl: "https://www.modtechworld.com/product-detail.php?id=19",
   },
   {
@@ -665,6 +667,7 @@ const castingMachines: Machine[] = [
       { label: "Assembly", value: "Pattern, row or complete-grid gluing" },
       { label: "Inspection", value: "Injection and visual-defect checks" },
     ],
+    videos: [{ youtubeId: "en-PsAB6_oo", title: "Modtech KAWAS" }],
     officialSourceUrl: "https://www.modtechworld.com/product-detail.php?id=20",
   },
 
@@ -867,6 +870,7 @@ const castingMachines: Machine[] = [
       { label: "Access", value: "Multi-level permissions" },
       { label: "Integration", value: "ERP ready" },
     ],
+    videos: [{ youtubeId: "4FHmghBbwS4", title: "Modtech Shell Dip Line" }],
     officialSourceUrl: "https://www.modtechworld.com/product-detail.php?id=32",
   },
   {
@@ -1284,6 +1288,12 @@ const automationMachines: Machine[] = [
       { label: "Gripper", value: "Vacuum / mechanical, product specific" },
       { label: "Support", value: "Ethernet enabled" },
     ],
+    videos: [
+      {
+        youtubeId: "BuX7PRm1Q-0",
+        title: "Modtech Random Case Erector, 12 CPM Speed",
+      },
+    ],
     officialSourceUrl: "https://www.modtechworld.com/product-robotic-detail.php?id=45",
   },
   {
@@ -1323,6 +1333,7 @@ const automationMachines: Machine[] = [
       { label: "Safety", value: "Interlocked guarding and doors" },
       { label: "Support", value: "Ethernet enabled" },
     ],
+    videos: [{ youtubeId: "c7oYzftZA8Y", title: "Modtech Robotics Case Packer" }],
     officialSourceUrl: "https://www.modtechworld.com/product-robotic-detail.php?id=46",
   },
   {
@@ -1361,6 +1372,12 @@ const automationMachines: Machine[] = [
       { label: "Safety", value: "Interlocked guarding and doors" },
       { label: "Support", value: "Ethernet enabled" },
     ],
+    videos: [
+      {
+        youtubeId: "TUrfLrsIYtk",
+        title: "Modtech EasyyRCPa - Palletizer for Multiple Lines",
+      },
+    ],
     officialSourceUrl: "https://www.modtechworld.com/product-robotic-detail.php?id=44",
   },
   {
@@ -1397,6 +1414,12 @@ const automationMachines: Machine[] = [
       { label: "Conveyor", value: "Basic infeed included as required" },
       { label: "Safety", value: "Interlocked guarding and doors" },
       { label: "Integration", value: "Design, build, commissioning and training" },
+    ],
+    videos: [
+      {
+        youtubeId: "pwUt_JBN3Gs",
+        title: "Vials Pick & Place With Pharma Grade Robot",
+      },
     ],
     officialSourceUrl: "https://www.modtechworld.com/product-robotic-detail.php?id=47",
   },

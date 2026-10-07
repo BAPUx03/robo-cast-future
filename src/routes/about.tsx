@@ -22,6 +22,7 @@ import {
   Star,
 } from "lucide-react";
 import { PageShell } from "@/components/page-shell";
+import { YouTubeBackground } from "@/components/youtube-background";
 import { DragRail } from "@/components/drag-rail";
 import { Button } from "@/components/ui/button";
 import { useRevealOnScroll } from "@/hooks/use-reveal-on-scroll";
@@ -175,10 +176,10 @@ function AboutPage() {
   return (
     <PageShell>
       <section className="on-dark relative isolate min-h-[620px] overflow-hidden border-b border-border bg-carbon px-5 pb-10 pt-14 sm:px-8 sm:pb-14 lg:min-h-[720px] lg:pt-20">
-        <img
-          src={automationImages.casePacker}
-          alt="Modtech robotic case packing system"
-          className="absolute inset-0 -z-20 h-full w-full object-cover object-center"
+        <YouTubeBackground
+          videoId="htlzxdmeVg0"
+          title="Modtech investment casting image movie"
+          className="-z-20"
         />
         <div className="absolute inset-0 -z-10 bg-gradient-to-r from-carbon via-carbon/90 to-carbon/20" />
         <div className="absolute inset-0 -z-10 bg-gradient-to-t from-carbon via-transparent to-carbon/40" />
@@ -243,6 +244,55 @@ function AboutPage() {
                 </li>
               ))}
             </ol>
+          </div>
+        </div>
+      </section>
+
+      <section className="on-dark relative isolate min-h-[520px] overflow-hidden border-y border-border bg-carbon px-5 py-20 sm:px-8 sm:py-28">
+        <video
+          autoPlay
+          muted
+          loop
+          playsInline
+          preload="metadata"
+          disablePictureInPicture
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-0 -z-20 h-full w-full object-cover"
+        >
+          <source
+            src="/modtech-global-map.mp4"
+            type="video/mp4"
+            media="(prefers-reduced-motion: no-preference)"
+          />
+        </video>
+        <div className="pointer-events-none absolute inset-0 -z-10 bg-gradient-to-r from-carbon via-carbon/90 to-carbon/35" />
+        <div className="pointer-events-none absolute inset-0 -z-10 bg-gradient-to-t from-carbon/90 via-transparent to-carbon/65" />
+        <div className="pointer-events-none absolute inset-0 -z-10 bg-grid opacity-15" />
+
+        <div className="mx-auto flex min-h-[330px] max-w-7xl items-center">
+          <div className="reveal-on-scroll max-w-2xl">
+            <div className="inline-flex items-center gap-2 rounded-full border border-brand/30 bg-carbon/55 px-3.5 py-2 font-mono text-[9px] font-semibold uppercase tracking-[0.22em] text-brand backdrop-blur-md">
+              <Globe2 className="h-3.5 w-3.5" /> Global presence
+            </div>
+            <h2 className="mt-6 font-display text-4xl font-bold tracking-[-0.04em] sm:text-6xl">
+              Expanding horizons.
+              <span className="block text-gradient-brand">Engineering without borders.</span>
+            </h2>
+            <p className="mt-6 max-w-xl text-base leading-8 text-foreground/70 sm:text-lg">
+              Modtech machines and automation systems support manufacturers across more than 45
+              countries, backed by commissioning, remote diagnostics and lifecycle service.
+            </p>
+            <div className="mt-8 flex flex-wrap gap-3 font-mono text-[9px] uppercase tracking-[0.16em] text-foreground/70">
+              <span className="rounded-full border border-foreground/15 bg-carbon/55 px-4 py-2 backdrop-blur-md">
+                45+ countries
+              </span>
+              <span className="rounded-full border border-foreground/15 bg-carbon/55 px-4 py-2 backdrop-blur-md">
+                Worldwide support
+              </span>
+              <span className="rounded-full border border-foreground/15 bg-carbon/55 px-4 py-2 backdrop-blur-md">
+                Remote diagnostics
+              </span>
+            </div>
           </div>
         </div>
       </section>

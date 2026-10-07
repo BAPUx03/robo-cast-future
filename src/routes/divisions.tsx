@@ -2,6 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { ArrowRight, Bot, Factory, Layers3 } from "lucide-react";
 import { PageShell } from "@/components/page-shell";
+import { YouTubeBackground } from "@/components/youtube-background";
 import { useRevealOnScroll } from "@/hooks/use-reveal-on-scroll";
 import { divisions, functionalities, machineDivision, type Mode } from "@/content/site-data";
 import { automationImages } from "@/content/automation-data";
@@ -116,13 +117,21 @@ function DivisionsPage() {
                   className="division-choice-card reveal-on-scroll group relative isolate flex min-h-[34rem] overflow-hidden rounded-[1.75rem] border border-border bg-card shadow-card focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-4 focus-visible:ring-offset-background"
                   data-reveal-delay={index * 140}
                 >
-                  <img
-                    src={division.image}
-                    alt=""
-                    aria-hidden
-                    loading={index === 0 ? "eager" : "lazy"}
-                    className="division-choice-media absolute inset-0 -z-20 h-full w-full object-cover"
-                  />
+                  {mode === "casting" ? (
+                    <YouTubeBackground
+                      videoId="OVS9l9h-Bbc"
+                      title="Modtech investment casting corporate video"
+                      className="division-choice-media -z-20"
+                    />
+                  ) : (
+                    <img
+                      src={division.image}
+                      alt=""
+                      aria-hidden
+                      loading={index === 0 ? "eager" : "lazy"}
+                      className="division-choice-media absolute inset-0 -z-20 h-full w-full object-cover"
+                    />
+                  )}
                   <div className="absolute inset-0 -z-10 bg-gradient-to-b from-carbon/15 via-carbon/50 to-carbon" />
                   <div className="absolute inset-0 -z-10 bg-gradient-to-r from-carbon/65 via-transparent to-transparent" />
                   <div className="division-choice-grid pointer-events-none absolute inset-0 -z-10 bg-grid opacity-0" />
