@@ -48,6 +48,7 @@ function sectionHref(section: (typeof sections)[number]) {
 }
 
 export function DesktopDivisionMenu({ active }: { active: boolean }) {
+  const [menuOpen, setMenuOpen] = useState(false);
   const [selectedDivision, setSelectedDivision] = useState<Mode>("casting");
   const [selectedSection, setSelectedSection] = useState<ProductSection>("wax-injection-machines");
   const visibleSections = sections.filter((section) => section.division === selectedDivision);
@@ -61,20 +62,42 @@ export function DesktopDivisionMenu({ active }: { active: boolean }) {
   }
 
   return (
-    <div className="group/divisions relative">
+    <div
+      className="relative"
+      onMouseEnter={() => setMenuOpen(true)}
+      onMouseLeave={() => setMenuOpen(false)}
+      onFocusCapture={() => setMenuOpen(true)}
+      onBlurCapture={(event) => {
+        if (!event.currentTarget.contains(event.relatedTarget as Node | null)) {
+          setMenuOpen(false);
+        }
+      }}
+    >
       <Link
         to="/divisions"
         data-active={active}
         aria-haspopup="menu"
+        aria-expanded={menuOpen}
+        onClick={() => setMenuOpen(false)}
         className={`nav-link inline-flex items-center gap-1.5 whitespace-nowrap rounded-md px-2 py-2 2xl:px-2.5 ${
           active ? "text-brand" : "text-foreground/75 hover:text-brand"
         }`}
       >
         Divisions
-        <ChevronDown className="h-3.5 w-3.5 transition duration-200 group-hover/divisions:rotate-180 group-focus-within/divisions:rotate-180" />
+        <ChevronDown
+          className={`h-3.5 w-3.5 transition duration-200 ${menuOpen ? "rotate-180" : ""}`}
+        />
       </Link>
 
-      <div className="pointer-events-none absolute left-1/2 top-full z-50 w-[min(94vw,64rem)] -translate-x-[38%] translate-y-2 pt-4 opacity-0 transition duration-200 group-hover/divisions:pointer-events-auto group-hover/divisions:translate-y-0 group-hover/divisions:opacity-100 group-focus-within/divisions:pointer-events-auto group-focus-within/divisions:translate-y-0 group-focus-within/divisions:opacity-100">
+      <div
+        aria-hidden={!menuOpen}
+        inert={!menuOpen}
+        className={`absolute left-1/2 top-full z-50 w-[min(94vw,64rem)] -translate-x-[38%] pt-4 transition duration-200 ${
+          menuOpen
+            ? "pointer-events-auto translate-y-0 opacity-100"
+            : "pointer-events-none translate-y-2 opacity-0"
+        }`}
+      >
         <div className="overflow-hidden rounded-2xl border border-border bg-card/98 text-left shadow-deep backdrop-blur-2xl">
           <div className="flex items-center justify-between gap-6 border-b border-border bg-background/55 px-5 py-3.5">
             <div>
@@ -85,13 +108,14 @@ export function DesktopDivisionMenu({ active }: { active: boolean }) {
                 Explore machines by engineering division
               </p>
             </div>
-            <Link
-              to="/divisions"
+            <a
+              href="/divisions#division-selector"
+              onClick={() => setMenuOpen(false)}
               className="group/all inline-flex items-center gap-2 rounded-full border border-brand/35 bg-brand/[0.08] px-4 py-2 font-mono text-[9px] font-semibold uppercase tracking-[0.15em] text-brand transition hover:border-brand hover:bg-brand hover:text-brand-foreground"
             >
               View divisions
               <MoveRight className="h-3.5 w-3.5 transition group-hover/all:translate-x-0.5" />
-            </Link>
+            </a>
           </div>
 
           <div className="grid min-h-[25rem] grid-cols-[13.5rem_18rem_minmax(0,1fr)]">
@@ -249,7 +273,7 @@ export function MobileDivisionMenu({
   active: boolean;
   onNavigate: () => void;
 }) {
-  const [expanded, setExpanded] = useState(active);
+  const [expanded, setExpanded] = useState(false);
   const [expandedSection, setExpandedSection] = useState<ProductSection | null>(null);
 
   return (

@@ -83,7 +83,10 @@ function DivisionsPage() {
         </div>
       </section>
 
-      <section className="relative bg-background px-5 py-16 sm:px-8 sm:py-24">
+      <section
+        id="division-selector"
+        className="relative scroll-mt-32 bg-background px-5 py-16 sm:px-8 sm:py-24"
+      >
         <div className="pointer-events-none absolute inset-0 bg-grid bg-grid-fade opacity-20" />
         <div className="relative mx-auto max-w-7xl">
           <header className="reveal-on-scroll mb-9 flex flex-col gap-4 border-b border-border pb-7 sm:flex-row sm:items-end sm:justify-between">
