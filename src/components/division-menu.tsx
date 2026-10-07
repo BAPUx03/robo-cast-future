@@ -70,12 +70,16 @@ export function DesktopDivisionMenu({ active }: { active: boolean }) {
     const closeOnEscape = (event: KeyboardEvent) => {
       if (event.key === "Escape") setMenuOpen(false);
     };
+    const desktopBreakpoint = window.matchMedia("(min-width: 80rem)");
+    const closeOnBreakpointChange = () => setMenuOpen(false);
 
     document.addEventListener("pointerdown", closeOnOutsidePointer, true);
     document.addEventListener("keydown", closeOnEscape);
+    desktopBreakpoint.addEventListener("change", closeOnBreakpointChange);
     return () => {
       document.removeEventListener("pointerdown", closeOnOutsidePointer, true);
       document.removeEventListener("keydown", closeOnEscape);
+      desktopBreakpoint.removeEventListener("change", closeOnBreakpointChange);
     };
   }, [menuOpen]);
 
