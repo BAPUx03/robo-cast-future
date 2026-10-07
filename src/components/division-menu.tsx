@@ -73,29 +73,29 @@ export function DesktopDivisionMenu({ active }: { active: boolean }) {
         }
       }}
     >
-      <div
+      <Link
+        to="/divisions"
         data-active={active}
+        onClick={() => setMenuOpen(false)}
         className={`nav-link inline-flex items-center gap-1.5 whitespace-nowrap rounded-md px-2 py-2 2xl:px-2.5 ${
           active ? "text-brand" : "text-foreground/75 hover:text-brand"
         }`}
       >
-        <Link to="/divisions" onClick={() => setMenuOpen(false)} className="text-inherit">
-          Divisions
-        </Link>
-        <button
-          type="button"
-          aria-haspopup="menu"
-          aria-expanded={menuOpen}
-          aria-controls="desktop-division-menu"
-          aria-label={menuOpen ? "Close divisions menu" : "Open divisions menu"}
-          onClick={() => setMenuOpen((current) => !current)}
-          className="-mr-1 grid h-6 w-6 place-items-center rounded text-current transition hover:bg-brand/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/50"
-        >
-          <ChevronDown
-            className={`h-3.5 w-3.5 transition duration-200 ${menuOpen ? "rotate-180" : ""}`}
-          />
-        </button>
-      </div>
+        Divisions
+        <ChevronDown
+          aria-hidden="true"
+          className={`pointer-events-none h-3.5 w-3.5 transition duration-200 ${menuOpen ? "rotate-180" : ""}`}
+        />
+      </Link>
+      <button
+        type="button"
+        aria-haspopup="menu"
+        aria-expanded={menuOpen}
+        aria-controls="desktop-division-menu"
+        aria-label={menuOpen ? "Close divisions menu" : "Open divisions menu"}
+        onClick={() => setMenuOpen((current) => !current)}
+        className="absolute right-1 top-1/2 z-10 h-6 w-6 -translate-y-1/2 rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/50"
+      />
 
       <div
         id="desktop-division-menu"
