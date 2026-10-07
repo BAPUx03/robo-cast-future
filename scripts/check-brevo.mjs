@@ -21,12 +21,23 @@ if (!apiKey) {
       process.exitCode = 1;
     } else {
       const account = await response.json();
+      const sendersResponse = await fetch("https://api.brevo.com/v3/senders", {
+        headers: { accept: "application/json", "api-key": apiKey },
+      });
+      const sendersBody = await sendersResponse.json().catch(() => ({}));
+      const hasActiveSender =
+        sendersResponse.ok &&
+        Array.isArray(sendersBody.senders) &&
+        sendersBody.senders.some((sender) => sender.active && sender.id);
+
       console.log(
         JSON.stringify({
           authenticated: true,
           transactionalEmailEnabled: Array.isArray(account.plan),
+          activeSenderConfigured: hasActiveSender,
         }),
       );
+      if (!hasActiveSender) process.exitCode = 1;
     }
   } catch (error) {
     console.error(
