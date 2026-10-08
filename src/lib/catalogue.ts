@@ -22,10 +22,15 @@ function galleryImages(value: unknown, fallback: string[]) {
 
 function specifications(value: unknown, fallback: Machine["specs"]) {
   if (!Array.isArray(value)) return fallback;
-  return value
+  const parsed = value
     .filter((item): item is Record<string, unknown> => Boolean(item) && typeof item === "object")
     .map((item) => ({ label: String(item.label ?? ""), value: String(item.value ?? "") }))
     .filter((item) => item.label && item.value);
+
+  // Product rows created before specifications were populated contain the
+  // column's default empty array. Keep the verified built-in specification
+  // set in that case instead of replacing it with an empty table.
+  return parsed.length > 0 ? parsed : fallback;
 }
 
 function category(value: unknown): Category {
