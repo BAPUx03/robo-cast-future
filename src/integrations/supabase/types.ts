@@ -318,6 +318,7 @@ export type Database = {
           created_at: string;
           description: string;
           gallery_images: string[];
+          gallery_captions: string[];
           highlights: string[];
           id: string;
           image_url: string | null;
@@ -326,6 +327,11 @@ export type Database = {
           slug: string;
           sort_order: number;
           specs: Json;
+          specification_note: string;
+          specification_status: string;
+          specification_tables: Json;
+          official_source_url: string | null;
+          datasheet_url: string | null;
           tagline: string;
           title: string;
           updated_at: string;
@@ -337,6 +343,7 @@ export type Database = {
           created_at?: string;
           description?: string;
           gallery_images?: string[];
+          gallery_captions?: string[];
           highlights?: string[];
           id?: string;
           image_url?: string | null;
@@ -345,6 +352,11 @@ export type Database = {
           slug: string;
           sort_order?: number;
           specs?: Json;
+          specification_note?: string;
+          specification_status?: string;
+          specification_tables?: Json;
+          official_source_url?: string | null;
+          datasheet_url?: string | null;
           tagline?: string;
           title: string;
           updated_at?: string;
@@ -356,6 +368,7 @@ export type Database = {
           created_at?: string;
           description?: string;
           gallery_images?: string[];
+          gallery_captions?: string[];
           highlights?: string[];
           id?: string;
           image_url?: string | null;
@@ -364,6 +377,11 @@ export type Database = {
           slug?: string;
           sort_order?: number;
           specs?: Json;
+          specification_note?: string;
+          specification_status?: string;
+          specification_tables?: Json;
+          official_source_url?: string | null;
+          datasheet_url?: string | null;
           tagline?: string;
           title?: string;
           updated_at?: string;

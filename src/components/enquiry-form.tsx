@@ -47,7 +47,13 @@ function Field({
   );
 }
 
-export function EnquiryForm({ heading = "Send us a message" }: { heading?: string }) {
+export function EnquiryForm({
+  heading = "Send us a message",
+  initialMessage = "",
+}: {
+  heading?: string;
+  initialMessage?: string;
+}) {
   const send = useServerFn(submitEnquiry);
   const [busy, setBusy] = useState(false);
 
@@ -100,6 +106,7 @@ export function EnquiryForm({ heading = "Send us a message" }: { heading?: strin
             rows={5}
             required
             maxLength={2000}
+            defaultValue={initialMessage}
             className="mt-2 w-full rounded-xl border border-border bg-background px-4 py-3 text-sm text-foreground outline-none ring-brand/40 transition placeholder:text-muted-foreground focus:border-brand focus:ring-2"
             placeholder="Tell us about the part, the volume, and the cycle time…"
           />

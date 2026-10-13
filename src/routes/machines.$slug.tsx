@@ -221,6 +221,21 @@ function MachineDetail() {
     m.specificationTables?.reduce((total, specificationTable) => {
       return total + specificationTable.rows.length;
     }, 0) ?? m.specs.length;
+  const specificationStatus = m.specificationStatus ?? "verified";
+  const specificationStatusCopy = {
+    verified: {
+      label: "Verified source data",
+      className: "border-brand/30 bg-brand/10 text-brand",
+    },
+    "project-specific": {
+      label: "Project-specific values",
+      className: "border-cyan/30 bg-cyan/10 text-cyan",
+    },
+    "source-review": {
+      label: "Source review required",
+      className: "border-amber/35 bg-amber/10 text-amber",
+    },
+  }[specificationStatus];
 
   return (
     <PageShell>
@@ -277,12 +292,14 @@ function MachineDetail() {
             <div className="mt-7 flex flex-wrap items-center gap-3">
               <Link
                 to="/contact"
+                search={{ machine: m.title }}
                 className="inline-flex items-center gap-2 rounded-full bg-brand px-6 py-3 font-mono text-[11px] font-semibold uppercase tracking-wider text-brand-foreground shadow-glow transition hover:translate-y-[-2px]"
               >
                 Request a quote <ArrowRight className="h-4 w-4" />
               </Link>
               <Link
                 to="/contact"
+                search={{ machine: m.title }}
                 className="inline-flex items-center gap-2 rounded-full border border-border bg-card/40 px-6 py-3 font-mono text-[11px] font-semibold uppercase tracking-wider text-foreground transition hover:border-brand/50 hover:text-brand"
               >
                 Talk to engineering <ArrowUpRight className="h-4 w-4" />
@@ -601,10 +618,33 @@ function MachineDetail() {
                       : "Complete published machine details."}
                   </h2>
                   <p className="mt-4 text-sm leading-relaxed text-muted-foreground sm:text-base">
-                    Compare machine capacity, controls, utilities and available options in one
-                    verified view. Final configuration is confirmed against the approved project
-                    datasheet.
+                    Compare published capacity, controls, utilities and available options in one
+                    structured view. The source status is shown below; final configuration is
+                    confirmed against the approved project datasheet.
                   </p>
+                  <div className="mt-4 flex flex-wrap items-center gap-3">
+                    <span
+                      className={`inline-flex rounded-full border px-3 py-1.5 font-mono text-[9px] font-semibold uppercase tracking-[0.15em] ${specificationStatusCopy.className}`}
+                    >
+                      {specificationStatusCopy.label}
+                    </span>
+                    {m.datasheetUrl && (
+                      <a
+                        href={m.datasheetUrl}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="inline-flex items-center gap-1.5 font-mono text-[9px] font-semibold uppercase tracking-[0.14em] text-brand"
+                      >
+                        Approved datasheet <ArrowUpRight className="h-3.5 w-3.5" />
+                      </a>
+                    )}
+                  </div>
+                  {m.specificationNote && (
+                    <p className="mt-3 max-w-3xl rounded-xl border border-border bg-card/60 px-4 py-3 text-xs leading-relaxed text-muted-foreground">
+                      <span className="font-semibold text-foreground">Specification note: </span>
+                      {m.specificationNote}
+                    </p>
+                  )}
                 </div>
 
                 {m.specificationTables?.length ? (
@@ -657,6 +697,7 @@ function MachineDetail() {
                     </p>
                     <Link
                       to="/contact"
+                      search={{ machine: m.title }}
                       className="mt-3 inline-flex items-center gap-2 rounded-full bg-brand px-5 py-2.5 font-mono text-[10px] font-semibold uppercase tracking-wider text-brand-foreground shadow-glow transition hover:-translate-y-0.5 sm:mt-0"
                     >
                       Request datasheet <ArrowRight className="h-4 w-4" />
@@ -736,6 +777,7 @@ function MachineDetail() {
                     </div>
                     <Link
                       to="/contact"
+                      search={{ machine: m.title }}
                       className="mt-3 inline-flex items-center gap-2 rounded-full bg-brand px-5 py-2.5 font-mono text-[10px] font-semibold uppercase tracking-wider text-brand-foreground shadow-glow transition hover:-translate-y-0.5 sm:mt-0"
                     >
                       Request datasheet <ArrowRight className="h-4 w-4" />
@@ -1031,6 +1073,9 @@ function MachineGallery({ machine }: { machine: Machine }) {
   const activeVideo =
     activeIndex >= images.length ? videos[activeIndex - images.length] : undefined;
   const isCastingImage = activeImage?.includes("/productsimg/casting/") ?? false;
+  const activeCaption = activeImage
+    ? machine.galleryCaptions?.[activeIndex] || `View ${activeIndex + 1} of ${machine.title}`
+    : activeVideo?.title;
 
   return (
     <div
@@ -1056,7 +1101,7 @@ function MachineGallery({ machine }: { machine: Machine }) {
             <img
               key={activeImage}
               src={activeImage}
-              alt={`${machine.title} — view ${activeIndex + 1}`}
+              alt={activeCaption ?? machine.title}
               className={`machine-image-enter h-full w-full ${isCastingImage ? `object-contain drop-shadow-[0_20px_20px_rgba(10,30,24,0.16)] ${machine.slug === "c-frame-wax-injector" ? "p-0 mix-blend-darken" : `p-6 sm:p-10 ${usesLightBackdropBlend(activeImage) ? "mix-blend-darken" : ""}`}` : "object-cover"}`}
             />
             <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-carbon/35 via-transparent to-transparent" />
@@ -1068,7 +1113,9 @@ function MachineGallery({ machine }: { machine: Machine }) {
           ) : (
             <Sparkles className="h-3 w-3 text-brand" />
           )}
-          {activeVideo ? "Official machine video" : "Product visual"}
+          <span className="max-w-[16rem] truncate">
+            {activeVideo ? "Official machine video" : activeCaption}
+          </span>
         </span>
         {mediaCount > 1 && (
           <div className="absolute bottom-3 right-3 flex items-center gap-1.5">
@@ -1114,7 +1161,7 @@ function MachineGallery({ machine }: { machine: Machine }) {
                 key={image}
                 type="button"
                 onClick={() => setActiveIndex(index)}
-                aria-label={`Show ${machine.title} view ${index + 1}`}
+                aria-label={`Show ${machine.galleryCaptions?.[index] || `${machine.title} view ${index + 1}`}`}
                 aria-pressed={activeIndex === index}
                 className={`h-16 w-20 shrink-0 overflow-hidden rounded-xl border bg-[#f6f7e5] transition duration-300 sm:h-20 sm:w-24 ${
                   activeIndex === index

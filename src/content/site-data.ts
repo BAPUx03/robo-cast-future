@@ -94,8 +94,11 @@ export const modeData: Record<
       "From wax injectors and conditioning tanks to slurry machines, rain sanders and ceramic injectors — industrial reliability across every step of the line.",
     image: castingImg,
     features: [
-      { title: "Wax injectors", desc: "Servo-clamp 30T to 300T capacity." },
-      { title: "Slurry systems", desc: "Closed-loop viscosity control." },
+      {
+        title: "Wax injectors",
+        desc: "Hydraulic and servo-controlled platforms from 12T to 300T.",
+      },
+      { title: "Slurry systems", desc: "Purpose-built mixing, conditioning and handling." },
       { title: "Rain sanders", desc: "Curtain stucco for complex shells." },
       { title: "Ceramic injectors", desc: "Hydraulic precision for cores." },
     ],
@@ -187,8 +190,12 @@ export type Machine = {
   applications: string[];
   specs: { label: string; value: string }[];
   specificationTables?: MachineSpecificationTable[];
+  specificationStatus?: "verified" | "project-specific" | "source-review";
+  specificationNote?: string;
+  galleryCaptions?: string[];
   videos?: { youtubeId: string; title: string }[];
   officialSourceUrl?: string;
+  datasheetUrl?: string;
 };
 
 export type ProductSection =
@@ -284,6 +291,8 @@ const castingMachines: Machine[] = [
       "Shipped as a plug-and-play machine",
       "Production-ready within 48 hours of delivery",
       "Simple, cost-effective hydraulic design",
+      "Selectable pressure-and-flow-controlled injection programs",
+      "Automatic cycle with guarded operator controls and emergency stop",
       "Remote access for rapid support",
       "Up to 200 die recipes",
       "Customised for specific industry requirements",
@@ -315,6 +324,8 @@ const castingMachines: Machine[] = [
       "Shipped as a plug-and-play machine",
       "Production-ready within 48 hours of delivery",
       "Simple, cost-effective C-frame design",
+      "Selectable pressure-and-flow-controlled injection programs",
+      "Automatic cycle with guarded operator controls and emergency stop",
       "Remote access for rapid support",
       "Up to 200 die recipes",
       "Customised for specific industry requirements",
@@ -438,6 +449,9 @@ const castingMachines: Machine[] = [
       { label: "Operation", value: "Hydraulic" },
       { label: "Configuration", value: "Application specific" },
     ],
+    specificationStatus: "project-specific",
+    specificationNote:
+      "Only the photographed C-20 configuration is currently documented. Clamp force, shot capacity, utilities, dimensions and weight must be confirmed in the approved project datasheet.",
   },
   {
     code: "WI.06",
@@ -474,6 +488,9 @@ const castingMachines: Machine[] = [
       { label: "Wax supply", value: "Integrated unit" },
       { label: "Configuration", value: "Application specific" },
     ],
+    specificationStatus: "project-specific",
+    specificationNote:
+      "Published information is limited to the supplied machine photographs. Capacity, utilities, dimensions, weight and safety package are confirmed per project.",
   },
   {
     code: "WX.01",
@@ -504,6 +521,9 @@ const castingMachines: Machine[] = [
       { label: "Control", value: "Machine-mounted panel" },
       { label: "Configuration", value: "Application specific" },
     ],
+    specificationStatus: "project-specific",
+    specificationNote:
+      "The domestic variant is identified from the supplied photo pack. Throughput, motor power, temperature range, utilities, dimensions and weight require an approved datasheet.",
   },
   {
     code: "WX.02",
@@ -541,6 +561,9 @@ const castingMachines: Machine[] = [
       { label: "Control", value: "Integrated panel" },
       { label: "Configuration", value: "Project specific" },
     ],
+    specificationStatus: "project-specific",
+    specificationNote:
+      "The export variant is identified from the supplied photo pack. Throughput, motor power, temperature range, utilities, dimensions and weight require an approved datasheet.",
   },
 
   // ---------- Wax conditioning tanks ----------
@@ -591,6 +614,9 @@ const castingMachines: Machine[] = [
       "Consistent injection viscosity",
       "Vacuum or mechanical de-aeration options",
       "Injection-ready wax verification",
+      "Routine filter inspection and replacement",
+      "Foam and entrained-air monitoring",
+      "Recorded viscosity checks before injection",
     ],
     applications: ["Wax rooms", "Pattern shops"],
     specs: [
@@ -740,6 +766,9 @@ const castingMachines: Machine[] = [
       { label: "Extraction", value: "Reverse-pulse jet option" },
     ],
     specificationTables: officialMachineSpecifications["rain-sander"],
+    specificationStatus: "source-review",
+    specificationNote:
+      "The supplied machine document specifies a 1,700-4,000 mm diameter range; the legacy product page states up to 3,000 mm. The supplied document is shown pending final client sign-off.",
     officialSourceUrl: "https://www.modtechworld.com/product-detail.php?id=23",
   },
   {
@@ -809,6 +838,9 @@ const castingMachines: Machine[] = [
       { label: "Options", value: "Recirculation · agitation · heating · spray rinse" },
       { label: "Automation", value: "Water infeed and automatic lid options" },
     ],
+    specificationStatus: "source-review",
+    specificationNote:
+      "The supplied machine document specifies diameters up to 1,600 mm; the legacy page states 1,500 mm. The supplied document is shown pending final client sign-off.",
     officialSourceUrl: "https://www.modtechworld.com/product-detail.php?id=26",
   },
   {
@@ -1208,6 +1240,11 @@ const castingMachines: Machine[] = [
       "Variable-speed abrasive cutting",
       "Servo-driven X and Y cutting head",
       "Five-axis workpiece manipulator",
+      "Z-axis lift, tilt and full 360-degree workpiece rotation",
+      "Hydraulic, part-specific clamping",
+      "HMI control of blade speed and cutting pressure",
+      "Spark, dust and fume arrestment provision",
+      "Manual, semi-automatic or fully automatic operation",
       "Fully interlocked acoustic enclosure",
     ],
     applications: ["Foundry fettling rooms", "Post-cast processing"],
@@ -1242,6 +1279,9 @@ const castingMachines: Machine[] = [
       "Vertical chipping process",
       "Downward mould clamping",
       "Sound-deadened dual-skin cabinet",
+      "Double-glazed observation windows",
+      "Automatic knock-off sequence",
+      "Pneumatic-valve hammer adjustment",
       "Integrated dust extraction",
     ],
     applications: ["Post-pour fettling", "Shell de-coring"],
@@ -1254,6 +1294,9 @@ const castingMachines: Machine[] = [
       { label: "Maximum clamp force", value: "200 kg" },
       { label: "Hammer", value: "Pneumatic · 1,000 BPM adjustable" },
       { label: "Dust extraction", value: "Included" },
+      { label: "Hammer count", value: "1" },
+      { label: "Cycle", value: "Automatic" },
+      { label: "Cabinet", value: "Sound-deadened dual skin with observation windows" },
       { label: "Operating pressure", value: "7 bar" },
       { label: "Pneumatic requirement", value: "46 CFM" },
       { label: "Electrical load", value: "1 kVA · 13 A · 380 V · 3 phase · 50 Hz" },
@@ -1307,6 +1350,9 @@ const automationMachines: Machine[] = [
         title: "Modtech Random Case Erector, 12 CPM Speed",
       },
     ],
+    specificationStatus: "project-specific",
+    specificationNote:
+      "Case range, throughput, utilities and footprint are engineered against the approved line requirement.",
     officialSourceUrl: "https://www.modtechworld.com/product-robotic-detail.php?id=45",
   },
   {
@@ -1347,6 +1393,9 @@ const automationMachines: Machine[] = [
       { label: "Support", value: "Ethernet enabled" },
     ],
     videos: [{ youtubeId: "c7oYzftZA8Y", title: "Modtech Robotics Case Packer" }],
+    specificationStatus: "project-specific",
+    specificationNote:
+      "Product and case ranges, payload, cycle rate, utilities and footprint are engineered per project.",
     officialSourceUrl: "https://www.modtechworld.com/product-robotic-detail.php?id=46",
   },
   {
@@ -1391,6 +1440,9 @@ const automationMachines: Machine[] = [
         title: "Modtech EasyyRCPa - Palletizer for Multiple Lines",
       },
     ],
+    specificationStatus: "project-specific",
+    specificationNote:
+      "Robot payload and reach, pallet size, stack height, cycle rate, utilities and footprint are confirmed for the approved layout.",
     officialSourceUrl: "https://www.modtechworld.com/product-robotic-detail.php?id=44",
   },
   {
@@ -1434,6 +1486,9 @@ const automationMachines: Machine[] = [
         title: "Vials Pick & Place With Pharma Grade Robot",
       },
     ],
+    specificationStatus: "project-specific",
+    specificationNote:
+      "Robot payload, reach, repeatability, cycle rate, tooling and utilities are selected for the application.",
     officialSourceUrl: "https://www.modtechworld.com/product-robotic-detail.php?id=47",
   },
   {
@@ -1466,6 +1521,9 @@ const automationMachines: Machine[] = [
       { label: "Verification", value: "Barcode · OCR · OCV · defect checks" },
       { label: "Calibration", value: "Vision-to-robot coordinate calibration" },
     ],
+    specificationStatus: "project-specific",
+    specificationNote:
+      "Inspection rate, field of view, camera resolution, conveyor speed and lighting are confirmed after sample and line trials.",
     officialSourceUrl: "https://www.modtechworld.com/product-robotic-detail.php?id=48",
   },
 ];

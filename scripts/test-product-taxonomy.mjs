@@ -11,12 +11,31 @@ try {
     FROM information_schema.columns
     WHERE table_schema = 'public'
       AND table_name = 'products'
-      AND column_name IN ('section', 'gallery_images')
+      AND column_name IN (
+        'section',
+        'gallery_images',
+        'gallery_captions',
+        'specification_tables',
+        'specification_status',
+        'specification_note',
+        'official_source_url',
+        'datasheet_url'
+      )
     ORDER BY column_name
   `;
   const requiredColumns = new Set(columns.map((row) => row.column_name));
-  if (!requiredColumns.has("section") || !requiredColumns.has("gallery_images")) {
-    throw new Error("Product taxonomy columns are missing.");
+  const expectedColumns = [
+    "section",
+    "gallery_images",
+    "gallery_captions",
+    "specification_tables",
+    "specification_status",
+    "specification_note",
+    "official_source_url",
+    "datasheet_url",
+  ];
+  if (expectedColumns.some((column) => !requiredColumns.has(column))) {
+    throw new Error("Product catalogue columns are missing.");
   }
 
   const constraints = await sql`
@@ -61,6 +80,10 @@ try {
         category,
         section,
         gallery_images,
+        gallery_captions,
+        specification_tables,
+        specification_status,
+        specification_note,
         published
       )
       VALUES (
@@ -70,14 +93,29 @@ try {
         'robotics',
         'flexible-industrial-automation',
         ${["/test/gallery-one.png", "/test/gallery-two.png"]},
+        ${["Front view", "Side view"]},
+        ${transaction.json([
+          {
+            title: "Performance",
+            columns: ["Test model"],
+            rows: [{ label: "Payload", values: ["20 kg"] }],
+          },
+        ])},
+        'verified',
+        'Test source data',
         false
       )
-      RETURNING category, section, gallery_images, published
+      RETURNING category, section, gallery_images, gallery_captions,
+        specification_tables, specification_status, specification_note, published
     `;
     if (
       row.category !== "robotics" ||
       row.section !== "flexible-industrial-automation" ||
       row.gallery_images.length !== 2 ||
+      row.gallery_captions.length !== 2 ||
+      row.specification_tables.length !== 1 ||
+      row.specification_status !== "verified" ||
+      row.specification_note !== "Test source data" ||
       row.published !== false
     ) {
       throw new Error("Product admin fields did not round-trip correctly.");

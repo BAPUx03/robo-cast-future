@@ -52,6 +52,9 @@ const REPRESENTATIVES = [
 ] as const;
 
 export const Route = createFileRoute("/contact")({
+  validateSearch: (search: Record<string, unknown>) => ({
+    machine: typeof search.machine === "string" ? search.machine.trim().slice(0, 160) : undefined,
+  }),
   head: () => ({
     meta: [
       { title: "Contact — Modtech Machine" },
@@ -74,6 +77,10 @@ function ContactPage() {
   useRevealOnScroll();
   const content = useSiteContent("contact");
   const global = useSiteContent("global");
+  const { machine } = Route.useSearch();
+  const initialMessage = machine
+    ? `I am interested in ${machine}. Please share the approved datasheet, available configuration and quotation.`
+    : "";
   return (
     <PageShell>
       <PageHero
@@ -202,7 +209,10 @@ function ContactPage() {
             </div>
           </div>
 
-          <EnquiryForm />
+          <EnquiryForm
+            heading={machine ? `Enquire about ${machine}` : undefined}
+            initialMessage={initialMessage}
+          />
         </div>
       </section>
 
