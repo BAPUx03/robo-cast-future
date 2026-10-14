@@ -1,5 +1,15 @@
 import { Link } from "@tanstack/react-router";
-import { ArrowUpRight, Bot, Factory, Linkedin, Mail, MapPin } from "lucide-react";
+import {
+  ArrowUpRight,
+  Bot,
+  Facebook,
+  Factory,
+  Instagram,
+  Linkedin,
+  Mail,
+  MapPin,
+  Youtube,
+} from "lucide-react";
 import { SiteHeader } from "@/components/site-header";
 import { BrandLogo } from "@/components/brand-logo";
 import { useSiteContent } from "@/lib/site-content";
@@ -147,9 +157,28 @@ function SiteFooter() {
   ];
   const socials = [
     {
+      href: "https://www.youtube.com/@modtechmachines",
+      Icon: Youtube,
+      label: "Modtech Machines on YouTube",
+      hoverClass: "hover:border-[#ff0000]/70 hover:text-[#ff0000]",
+    },
+    {
+      href: "https://www.instagram.com/modtechmachines/",
+      Icon: Instagram,
+      label: "Modtech Machines on Instagram",
+      hoverClass: "hover:border-[#e4405f]/70 hover:text-[#e4405f]",
+    },
+    {
+      href: "https://www.facebook.com/modtechmachine",
+      Icon: Facebook,
+      label: "Modtech Machines on Facebook",
+      hoverClass: "hover:border-[#1877f2]/70 hover:text-[#1877f2]",
+    },
+    {
       href: "https://www.linkedin.com/company/modtech-machines-pvt-ltd",
       Icon: Linkedin,
       label: "Modtech Machines on LinkedIn",
+      hoverClass: "hover:border-[#0a66c2]/70 hover:text-[#0a66c2]",
     },
   ];
   return (
@@ -165,7 +194,10 @@ function SiteFooter() {
           <p className="mt-5 max-w-sm text-sm leading-relaxed text-muted-foreground">
             {content.company_tagline}
           </p>
-          <div className="mt-5 flex flex-wrap items-center gap-2">
+          <p className="mt-6 font-mono text-[9px] uppercase tracking-[0.2em] text-muted-foreground">
+            Follow Modtech
+          </p>
+          <div className="mt-3 flex flex-wrap items-center gap-2">
             {socials.map((s) => (
               <a
                 key={s.label}
@@ -173,7 +205,8 @@ function SiteFooter() {
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label={s.label}
-                className="grid h-10 w-10 place-items-center rounded-full border border-border bg-card/60 text-muted-foreground transition hover:-translate-y-0.5 hover:border-brand/60 hover:text-brand"
+                title={s.label}
+                className={`grid h-10 w-10 place-items-center rounded-full border border-border bg-card/60 text-muted-foreground transition duration-200 hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand ${s.hoverClass}`}
               >
                 <s.Icon className="h-4 w-4" />
               </a>

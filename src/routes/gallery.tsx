@@ -26,16 +26,17 @@ export const Route = createFileRoute("/gallery")({
   ssr: false,
   head: () => ({
     meta: [
-      { title: "Gallery - Inside Modtech Machine" },
+      { title: "Gallery - Modtech Machine Global Projects & Visits" },
       {
         name: "description",
         content:
-          "Explore Modtech Machine's offices, engineering facilities, factory floors and automation projects.",
+          "Explore Modtech Machine's global projects, customer visits, technical collaborations and industry events.",
       },
-      { property: "og:title", content: "Inside Modtech Machine - Gallery" },
+      { property: "og:title", content: "Our Global Presence - Modtech Machine Gallery" },
       {
         property: "og:description",
-        content: "A visual tour of our people, facilities and engineering work.",
+        content:
+          "A visual journal of Modtech Machine's customer partnerships and engineering work around the world.",
       },
     ],
   }),
@@ -124,20 +125,20 @@ function GalleryPage() {
 
         <div className="mx-auto max-w-7xl">
           <div className="reveal inline-flex items-center gap-2 rounded-full border border-brand/25 bg-brand/10 px-4 py-2 font-mono text-[10px] uppercase tracking-[0.24em] text-brand backdrop-blur">
-            <Camera className="h-3.5 w-3.5" /> Inside Modtech
+            <Camera className="h-3.5 w-3.5" /> Global Gallery
           </div>
           <div className="mt-8 grid gap-14 lg:grid-cols-[0.9fr_1.1fr] lg:items-center">
             <div>
               <h1 className="reveal max-w-4xl font-display text-[clamp(3rem,6.2vw,6.5rem)] font-bold leading-[0.9] tracking-[-0.055em]">
-                The people and places{" "}
-                <span className="block text-gradient-brand">behind every build.</span>
+                Projects, people and{" "}
+                <span className="block text-gradient-brand">global partnerships.</span>
               </h1>
               <p
                 className="reveal mt-6 max-w-2xl text-base leading-relaxed text-foreground/65 sm:text-lg"
                 style={{ animationDelay: "100ms" }}
               >
-                A closer look at our offices, engineering facilities, integration bays and the
-                people who turn demanding production challenges into reliable machinery.
+                A closer look at customer visits, technical collaborations and the teams behind
+                Modtech projects around the world.
               </p>
               <div
                 className="reveal mt-10 grid max-w-md grid-cols-2 border-y border-white/10 py-5"
@@ -146,7 +147,7 @@ function GalleryPage() {
                 <HeroMetric value={items.length} label="Gallery images" Icon={Images} />
                 <HeroMetric
                   value={availableCategories.length}
-                  label="Inside stories"
+                  label="Gallery stories"
                   Icon={Building2}
                 />
               </div>
@@ -205,13 +206,14 @@ function GalleryPage() {
           <div className="grid gap-10 lg:grid-cols-[15rem_minmax(0,1fr)] lg:gap-14">
             <aside className="lg:sticky lg:top-28 lg:self-start">
               <p className="font-mono text-[10px] uppercase tracking-[0.26em] text-brand">
-                Visual journal
+                Global presence
               </p>
               <h2 className="mt-3 font-display text-3xl font-bold tracking-tight">
-                Explore by space.
+                Explore the journey.
               </h2>
               <p className="mt-4 text-sm leading-relaxed text-muted-foreground">
-                Step inside our workplace, project rooms and engineering floor.
+                From customer facilities to international exhibitions, explore the relationships
+                behind our engineering work.
               </p>
               <div className="mt-7 flex flex-wrap gap-2 lg:flex-col" aria-label="Gallery filters">
                 <FilterButton
@@ -242,7 +244,7 @@ function GalleryPage() {
                   </p>
                   <h3 className="mt-2 font-display text-3xl font-bold tracking-tight sm:text-5xl">
                     {category === "all"
-                      ? "Inside Modtech."
+                      ? "Our Global Presence."
                       : `${GALLERY_CATEGORY_LABELS[category]}.`}
                   </h3>
                 </div>
@@ -377,14 +379,21 @@ function GalleryCard({
   onOpen: () => void;
 }) {
   const large = item.featured || index === 0;
-  const wide = !large && index % 4 === 3;
+  const portrait = !large && item.portrait;
+  const wide = !large && !portrait && index % 4 === 3;
   return (
     <button
       type="button"
       onClick={onOpen}
       aria-label={`Open ${item.title}`}
       className={`gallery-card group relative isolate overflow-hidden rounded-2xl border border-border bg-card text-left shadow-card ${
-        large ? "md:col-span-2 md:row-span-2" : wide ? "md:col-span-2" : ""
+        large
+          ? "md:col-span-2 md:row-span-2"
+          : portrait
+            ? "md:row-span-2"
+            : wide
+              ? "md:col-span-2"
+              : ""
       }`}
       style={{ animationDelay: `${(index % 6) * 70}ms` }}
     >

@@ -1,4 +1,3 @@
-import { automationImages } from "@/content/automation-data";
 import { supabase } from "@/integrations/supabase/client";
 import { DEMO_MODE, getDemoRows } from "@/lib/demo-admin";
 
@@ -15,6 +14,7 @@ export type GalleryItem = {
   featured: boolean;
   sort_order: number;
   published: boolean;
+  portrait?: boolean;
 };
 
 export const GALLERY_CATEGORY_LABELS: Record<GalleryCategory, string> = {
@@ -22,125 +22,150 @@ export const GALLERY_CATEGORY_LABELS: Record<GalleryCategory, string> = {
   facility: "Facility",
   factory: "Factory Floor",
   team: "People",
-  events: "Events",
+  events: "Visits & Events",
 };
 
-export const defaultGalleryItems: GalleryItem[] = [
+const clientGalleryItems: GalleryItem[] = [
   {
-    id: "default-office-hero",
-    title: "Office meets engineering",
-    category: "office",
-    location: "Modtech engineering campus",
-    image_url: "/gallery/modtech-office-hero.webp",
-    alt_text:
-      "Contemporary Modtech office with glass meeting rooms overlooking a robotics integration floor",
+    id: "client-international-machine-commissioning",
+    title: "Engineering partnerships in action",
+    category: "factory",
+    location: "International customer site",
+    image_url: "/gallery/customer-visits/international-machine-commissioning.webp",
+    alt_text: "Modtech engineers with an international customer team in front of a Modtech machine",
     caption:
-      "A connected workplace where customer conversations, engineering decisions and shop-floor execution happen side by side.",
+      "A customer-site milestone bringing engineering teams together around Modtech equipment.",
     featured: true,
-    sort_order: 5,
-    published: true,
-  },
-  {
-    id: "default-design-studio",
-    title: "Engineering design studio",
-    category: "team",
-    location: "Design & applications office",
-    image_url: "/gallery/engineering-design-studio.webp",
-    alt_text: "Indian automation engineers collaborating around a mechanical design workstation",
-    caption:
-      "Cross-functional teams develop machine concepts, tooling and controls around the real production challenge.",
-    featured: false,
     sort_order: 10,
     published: true,
   },
   {
-    id: "default-project-review",
-    title: "Project review room",
-    category: "office",
-    location: "Customer engineering centre",
-    image_url: "/gallery/project-review-room.webp",
-    alt_text:
-      "Engineering leaders reviewing project drawings in a glass meeting room beside the automation floor",
-    caption:
-      "Every programme moves through structured design reviews before manufacturing and integration.",
-    featured: false,
-    sort_order: 15,
-    published: true,
-  },
-  {
-    id: "default-team-collaboration",
-    title: "Ideas move faster together",
-    category: "team",
-    location: "Engineering collaboration lounge",
-    image_url: "/gallery/team-collaboration.webp",
-    alt_text: "Indian engineering and operations team discussing a project in a modern office",
-    caption:
-      "Mechanical, electrical, controls and operations expertise come together around each application.",
-    featured: false,
-    sort_order: 18,
-    published: true,
-  },
-  {
-    id: "default-facility",
-    title: "Engineering under one roof",
-    category: "facility",
-    location: "Modtech Machine",
-    image_url: automationImages.facility,
-    alt_text: "Modtech Machine engineering and manufacturing facility",
-    caption: "Design, manufacturing, controls and validation brought together in one facility.",
+    id: "client-site-installation",
+    title: "Customer-site installation",
+    category: "factory",
+    location: "International customer facility",
+    image_url: "/gallery/customer-visits/customer-site-installation.webp",
+    alt_text: "Customer and Modtech teams standing beside an installed Modtech machine",
+    caption: "Working side by side with the customer team during an international installation.",
     featured: false,
     sort_order: 20,
     published: true,
   },
   {
-    id: "default-case-erector",
-    title: "Automation assembly floor",
+    id: "client-technical-collaboration",
+    title: "International technical collaboration",
     category: "factory",
-    location: "Robotics division",
-    image_url: automationImages.caseErectorFloor,
-    alt_text: "Robotic case erector on the Modtech assembly floor",
-    caption: "Turnkey cells assembled and tested before customer dispatch.",
+    location: "Customer production facility",
+    image_url: "/gallery/customer-visits/international-technical-collaboration.webp",
+    alt_text: "Modtech representatives with an international production team on a factory floor",
+    caption: "Technical teams connecting on the shop floor to support reliable production.",
     featured: false,
     sort_order: 30,
     published: true,
   },
   {
-    id: "default-palletizing",
-    title: "Palletizing cell validation",
+    id: "client-machine-visit",
+    title: "Customer project milestone",
     category: "factory",
-    location: "Automation shop floor",
-    image_url: automationImages.palletizingFloor,
-    alt_text: "Robotic palletizing cell during validation",
-    caption: "Cycle testing, safety validation and production trials on the shop floor.",
+    location: "Customer manufacturing facility",
+    image_url: "/gallery/customer-visits/uk-customer-machine-visit.webp",
+    alt_text:
+      "Customer team standing with a Modtech industrial machine at a manufacturing facility",
+    caption: "A shared project milestone with the customer team beside the completed machine.",
     featured: false,
     sort_order: 40,
     published: true,
+    portrait: true,
   },
   {
-    id: "default-pick-place",
-    title: "Precision handling systems",
-    category: "factory",
-    location: "Integration bay",
-    image_url: automationImages.pickPlaceFloor,
-    alt_text: "Pick-and-place robot cell in the Modtech integration bay",
-    caption: "Robotics, vision and end-of-arm tooling engineered as one production system.",
+    id: "client-thailand-visit",
+    title: "Building partnerships in Thailand",
+    category: "events",
+    location: "MSM, Thailand",
+    image_url: "/gallery/customer-visits/thailand-customer-visit.webp",
+    alt_text: "Modtech representatives visiting the MSM team in Thailand",
+    caption: "Strengthening international relationships through direct customer collaboration.",
     featured: false,
     sort_order: 50,
     published: true,
   },
   {
-    id: "default-casting",
-    title: "Investment casting expertise",
-    category: "facility",
-    location: "Casting division",
-    image_url: automationImages.casting,
-    alt_text: "Investment casting production environment",
-    caption: "Process knowledge and equipment engineering across the complete casting workflow.",
+    id: "client-modtech-office-guests",
+    title: "Welcoming global partners",
+    category: "office",
+    location: "Modtech Machine, India",
+    image_url: "/gallery/customer-visits/international-guests-modtech-office.webp",
+    alt_text: "Modtech team welcoming international guests at the company office",
+    caption: "International guests receive a warm welcome from the Modtech team.",
     featured: false,
     sort_order: 60,
     published: true,
+    portrait: true,
+  },
+  {
+    id: "client-trade-show",
+    title: "Connecting at the industry show",
+    category: "events",
+    location: "International trade exhibition",
+    image_url: "/gallery/customer-visits/international-trade-show.webp",
+    alt_text: "Modtech representatives meeting international partners at an industry exhibition",
+    caption:
+      "Exchanging ideas and exploring new manufacturing opportunities at an international show.",
+    featured: false,
+    sort_order: 70,
+    published: true,
+    portrait: true,
+  },
+  {
+    id: "client-hi-tech-visit",
+    title: "Technical exchange at Hi-Tech",
+    category: "events",
+    location: "Hi-Tech facility",
+    image_url: "/gallery/customer-visits/hi-tech-customer-visit.webp",
+    alt_text: "Modtech representatives with the Hi-Tech team during a technical visit",
+    caption: "A focused visit built around technical exchange and long-term collaboration.",
+    featured: false,
+    sort_order: 80,
+    published: true,
+    portrait: true,
+  },
+  {
+    id: "client-partner-dinner",
+    title: "Relationships beyond the factory floor",
+    category: "events",
+    location: "International customer gathering",
+    image_url: "/gallery/customer-visits/international-customer-dinner.webp",
+    alt_text: "Modtech team sharing dinner with international business partners",
+    caption: "Celebrating the people and relationships behind successful global projects.",
+    featured: false,
+    sort_order: 90,
+    published: true,
   },
 ];
+
+export const defaultGalleryItems: GalleryItem[] = clientGalleryItems;
+
+const legacyGalleryImages = new Set([
+  "/gallery/modtech-office-hero.webp",
+  "/gallery/engineering-design-studio.webp",
+  "/gallery/project-review-room.webp",
+  "/gallery/team-collaboration.webp",
+]);
+
+function arrangeGalleryItems(items: GalleryItem[]): GalleryItem[] {
+  const itemsByImage = new Map(items.map((item) => [item.image_url, item]));
+  const arrangedClientItems = clientGalleryItems.map((item) => ({
+    ...item,
+    ...itemsByImage.get(item.image_url),
+    portrait: item.portrait,
+  }));
+  const clientImages = new Set(clientGalleryItems.map((item) => item.image_url));
+  const additionalItems = items.filter(
+    (item) => !clientImages.has(item.image_url) && !legacyGalleryImages.has(item.image_url),
+  );
+
+  return [...arrangedClientItems, ...additionalItems];
+}
 
 function isGalleryCategory(value: unknown): value is GalleryCategory {
   return ["office", "facility", "factory", "team", "events"].includes(String(value));
@@ -160,6 +185,7 @@ function mapGalleryRows(rows: Record<string, unknown>[]): GalleryItem[] {
       featured: Boolean(row["featured"]),
       sort_order: Number(row["sort_order"] ?? index * 10),
       published: row["published"] !== false,
+      portrait: Boolean(row["portrait"]),
     }))
     .sort((a, b) => Number(b.featured) - Number(a.featured) || a.sort_order - b.sort_order);
 }
@@ -167,7 +193,7 @@ function mapGalleryRows(rows: Record<string, unknown>[]): GalleryItem[] {
 export async function fetchPublishedGallery(): Promise<GalleryItem[]> {
   if (DEMO_MODE) {
     const local = mapGalleryRows(getDemoRows("gallery_items"));
-    return local.length > 0 ? local : defaultGalleryItems;
+    return arrangeGalleryItems(local);
   }
 
   const { data, error } = await supabase
@@ -179,5 +205,5 @@ export async function fetchPublishedGallery(): Promise<GalleryItem[]> {
 
   if (error) return defaultGalleryItems;
   const items = mapGalleryRows((data ?? []) as Record<string, unknown>[]);
-  return items.length > 0 ? items : defaultGalleryItems;
+  return arrangeGalleryItems(items);
 }
