@@ -15,13 +15,15 @@ export type GalleryItem = {
   sort_order: number;
   published: boolean;
   portrait?: boolean;
+  aspect_ratio?: number;
+  object_position?: string;
 };
 
 export const GALLERY_CATEGORY_LABELS: Record<GalleryCategory, string> = {
-  office: "Office",
-  facility: "Facility",
-  factory: "Factory Floor",
-  team: "People",
+  office: "Modtech Office",
+  facility: "Facilities",
+  factory: "Customer Sites",
+  team: "People & Teams",
   events: "Visits & Events",
 };
 
@@ -38,6 +40,8 @@ const clientGalleryItems: GalleryItem[] = [
     featured: true,
     sort_order: 10,
     published: true,
+    aspect_ratio: 16 / 9,
+    object_position: "50% 45%",
   },
   {
     id: "client-site-installation",
@@ -50,6 +54,8 @@ const clientGalleryItems: GalleryItem[] = [
     featured: false,
     sort_order: 20,
     published: true,
+    aspect_ratio: 4 / 3,
+    object_position: "42% 48%",
   },
   {
     id: "client-technical-collaboration",
@@ -62,6 +68,8 @@ const clientGalleryItems: GalleryItem[] = [
     featured: false,
     sort_order: 30,
     published: true,
+    aspect_ratio: 16 / 9,
+    object_position: "50% 45%",
   },
   {
     id: "client-machine-visit",
@@ -76,6 +84,8 @@ const clientGalleryItems: GalleryItem[] = [
     sort_order: 40,
     published: true,
     portrait: true,
+    aspect_ratio: 3 / 4,
+    object_position: "50% 52%",
   },
   {
     id: "client-thailand-visit",
@@ -88,6 +98,8 @@ const clientGalleryItems: GalleryItem[] = [
     featured: false,
     sort_order: 50,
     published: true,
+    aspect_ratio: 4 / 3,
+    object_position: "50% 48%",
   },
   {
     id: "client-modtech-office-guests",
@@ -101,6 +113,8 @@ const clientGalleryItems: GalleryItem[] = [
     sort_order: 60,
     published: true,
     portrait: true,
+    aspect_ratio: 3 / 4,
+    object_position: "50% 38%",
   },
   {
     id: "client-trade-show",
@@ -115,6 +129,8 @@ const clientGalleryItems: GalleryItem[] = [
     sort_order: 70,
     published: true,
     portrait: true,
+    aspect_ratio: 3 / 4,
+    object_position: "50% 52%",
   },
   {
     id: "client-hi-tech-visit",
@@ -128,6 +144,8 @@ const clientGalleryItems: GalleryItem[] = [
     sort_order: 80,
     published: true,
     portrait: true,
+    aspect_ratio: 3 / 4,
+    object_position: "50% 62%",
   },
   {
     id: "client-partner-dinner",
@@ -140,6 +158,8 @@ const clientGalleryItems: GalleryItem[] = [
     featured: false,
     sort_order: 90,
     published: true,
+    aspect_ratio: 16 / 9,
+    object_position: "50% 50%",
   },
 ];
 
@@ -153,18 +173,35 @@ const legacyGalleryImages = new Set([
 ]);
 
 function arrangeGalleryItems(items: GalleryItem[]): GalleryItem[] {
-  const itemsByImage = new Map(items.map((item) => [item.image_url, item]));
+  const normalizeImageUrl = (url: string) =>
+    url
+      .trim()
+      .replace(/^https?:\/\/[^/]+/i, "")
+      .replace(/[?#].*$/, "")
+      .replace(/\/+$/, "")
+      .toLowerCase();
+  const itemsByImage = new Map(items.map((item) => [normalizeImageUrl(item.image_url), item]));
   const arrangedClientItems = clientGalleryItems.map((item) => ({
     ...item,
-    ...itemsByImage.get(item.image_url),
+    ...itemsByImage.get(normalizeImageUrl(item.image_url)),
     portrait: item.portrait,
+    aspect_ratio: item.aspect_ratio,
+    object_position: item.object_position,
   }));
-  const clientImages = new Set(clientGalleryItems.map((item) => item.image_url));
+  const clientImages = new Set(clientGalleryItems.map((item) => normalizeImageUrl(item.image_url)));
   const additionalItems = items.filter(
-    (item) => !clientImages.has(item.image_url) && !legacyGalleryImages.has(item.image_url),
+    (item) =>
+      !clientImages.has(normalizeImageUrl(item.image_url)) &&
+      !legacyGalleryImages.has(normalizeImageUrl(item.image_url)),
   );
 
-  return [...arrangedClientItems, ...additionalItems];
+  const seenImages = new Set<string>();
+  return [...arrangedClientItems, ...additionalItems].filter((item) => {
+    const imageKey = normalizeImageUrl(item.image_url);
+    if (!imageKey || seenImages.has(imageKey)) return false;
+    seenImages.add(imageKey);
+    return true;
+  });
 }
 
 function isGalleryCategory(value: unknown): value is GalleryCategory {
@@ -186,6 +223,8 @@ function mapGalleryRows(rows: Record<string, unknown>[]): GalleryItem[] {
       sort_order: Number(row["sort_order"] ?? index * 10),
       published: row["published"] !== false,
       portrait: Boolean(row["portrait"]),
+      aspect_ratio: Number(row["aspect_ratio"]) || undefined,
+      object_position: String(row["object_position"] || "50% 50%"),
     }))
     .sort((a, b) => Number(b.featured) - Number(a.featured) || a.sort_order - b.sort_order);
 }
