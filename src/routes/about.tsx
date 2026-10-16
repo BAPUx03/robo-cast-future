@@ -180,6 +180,7 @@ function AboutPage() {
           videoId="htlzxdmeVg0"
           title="Modtech investment casting image movie"
           className="-z-20"
+          priority
         />
         <div className="absolute inset-0 -z-10 bg-gradient-to-r from-carbon via-carbon/90 to-carbon/20" />
         <div className="absolute inset-0 -z-10 bg-gradient-to-t from-carbon via-transparent to-carbon/40" />

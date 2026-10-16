@@ -33,6 +33,17 @@ const divisionIcons = {
   robotics: Bot,
 } satisfies Record<Mode, typeof Factory>;
 
+const divisionVideos = {
+  casting: {
+    videoId: "OVS9l9h-Bbc",
+    title: "Modtech investment casting corporate video",
+  },
+  robotics: {
+    videoId: "bd5fXFXLylE",
+    title: "Future of Smart Factory in India — Modtech Automation",
+  },
+} satisfies Record<Mode, { videoId: string; title: string }>;
+
 function DivisionsPage() {
   useRevealOnScroll();
   const content = useSiteContent("divisions");
@@ -107,6 +118,7 @@ function DivisionsPage() {
             {divisions.map((division, index) => {
               const mode = division.category as Mode;
               const Icon = divisionIcons[mode];
+              const backgroundVideo = divisionVideos[mode];
               const machineCount = machines.filter(
                 (machine) => machineDivision(machine) === mode,
               ).length;
@@ -120,21 +132,11 @@ function DivisionsPage() {
                   className="division-choice-card reveal-on-scroll group relative isolate flex min-h-[34rem] overflow-hidden rounded-[1.75rem] border border-border bg-card shadow-card focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-4 focus-visible:ring-offset-background"
                   data-reveal-delay={index * 140}
                 >
-                  {mode === "casting" ? (
-                    <YouTubeBackground
-                      videoId="OVS9l9h-Bbc"
-                      title="Modtech investment casting corporate video"
-                      className="division-choice-media -z-20"
-                    />
-                  ) : (
-                    <img
-                      src={division.image}
-                      alt=""
-                      aria-hidden
-                      loading={index === 0 ? "eager" : "lazy"}
-                      className="division-choice-media absolute inset-0 -z-20 h-full w-full object-cover"
-                    />
-                  )}
+                  <YouTubeBackground
+                    videoId={backgroundVideo.videoId}
+                    title={backgroundVideo.title}
+                    className="division-choice-media -z-20"
+                  />
                   <div className="absolute inset-0 -z-10 bg-gradient-to-b from-carbon/15 via-carbon/50 to-carbon" />
                   <div className="absolute inset-0 -z-10 bg-gradient-to-r from-carbon/65 via-transparent to-transparent" />
                   <div className="division-choice-grid pointer-events-none absolute inset-0 -z-10 bg-grid opacity-0" />

@@ -13,6 +13,7 @@ import {
 } from "lucide-react";
 import { PageShell } from "@/components/page-shell";
 import { EnquiryForm } from "@/components/enquiry-form";
+import { YouTubeBackground } from "@/components/youtube-background";
 import { YouTubeVideoCard } from "@/components/youtube-video-card";
 import { Button } from "@/components/ui/button";
 import { useRevealOnScroll } from "@/hooks/use-reveal-on-scroll";
@@ -67,11 +68,11 @@ const advantages = [
 
 const featuredVideos = [
   {
-    videoId: "bd5fXFXLylE",
-    title: "Future of Smart Factory in India",
-    category: "Smart factory overview",
+    videoId: "rArfx6gCAlY",
+    title: "Modtech Wax Auto Cell",
+    category: "Investment casting automation",
     description:
-      "A concise look at Modtech's approach to connected automation, engineered production systems and the modern factory floor.",
+      "Robot-assisted wax pattern handling that brings repeatable extraction, mould service, trimming and placement into one production cell.",
   },
   {
     videoId: "Ah5mS5PDqwQ",
@@ -81,11 +82,11 @@ const featuredVideos = [
       "Automatic wax injection engineered for repeatable pattern production and controlled process performance.",
   },
   {
-    videoId: "sIR8T5m9KUU",
-    title: "Modtech Plastic Machine Tending",
+    videoId: "TUrfLrsIYtk",
+    title: "Modtech EasyyRCPa — Palletizer for Multiple Lines",
     category: "Robotics & automation",
     description:
-      "Robotic machine loading and unloading designed to keep production cycles consistent, safe and dependable.",
+      "A configurable robotic palletizing system for repeatable multi-line handling, automatic pallet feeding and consistent stack quality.",
   },
 ] as const;
 
@@ -96,27 +97,14 @@ function HomePage() {
   return (
     <PageShell>
       <section className="home-hero on-dark relative isolate -mt-28 min-h-[calc(100svh-1rem)] overflow-hidden bg-carbon pt-28 sm:-mt-32 sm:pt-32">
-        <div className="home-hero-media pointer-events-none absolute inset-0 -z-10">
-          <video
-            poster={automationImages.palletizer}
-            autoPlay
-            muted
-            loop
-            playsInline
-            preload="metadata"
-            disablePictureInPicture
-            aria-hidden="true"
-            className="h-full w-full object-cover"
-          >
-            <source
-              src="/modtech-automation-hero.mp4"
-              type="video/mp4"
-              media="(min-width: 768px) and (prefers-reduced-motion: no-preference)"
-            />
-          </video>
-          <div className="absolute inset-0 bg-gradient-to-r from-carbon via-carbon/80 to-carbon/20" />
-          <div className="absolute inset-0 bg-gradient-to-t from-carbon via-transparent to-carbon/40" />
-        </div>
+        <YouTubeBackground
+          videoId="bd5fXFXLylE"
+          title="Future of Smart Factory in India — Modtech Automation"
+          className="home-hero-media -z-10"
+          priority
+        />
+        <div className="pointer-events-none absolute inset-0 -z-10 bg-gradient-to-r from-carbon via-carbon/80 to-carbon/20" />
+        <div className="pointer-events-none absolute inset-0 -z-10 bg-gradient-to-t from-carbon via-transparent to-carbon/40" />
         <div className="pointer-events-none absolute inset-0 -z-10 bg-grid opacity-20" />
 
         <div className="mx-auto grid min-h-[calc(100svh-8rem)] max-w-7xl content-center gap-10 px-5 pb-16 pt-12 sm:px-8 sm:pb-20 lg:grid-cols-[minmax(0,1fr)_16rem] lg:items-end lg:pb-16 xl:grid-cols-[minmax(0,1fr)_18rem]">
