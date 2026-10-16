@@ -46,7 +46,7 @@ const divisionVideos = {
   robotics: {
     videoId: "bd5fXFXLylE",
     title: "Future of Smart Factory in India — Modtech Automation",
-    startAt: 8,
+    startAt: 15,
   },
 } satisfies Record<Mode, { videoId: string; title: string; startAt: number }>;
 

@@ -113,7 +113,7 @@ function HomePage() {
           className="home-hero-media -z-10"
           fallbackImageSrc={automationImages.palletizer}
           fallbackVideoSrc="/modtech-automation-hero.mp4"
-          startAt={10}
+          startAt={15}
           priority
         />
         <div className="pointer-events-none absolute inset-0 -z-10 bg-gradient-to-r from-carbon via-carbon/80 to-carbon/20" />
