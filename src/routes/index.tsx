@@ -3,14 +3,17 @@ import {
   ArrowRight,
   ArrowUpRight,
   Check,
+  ExternalLink,
   Factory,
   Globe2,
   Mail,
   MapPin,
+  Youtube,
   Wrench,
 } from "lucide-react";
 import { PageShell } from "@/components/page-shell";
 import { EnquiryForm } from "@/components/enquiry-form";
+import { YouTubeVideoCard } from "@/components/youtube-video-card";
 import { Button } from "@/components/ui/button";
 import { useRevealOnScroll } from "@/hooks/use-reveal-on-scroll";
 import { stats, type Mode } from "@/content/site-data";
@@ -61,6 +64,30 @@ const advantages = [
     text: "Ethernet-enabled remote support and service capability for installations across more than 45 countries.",
   },
 ];
+
+const featuredVideos = [
+  {
+    videoId: "bd5fXFXLylE",
+    title: "Future of Smart Factory in India",
+    category: "Smart factory overview",
+    description:
+      "A concise look at Modtech's approach to connected automation, engineered production systems and the modern factory floor.",
+  },
+  {
+    videoId: "Ah5mS5PDqwQ",
+    title: "Modtech AutoMode — Fully Automatic Wax Injection",
+    category: "Investment casting",
+    description:
+      "Automatic wax injection engineered for repeatable pattern production and controlled process performance.",
+  },
+  {
+    videoId: "sIR8T5m9KUU",
+    title: "Modtech Plastic Machine Tending",
+    category: "Robotics & automation",
+    description:
+      "Robotic machine loading and unloading designed to keep production cycles consistent, safe and dependable.",
+  },
+] as const;
 
 function HomePage() {
   useRevealOnScroll();
@@ -214,6 +241,57 @@ function HomePage() {
               ]}
               reverse
             />
+          </div>
+        </div>
+      </section>
+
+      <section className="on-dark relative isolate overflow-hidden border-y border-white/10 bg-carbon px-5 py-20 sm:px-8 sm:py-28">
+        <div className="pointer-events-none absolute inset-0 -z-10 bg-grid opacity-[0.12]" />
+        <div className="pointer-events-none absolute -right-40 top-0 -z-10 h-[32rem] w-[32rem] rounded-full bg-brand/10 blur-[120px]" />
+
+        <div className="mx-auto max-w-7xl">
+          <header className="reveal-on-scroll grid gap-7 border-b border-white/10 pb-9 lg:grid-cols-[1fr_0.8fr] lg:items-end">
+            <div>
+              <div className="inline-flex items-center gap-2 font-mono text-[10px] uppercase tracking-[0.24em] text-brand">
+                <Youtube className="h-4 w-4" />
+                Selected from our official channel
+              </div>
+              <h2 className="mt-4 max-w-3xl font-display text-4xl font-bold leading-[1.02] text-white sm:text-6xl">
+                See the systems at work.
+              </h2>
+            </div>
+            <div className="lg:justify-self-end">
+              <p className="max-w-xl text-sm leading-relaxed text-white/60 sm:text-base">
+                Three focused demonstrations across smart manufacturing, investment casting and
+                robotic automation—selected to give a clear view of Modtech's engineering in
+                production.
+              </p>
+              <a
+                href="https://www.youtube.com/@modtechmachines/videos"
+                target="_blank"
+                rel="noreferrer"
+                className="mt-5 inline-flex items-center gap-2 font-mono text-[10px] uppercase tracking-[0.2em] text-white transition hover:text-brand"
+              >
+                Visit the Modtech channel <ExternalLink className="h-3.5 w-3.5" />
+              </a>
+            </div>
+          </header>
+
+          <div className="mt-10 grid gap-6 lg:grid-cols-[1.45fr_0.75fr] lg:items-start">
+            <div className="reveal-on-scroll">
+              <YouTubeVideoCard {...featuredVideos[0]} featured />
+            </div>
+            <div className="grid gap-6">
+              {featuredVideos.slice(1).map((video, index) => (
+                <div
+                  key={video.videoId}
+                  className="reveal-on-scroll"
+                  data-reveal-delay={(index + 1) * 100}
+                >
+                  <YouTubeVideoCard {...video} />
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       </section>
