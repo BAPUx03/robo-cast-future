@@ -51,11 +51,10 @@ export const Route = createFileRoute("/about")({
     links: [
       { rel: "preconnect", href: "https://www.youtube.com" },
       { rel: "preconnect", href: "https://www.youtube-nocookie.com" },
-      { rel: "preconnect", href: "https://i.ytimg.com" },
       {
         rel: "preload",
         as: "image",
-        href: "https://i.ytimg.com/vi/htlzxdmeVg0/maxresdefault.jpg",
+        href: automationImages.casting,
       },
     ],
   }),
@@ -187,10 +186,11 @@ function AboutPage() {
     <PageShell>
       <section className="on-dark relative isolate min-h-[620px] overflow-hidden border-b border-border bg-carbon px-5 pb-10 pt-14 sm:px-8 sm:pb-14 lg:min-h-[720px] lg:pt-20">
         <YouTubeBackground
-          videoId="htlzxdmeVg0"
-          title="Modtech investment casting image movie"
+          videoId="OVS9l9h-Bbc"
+          title="Modtech investment casting corporate video"
           className="-z-20"
-          startAt={32}
+          fallbackImageSrc={automationImages.casting}
+          startAt={10}
           priority
         />
         <div className="absolute inset-0 -z-10 bg-gradient-to-r from-carbon via-carbon/90 to-carbon/20" />

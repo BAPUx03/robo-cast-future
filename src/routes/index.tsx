@@ -51,7 +51,7 @@ export const Route = createFileRoute("/")({
       {
         rel: "preload",
         as: "image",
-        href: "https://i.ytimg.com/vi/bd5fXFXLylE/maxresdefault.jpg",
+        href: automationImages.palletizer,
       },
     ],
   }),
@@ -111,7 +111,9 @@ function HomePage() {
           videoId="bd5fXFXLylE"
           title="Future of Smart Factory in India — Modtech Automation"
           className="home-hero-media -z-10"
-          startAt={8}
+          fallbackImageSrc={automationImages.palletizer}
+          fallbackVideoSrc="/modtech-automation-hero.mp4"
+          startAt={10}
           priority
         />
         <div className="pointer-events-none absolute inset-0 -z-10 bg-gradient-to-r from-carbon via-carbon/80 to-carbon/20" />

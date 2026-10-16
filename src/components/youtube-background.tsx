@@ -31,6 +31,7 @@ declare global {
 }
 
 let youtubeApiPromise: Promise<YouTubeApi> | undefined;
+const PLAYER_CHROME_HIDE_DELAY_MS = 2_600;
 
 function loadYouTubeApi() {
   if (window.YT?.Player) return Promise.resolve(window.YT);
@@ -69,6 +70,8 @@ type YouTubeBackgroundProps = {
   videoId: string;
   title: string;
   className?: string;
+  fallbackImageSrc?: string;
+  fallbackVideoSrc?: string;
   priority?: boolean;
   startAt?: number;
 };
@@ -77,13 +80,15 @@ export function YouTubeBackground({
   videoId,
   title,
   className = "",
+  fallbackImageSrc,
+  fallbackVideoSrc,
   priority = false,
   startAt = 0,
 }: YouTubeBackgroundProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const iframeRef = useRef<HTMLIFrameElement>(null);
   const playerId = `yt-background-${useId().replaceAll(":", "")}`;
-  const [showPoster, setShowPoster] = useState(true);
+  const [showFallback, setShowFallback] = useState(true);
   const [canPlayVideo, setCanPlayVideo] = useState(false);
   const [isNearViewport, setIsNearViewport] = useState(priority);
   const [playerLoaded, setPlayerLoaded] = useState(false);
@@ -91,6 +96,8 @@ export function YouTubeBackground({
     "poster",
   );
   const safeStartAt = Math.max(0, Math.floor(startAt));
+  const defaultThumbnail = `https://i.ytimg.com/vi/${videoId}/maxresdefault.jpg`;
+  const fallbackImage = fallbackImageSrc ?? defaultThumbnail;
   const siteOrigin = typeof window === "undefined" ? "" : window.location.origin;
   const source =
     `https://www.youtube-nocookie.com/embed/${videoId}` +
@@ -100,7 +107,7 @@ export function YouTubeBackground({
     (siteOrigin ? `&origin=${encodeURIComponent(siteOrigin)}` : "");
 
   useEffect(() => {
-    setShowPoster(true);
+    setShowFallback(true);
     setPlayerLoaded(false);
     setPlaybackState("poster");
   }, [videoId]);
@@ -148,6 +155,7 @@ export function YouTubeBackground({
     if (!playerLoaded) return;
     let cancelled = false;
     let player: YouTubePlayer | undefined;
+    let revealTimeout: number | undefined;
 
     loadYouTubeApi()
       .then((api) => {
@@ -163,7 +171,9 @@ export function YouTubeBackground({
             onStateChange: (event) => {
               if (event.data !== api.PlayerState.PLAYING) return;
               setPlaybackState("playing");
-              setShowPoster(false);
+              revealTimeout ??= window.setTimeout(() => {
+                setShowFallback(false);
+              }, PLAYER_CHROME_HIDE_DELAY_MS);
             },
             onAutoplayBlocked: () => setPlaybackState("blocked"),
           },
@@ -173,6 +183,7 @@ export function YouTubeBackground({
 
     return () => {
       cancelled = true;
+      if (revealTimeout) window.clearTimeout(revealTimeout);
       player?.destroy();
     };
   }, [playerId, playerLoaded]);
@@ -185,20 +196,47 @@ export function YouTubeBackground({
       style={{ containerType: "size" }}
       aria-hidden="true"
     >
-      <img
-        src={`https://i.ytimg.com/vi/${videoId}/maxresdefault.jpg`}
-        alt=""
-        aria-hidden
-        loading={priority ? "eager" : "lazy"}
-        fetchPriority={priority ? "high" : "auto"}
-        onError={(event) => {
-          event.currentTarget.onerror = null;
-          event.currentTarget.src = `https://i.ytimg.com/vi/${videoId}/hqdefault.jpg`;
-        }}
-        className={`absolute inset-0 z-10 h-full w-full object-cover transition-opacity duration-1000 motion-reduce:transition-none ${
-          showPoster ? "opacity-100" : "opacity-0"
+      <div
+        className={`absolute inset-0 z-10 transition-opacity duration-1000 motion-reduce:transition-none ${
+          showFallback ? "opacity-100" : "opacity-0"
         }`}
-      />
+      >
+        <img
+          src={fallbackImage}
+          alt=""
+          aria-hidden
+          loading={priority ? "eager" : "lazy"}
+          fetchPriority={priority ? "high" : "auto"}
+          onError={
+            fallbackImageSrc
+              ? undefined
+              : (event) => {
+                  event.currentTarget.onerror = null;
+                  event.currentTarget.src = `https://i.ytimg.com/vi/${videoId}/hqdefault.jpg`;
+                }
+          }
+          className="absolute inset-0 h-full w-full object-cover"
+        />
+        {fallbackVideoSrc && (
+          <video
+            autoPlay
+            muted
+            loop
+            playsInline
+            disablePictureInPicture
+            controls={false}
+            preload={priority ? "auto" : "metadata"}
+            poster={fallbackImageSrc}
+            className="absolute inset-0 h-full w-full object-cover"
+          >
+            <source
+              src={fallbackVideoSrc}
+              type="video/mp4"
+              media="(prefers-reduced-motion: no-preference)"
+            />
+          </video>
+        )}
+      </div>
       {canPlayVideo && isNearViewport && (
         <iframe
           ref={iframeRef}
@@ -213,7 +251,9 @@ export function YouTubeBackground({
           loading={priority ? "eager" : "lazy"}
           allow="autoplay; encrypted-media; picture-in-picture"
           referrerPolicy="strict-origin-when-cross-origin"
-          className="absolute left-1/2 top-1/2 max-w-none -translate-x-1/2 -translate-y-1/2 scale-[1.12] border-0 opacity-80"
+          className={`absolute left-1/2 top-1/2 max-w-none -translate-x-1/2 -translate-y-1/2 scale-[1.12] border-0 transition-opacity duration-700 motion-reduce:transition-none ${
+            playbackState === "playing" && !showFallback ? "opacity-80" : "opacity-0"
+          }`}
           style={{
             width: "max(100cqw, 177.78cqh)",
             height: "max(100cqh, 56.25cqw)",

@@ -27,7 +27,6 @@ export const Route = createFileRoute("/divisions")({
     links: [
       { rel: "preconnect", href: "https://www.youtube.com" },
       { rel: "preconnect", href: "https://www.youtube-nocookie.com" },
-      { rel: "preconnect", href: "https://i.ytimg.com" },
     ],
   }),
   component: DivisionsPage,
@@ -40,9 +39,9 @@ const divisionIcons = {
 
 const divisionVideos = {
   casting: {
-    videoId: "OVS9l9h-Bbc",
-    title: "Modtech investment casting corporate video",
-    startAt: 12,
+    videoId: "Ah5mS5PDqwQ",
+    title: "Modtech AutoMode — Fully Automatic Wax Injection Machine",
+    startAt: 0,
   },
   robotics: {
     videoId: "bd5fXFXLylE",
@@ -143,6 +142,7 @@ function DivisionsPage() {
                     videoId={backgroundVideo.videoId}
                     title={backgroundVideo.title}
                     className="division-choice-media -z-20"
+                    fallbackImageSrc={division.image}
                     startAt={backgroundVideo.startAt}
                   />
                   <div className="absolute inset-0 -z-10 bg-gradient-to-b from-carbon/15 via-carbon/50 to-carbon" />
