@@ -24,6 +24,11 @@ export const Route = createFileRoute("/divisions")({
         content: "Choose a division to explore its complete machine portfolio.",
       },
     ],
+    links: [
+      { rel: "preconnect", href: "https://www.youtube.com" },
+      { rel: "preconnect", href: "https://www.youtube-nocookie.com" },
+      { rel: "preconnect", href: "https://i.ytimg.com" },
+    ],
   }),
   component: DivisionsPage,
 });
@@ -37,12 +42,14 @@ const divisionVideos = {
   casting: {
     videoId: "OVS9l9h-Bbc",
     title: "Modtech investment casting corporate video",
+    startAt: 12,
   },
   robotics: {
     videoId: "bd5fXFXLylE",
     title: "Future of Smart Factory in India — Modtech Automation",
+    startAt: 8,
   },
-} satisfies Record<Mode, { videoId: string; title: string }>;
+} satisfies Record<Mode, { videoId: string; title: string; startAt: number }>;
 
 function DivisionsPage() {
   useRevealOnScroll();
@@ -136,6 +143,7 @@ function DivisionsPage() {
                     videoId={backgroundVideo.videoId}
                     title={backgroundVideo.title}
                     className="division-choice-media -z-20"
+                    startAt={backgroundVideo.startAt}
                   />
                   <div className="absolute inset-0 -z-10 bg-gradient-to-b from-carbon/15 via-carbon/50 to-carbon" />
                   <div className="absolute inset-0 -z-10 bg-gradient-to-r from-carbon/65 via-transparent to-transparent" />

@@ -1,5 +1,4 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { ArrowRight } from "lucide-react";
 import { PageShell, PageHero } from "@/components/page-shell";
 import { useRevealOnScroll } from "@/hooks/use-reveal-on-scroll";
 import { processSteps } from "@/content/site-data";
@@ -41,36 +40,43 @@ function ProcessPage() {
         subtitle={content.description}
       />
 
-      <section className="relative bg-background px-5 py-16 sm:px-8 sm:py-20">
-        <div className="mx-auto max-w-7xl">
-          <ol className="grid gap-px overflow-hidden rounded-2xl border border-border bg-border md:grid-cols-5">
+      <section className="relative overflow-hidden bg-background px-5 py-16 sm:px-8 sm:py-24">
+        <div className="pointer-events-none absolute inset-0 bg-grid bg-grid-fade opacity-20" />
+        <div className="relative mx-auto max-w-6xl">
+          <ol
+            className="relative space-y-6 before:absolute before:bottom-6 before:left-6 before:top-6 before:w-px before:bg-gradient-to-b before:from-brand before:via-brand/45 before:to-border md:space-y-8 md:before:left-1/2"
+            aria-label="Engineering delivery process"
+          >
             {processSteps.map((s, i) => (
               <li
                 key={s.code}
-                className="reveal-on-scroll group relative overflow-hidden bg-card p-6 transition hover:bg-card/60"
-                data-reveal-delay={i * 100}
+                className="reveal-on-scroll relative pl-16 md:grid md:grid-cols-2 md:gap-24 md:pl-0"
+                data-reveal-delay={i * 90}
               >
-                <div className="pointer-events-none absolute -right-10 -top-10 h-32 w-32 rounded-full bg-brand/10 opacity-0 blur-2xl transition duration-500 group-hover:opacity-100" />
-                <div className="relative flex items-center justify-between">
-                  <span className="font-mono text-xs text-brand">{s.code}</span>
-                  <span className="h-2 w-2 rounded-full bg-brand/40 transition group-hover:scale-150 group-hover:bg-brand" />
-                </div>
-                <div className="relative mt-6 inline-flex">
-                  <span className="grid h-12 w-12 place-items-center rounded-xl border border-border bg-secondary/40 text-brand transition group-hover:border-brand/60 group-hover:bg-brand/10">
-                    <s.Icon className="h-5 w-5" />
-                  </span>
-                </div>
-                <h3 className="relative mt-5 font-display text-xl font-bold">{s.name}</h3>
-                <p className="relative mt-2 text-sm leading-relaxed text-muted-foreground">
-                  {s.desc}
-                </p>
-                {i < processSteps.length - 1 && (
-                  <span className="pointer-events-none absolute right-0 top-1/2 hidden -translate-y-1/2 translate-x-1/2 items-center justify-center md:flex">
-                    <span className="grid h-7 w-7 place-items-center rounded-full border border-border bg-carbon text-brand">
-                      <ArrowRight className="h-3.5 w-3.5" />
+                <span className="absolute left-0 top-6 z-10 grid h-12 w-12 place-items-center rounded-full border border-brand/50 bg-carbon font-mono text-xs font-semibold text-brand shadow-glow md:left-1/2 md:-translate-x-1/2">
+                  {s.code}
+                </span>
+
+                <article
+                  className={`group relative overflow-hidden rounded-[1.75rem] border border-border bg-card p-6 shadow-card transition duration-500 hover:-translate-y-1 hover:border-brand/40 hover:shadow-elevated sm:p-7 ${
+                    i % 2 === 0 ? "md:col-start-1" : "md:col-start-2"
+                  }`}
+                >
+                  <div className="pointer-events-none absolute -right-12 -top-12 h-36 w-36 rounded-full bg-brand/10 opacity-40 blur-3xl transition duration-500 group-hover:opacity-80" />
+                  <div
+                    className={`relative flex items-start gap-4 ${
+                      i % 2 === 0 ? "md:flex-row-reverse" : ""
+                    }`}
+                  >
+                    <span className="grid h-12 w-12 shrink-0 place-items-center rounded-2xl border border-border bg-secondary/50 text-brand transition duration-300 group-hover:border-brand/50 group-hover:bg-brand/10">
+                      <s.Icon className="h-5 w-5" />
                     </span>
-                  </span>
-                )}
+                    <div className={`min-w-0 ${i % 2 === 0 ? "md:text-right" : ""}`}>
+                      <h3 className="font-display text-2xl font-bold tracking-tight">{s.name}</h3>
+                      <p className="mt-2 text-sm leading-7 text-muted-foreground">{s.desc}</p>
+                    </div>
+                  </div>
+                </article>
               </li>
             ))}
           </ol>

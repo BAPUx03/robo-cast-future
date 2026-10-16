@@ -48,6 +48,16 @@ export const Route = createFileRoute("/about")({
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
     ],
+    links: [
+      { rel: "preconnect", href: "https://www.youtube.com" },
+      { rel: "preconnect", href: "https://www.youtube-nocookie.com" },
+      { rel: "preconnect", href: "https://i.ytimg.com" },
+      {
+        rel: "preload",
+        as: "image",
+        href: "https://i.ytimg.com/vi/htlzxdmeVg0/maxresdefault.jpg",
+      },
+    ],
   }),
   component: AboutPage,
 });
@@ -180,6 +190,7 @@ function AboutPage() {
           videoId="htlzxdmeVg0"
           title="Modtech investment casting image movie"
           className="-z-20"
+          startAt={32}
           priority
         />
         <div className="absolute inset-0 -z-10 bg-gradient-to-r from-carbon via-carbon/90 to-carbon/20" />

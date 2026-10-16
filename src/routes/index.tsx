@@ -44,6 +44,16 @@ export const Route = createFileRoute("/")({
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
     ],
+    links: [
+      { rel: "preconnect", href: "https://www.youtube.com" },
+      { rel: "preconnect", href: "https://www.youtube-nocookie.com" },
+      { rel: "preconnect", href: "https://i.ytimg.com" },
+      {
+        rel: "preload",
+        as: "image",
+        href: "https://i.ytimg.com/vi/bd5fXFXLylE/maxresdefault.jpg",
+      },
+    ],
   }),
   component: HomePage,
 });
@@ -101,6 +111,7 @@ function HomePage() {
           videoId="bd5fXFXLylE"
           title="Future of Smart Factory in India — Modtech Automation"
           className="home-hero-media -z-10"
+          startAt={8}
           priority
         />
         <div className="pointer-events-none absolute inset-0 -z-10 bg-gradient-to-r from-carbon via-carbon/80 to-carbon/20" />
