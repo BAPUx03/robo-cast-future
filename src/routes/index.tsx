@@ -1,10 +1,10 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ArrowRight, ArrowUpRight, Factory, Globe2, Wrench } from "lucide-react";
+import { ArrowRight, ArrowUpRight, Check, Factory, Globe2, Wrench } from "lucide-react";
 import { PageShell } from "@/components/page-shell";
 import { YouTubeBackground } from "@/components/youtube-background";
 import { Button } from "@/components/ui/button";
 import { useRevealOnScroll } from "@/hooks/use-reveal-on-scroll";
-import { divisions, stats, type Mode } from "@/content/site-data";
+import { stats, type Mode } from "@/content/site-data";
 import { useSiteContent } from "@/lib/site-content";
 import { automationPartners, automationImages } from "@/content/automation-data";
 
@@ -140,99 +140,74 @@ function HomePage() {
         </div>
       </section>
 
-      <section className="bg-background px-5 py-12 sm:px-8 sm:py-16">
+      <section className="bg-background px-5 py-16 sm:px-8 sm:py-24">
         <div className="mx-auto max-w-7xl">
-          <header className="mb-7 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
-            <div>
-              <p className="font-mono text-[10px] uppercase tracking-[0.22em] text-brand">
-                Our divisions
-              </p>
-              <h2 className="mt-2 font-display text-3xl font-bold tracking-tight sm:text-4xl">
-                Two specialist portfolios.
-              </h2>
-            </div>
-            <p className="max-w-lg text-sm leading-relaxed text-muted-foreground">
-              Precision casting machinery and integrated factory automation, engineered by one team.
+          <header className="reveal-on-scroll border-b border-border pb-7 sm:pb-9">
+            <p className="font-mono text-[10px] uppercase tracking-[0.22em] text-brand">
+              Our divisions
             </p>
+            <h2 className="mt-3 max-w-3xl font-display text-3xl font-bold tracking-tight sm:text-5xl">
+              Precision foundry machinery. Factory automation.
+            </h2>
           </header>
 
-          <div className="grid gap-4 sm:gap-5 md:grid-cols-2">
-            {divisions.map((division) => {
-              const mode: Mode = division.category === "casting" ? "casting" : "robotics";
-              return (
-                <article
-                  key={division.code}
-                  className="overflow-hidden rounded-2xl border border-border bg-card"
-                >
-                  <div className="relative h-40 overflow-hidden sm:h-48">
-                    <img
-                      src={division.image}
-                      alt={division.title}
-                      className="h-full w-full object-cover transition duration-500 hover:scale-[1.03]"
-                      loading="lazy"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-carbon/85 via-carbon/10 to-transparent" />
-                    <span className="absolute bottom-3 left-4 font-mono text-[10px] uppercase tracking-[0.2em] text-white/80">
-                      {division.code}
-                    </span>
-                  </div>
-                  <div className="p-5 sm:p-6">
-                    <p className="font-mono text-[10px] uppercase tracking-[0.18em] text-brand">
-                      {division.tag}
-                    </p>
-                    <h3 className="mt-2 font-display text-xl font-bold sm:text-2xl">
-                      {division.title}
-                    </h3>
-                    <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
-                      {division.description}
-                    </p>
-                    <ul className="mt-4 grid grid-cols-2 gap-2">
-                      {division.points.slice(0, 4).map((point) => (
-                        <li
-                          key={point}
-                          className="rounded-lg border border-border/70 bg-background/50 px-2.5 py-2 text-xs leading-snug text-foreground/80 sm:px-3"
-                        >
-                          {point}
-                        </li>
-                      ))}
-                    </ul>
-                    <Link
-                      to="/machines"
-                      search={{ division: mode }}
-                      className="mt-5 inline-flex min-h-11 items-center gap-2 font-mono text-[11px] font-semibold uppercase tracking-wider text-brand"
-                    >
-                      Explore portfolio <ArrowRight className="h-4 w-4" />
-                    </Link>
-                  </div>
-                </article>
-              );
-            })}
+          <div className="mt-9 space-y-16 sm:mt-12 sm:space-y-24">
+            <DivisionChapter
+              title="Investment Casting Machinery"
+              description="Equipment for wax preparation and injection, ceramic shell building and foundry processing, engineered for repeatable production and dependable uptime."
+              image={automationImages.casting}
+              alt="Investment casting machinery on the factory floor"
+              division="casting"
+              linkLabel="View casting machines"
+              points={[
+                "Wax injectors",
+                "Wax conditioning systems",
+                "Slurry equipment",
+                "Rain sanders & shelling cells",
+              ]}
+            />
+            <DivisionChapter
+              title="Robotics & Automation"
+              description="Custom robot cells for packaging, palletizing, pick-and-place and vision inspection, built around each product, process and factory layout."
+              image={automationImages.casePacker}
+              alt="Robotic automation cell in production"
+              division="robotics"
+              linkLabel="Explore automation"
+              points={[
+                "Robotic case erecting & packing",
+                "Robotic palletizing",
+                "Pick & place",
+                "Vision systems",
+              ]}
+              reverse
+            />
           </div>
         </div>
       </section>
       <section className="bg-background px-5 py-10 sm:px-8 sm:py-16">
         <div className="mx-auto max-w-7xl">
-          <div className="reveal-on-scroll grid gap-7 lg:grid-cols-[0.8fr_1.2fr] lg:gap-10">
-            <div>
-              <h2 className="max-w-lg font-display text-3xl font-bold sm:text-5xl">
-                Engineering, end to end.
+          <div className="reveal-on-scroll grid gap-10 lg:grid-cols-[0.8fr_1.2fr]">
+            <div className="lg:sticky lg:top-32 lg:self-start">
+              <h2 className="max-w-lg font-display text-4xl font-bold sm:text-6xl">
+                Engineering that stays accountable.
               </h2>
-              <p className="mt-3 max-w-lg text-sm leading-relaxed text-muted-foreground sm:text-base">
-                One team from design through commissioning and ongoing support.
+              <p className="mt-5 max-w-lg leading-relaxed text-muted-foreground">
+                From the first layout to commissioning and after-sales support, one engineering
+                partner owns the complete system.
               </p>
             </div>
             <ol className="border-t border-border">
               {advantages.map(({ Icon, title, text }) => (
                 <li
                   key={title}
-                  className="grid gap-3 border-b border-border py-5 sm:grid-cols-[3rem_1fr] sm:gap-4 sm:py-7"
+                  className="grid gap-4 border-b border-border py-7 sm:grid-cols-[4rem_1fr] sm:py-9"
                 >
                   <div className="flex items-center sm:block">
                     <Icon className="h-5 w-5 text-brand" />
                   </div>
                   <div>
-                    <h3 className="font-display text-xl font-bold sm:text-2xl">{title}</h3>
-                    <p className="mt-1.5 max-w-xl text-sm leading-relaxed text-muted-foreground">
+                    <h3 className="font-display text-2xl font-bold">{title}</h3>
+                    <p className="mt-2 max-w-xl text-sm leading-relaxed text-muted-foreground sm:text-base">
                       {text}
                     </p>
                   </div>
@@ -270,6 +245,62 @@ function HomePage() {
         </div>
       </section>
     </PageShell>
+  );
+}
+
+function DivisionChapter({
+  title,
+  description,
+  image,
+  alt,
+  division,
+  linkLabel,
+  points,
+  reverse = false,
+}: {
+  title: string;
+  description: string;
+  image: string;
+  alt: string;
+  division: Mode;
+  linkLabel: string;
+  points: string[];
+  reverse?: boolean;
+}) {
+  return (
+    <article className="reveal-on-scroll grid gap-8 lg:grid-cols-12 lg:items-center">
+      <div
+        className={`home-image-reveal relative min-h-[22rem] overflow-hidden sm:min-h-[32rem] lg:col-span-7 ${reverse ? "lg:order-2" : ""}`}
+      >
+        <img
+          src={image}
+          alt={alt}
+          loading="lazy"
+          className="home-machine-image absolute inset-0 h-full w-full object-cover"
+        />
+      </div>
+      <div className={`lg:col-span-5 ${reverse ? "lg:order-1 lg:pr-10" : "lg:pl-10"}`}>
+        <h3 className="font-display text-3xl font-bold sm:text-5xl">{title}</h3>
+        <p className="mt-5 leading-relaxed text-muted-foreground">{description}</p>
+        <ul className="mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-1">
+          {points.map((point) => (
+            <li key={point} className="flex items-center gap-3 text-sm">
+              <Check className="h-4 w-4 shrink-0 text-brand" />
+              {point}
+            </li>
+          ))}
+        </ul>
+        <Button
+          asChild
+          variant="link"
+          className="mt-7 h-auto p-0 font-mono text-xs uppercase tracking-wider"
+        >
+          <Link to="/machines" search={{ division }}>
+            {linkLabel} <ArrowRight />
+          </Link>
+        </Button>
+      </div>
+    </article>
   );
 }
 
