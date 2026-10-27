@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ArrowUpRight, Factory, Globe2, Wrench } from "lucide-react";
+import { ArrowRight, ArrowUpRight, Factory, Globe2, Wrench } from "lucide-react";
 import { PageShell } from "@/components/page-shell";
 import { YouTubeBackground } from "@/components/youtube-background";
 import { Button } from "@/components/ui/button";
@@ -222,3 +222,4 @@ function ProofRow({ label, items }: { label: string; items: string[] }) {
     </div>
   );
 }
+
