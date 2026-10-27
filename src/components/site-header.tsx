@@ -3,7 +3,6 @@ import { useQuery } from "@tanstack/react-query";
 import { ArrowUpRight, Mail, Megaphone, Menu, X } from "lucide-react";
 import { Link, useLocation } from "@tanstack/react-router";
 import { BrandLogo } from "@/components/brand-logo";
-import { DesktopDivisionMenu, MobileDivisionMenu } from "@/components/division-menu";
 import { ThemeToggle } from "@/components/theme-toggle";
 import {
   fetchPublicAnnouncement,
@@ -15,9 +14,6 @@ const NAV_ITEMS = [
   { to: "/", label: "Home" },
   { to: "/about", label: "About Us" },
   { to: "/divisions", label: "Divisions" },
-  { to: "/solutions", label: "Solutions" },
-  { to: "/industries", label: "Industries" },
-  { to: "/process", label: "Process" },
   { to: "/gallery", label: "Gallery" },
   { to: "/blog", label: "Blogs" },
   { to: "/contact", label: "Contact" },
@@ -94,9 +90,6 @@ export function SiteHeader() {
   const location = useLocation();
   const isNavItemActive = (to: (typeof NAV_ITEMS)[number]["to"]) =>
     to === "/" ? location.pathname === "/" : location.pathname.startsWith(to);
-  const isDivisionMenuActive =
-    location.pathname.startsWith("/divisions") || location.pathname.startsWith("/machines");
-
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 24);
     onScroll();
@@ -139,28 +132,25 @@ export function SiteHeader() {
         </Link>
 
         <nav className="hidden min-w-0 items-center justify-center gap-0 font-display text-[12px] font-medium xl:flex 2xl:text-[13px]">
-          {NAV_ITEMS.map((item) =>
-            item.to === "/divisions" ? (
-              <DesktopDivisionMenu key={item.to} active={isDivisionMenuActive} />
-            ) : (
-              <Link
-                key={item.to}
-                to={item.to}
-                data-active={isNavItemActive(item.to)}
-                className={`nav-link whitespace-nowrap rounded-md px-2 py-2 2xl:px-2.5 ${
-                  isNavItemActive(item.to) ? "text-brand" : "text-foreground/75 hover:text-brand"
-                }`}
-              >
-                {item.label}
-              </Link>
-            ),
-          )}
+          {NAV_ITEMS.map((item) => (
+            <Link
+              key={item.to}
+              to={item.to}
+              data-active={isNavItemActive(item.to)}
+              className={`nav-link whitespace-nowrap rounded-md px-2 py-2 2xl:px-2.5 ${
+                isNavItemActive(item.to) ? "text-brand" : "text-foreground/75 hover:text-brand"
+              }`}
+            >
+              {item.label}
+            </Link>
+          ))}
         </nav>
 
         <div className="flex shrink-0 items-center gap-2 justify-self-end">
           <ThemeToggle />
           <Link
             to="/contact"
+            search={{ machine: undefined }}
             className="hidden shrink-0 items-center gap-2 whitespace-nowrap rounded-full bg-brand px-4 py-2.5 font-mono text-[10px] font-semibold uppercase tracking-wider text-brand-foreground shadow-glow transition hover:translate-y-[-1px] 2xl:inline-flex"
           >
             Contact Us
@@ -171,7 +161,7 @@ export function SiteHeader() {
             aria-label={open ? "Close menu" : "Open menu"}
             aria-expanded={open}
             onClick={() => setOpen((v) => !v)}
-            className="grid h-10 w-10 place-items-center rounded-md border border-border text-foreground transition hover:border-brand/50 hover:text-brand xl:hidden"
+            className="grid h-11 w-11 place-items-center rounded-md border border-border text-foreground transition hover:border-brand/50 hover:text-brand xl:hidden"
           >
             {open ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
           </button>
@@ -179,31 +169,23 @@ export function SiteHeader() {
       </div>
 
       {open && (
-        <div className="max-h-[calc(100dvh-4.5rem)] overflow-y-auto overscroll-contain border-t border-border bg-card/95 backdrop-blur-xl xl:hidden">
+        <div className="max-h-[calc(100dvh-7rem)] overflow-y-auto overscroll-contain border-t border-border bg-card/95 backdrop-blur-xl xl:hidden">
           <nav className="mx-auto flex max-w-7xl flex-col gap-1 px-5 py-4 sm:px-8">
-            {NAV_ITEMS.map((item) =>
-              item.to === "/divisions" ? (
-                <MobileDivisionMenu
-                  key={item.to}
-                  active={isDivisionMenuActive}
-                  onNavigate={() => setOpen(false)}
-                />
-              ) : (
-                <Link
-                  key={item.to}
-                  to={item.to}
-                  onClick={() => setOpen(false)}
-                  data-active={isNavItemActive(item.to)}
-                  className={`rounded-lg px-4 py-2.5 font-display text-[15px] transition ${
-                    isNavItemActive(item.to)
-                      ? "bg-brand/12 font-semibold text-brand"
-                      : "font-medium text-foreground/85 hover:bg-secondary/40 hover:text-brand"
-                  }`}
-                >
-                  {item.label}
-                </Link>
-              ),
-            )}
+            {NAV_ITEMS.map((item) => (
+              <Link
+                key={item.to}
+                to={item.to}
+                onClick={() => setOpen(false)}
+                data-active={isNavItemActive(item.to)}
+                className={`rounded-lg px-4 py-2.5 font-display text-[15px] transition ${
+                  isNavItemActive(item.to)
+                    ? "bg-brand/12 font-semibold text-brand"
+                    : "font-medium text-foreground/85 hover:bg-secondary/40 hover:text-brand"
+                }`}
+              >
+                {item.label}
+              </Link>
+            ))}
             <div className="mt-3 flex flex-col gap-2 border-t border-border pt-3">
               <a
                 href="mailto:sales.automation@modtechworld.com"
@@ -213,6 +195,7 @@ export function SiteHeader() {
               </a>
               <Link
                 to="/contact"
+                search={{ machine: undefined }}
                 onClick={() => setOpen(false)}
                 className="mt-1 inline-flex items-center justify-center gap-2 rounded-full bg-brand px-5 py-3 font-mono text-xs font-semibold uppercase tracking-wider text-brand-foreground shadow-glow"
               >

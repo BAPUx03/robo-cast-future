@@ -40,7 +40,7 @@ export function PageHero({
 }) {
   return (
     <section
-      className={`relative isolate overflow-hidden bg-carbon px-5 py-16 sm:px-8 sm:py-24 ${image ? "on-dark" : ""}`}
+      className={`relative isolate overflow-hidden bg-carbon px-5 py-12 sm:px-8 sm:py-20 ${image ? "on-dark" : ""}`}
     >
       {image && (
         <div className="pointer-events-none absolute inset-0 -z-10">
@@ -134,23 +134,11 @@ function SiteFooter() {
     },
   ];
   const links: Array<{
-    to:
-      | "/"
-      | "/about"
-      | "/divisions"
-      | "/solutions"
-      | "/industries"
-      | "/process"
-      | "/gallery"
-      | "/blog"
-      | "/contact";
+    to: "/" | "/about" | "/divisions" | "/gallery" | "/blog" | "/contact";
     label: string;
   }> = [
     { to: "/about", label: "About Us" },
     { to: "/divisions", label: "Divisions / Machines" },
-    { to: "/solutions", label: "Services / Solutions" },
-    { to: "/industries", label: "Industries Served" },
-    { to: "/process", label: "Process" },
     { to: "/gallery", label: "Gallery" },
     { to: "/blog", label: "Blogs" },
     { to: "/contact", label: "Contact Us" },

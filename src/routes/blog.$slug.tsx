@@ -249,6 +249,7 @@ function BlogArticle() {
               </p>
               <Link
                 to="/contact"
+                search={{ machine: undefined }}
                 className="mt-5 inline-flex items-center gap-2 rounded-full bg-brand px-5 py-2.5 font-mono text-xs font-semibold uppercase tracking-wider text-brand-foreground shadow-glow transition hover:-translate-y-0.5"
               >
                 Talk to engineering <ArrowRight className="h-4 w-4" />

@@ -50,7 +50,7 @@ export function ThemeToggle({ className = "" }: { className?: string }) {
       onClick={toggle}
       aria-label={`Switch to ${isDark ? "light" : "dark"} theme`}
       title={`Switch to ${isDark ? "light" : "dark"} theme`}
-      className={`group relative inline-flex h-9 w-9 items-center justify-center overflow-hidden rounded-full border border-border bg-card/60 text-foreground backdrop-blur transition hover:border-brand/50 hover:text-brand ${className}`}
+      className={`group relative inline-flex h-11 w-11 items-center justify-center overflow-hidden rounded-full border border-border bg-card/60 text-foreground backdrop-blur transition hover:border-brand/50 hover:text-brand ${className}`}
     >
       {/* Sun (light mode active visual = sun shown when dark, since clicking will go to light? We show CURRENT theme icon) */}
       <Sun

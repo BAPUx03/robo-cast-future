@@ -1,22 +1,7 @@
-import { createFileRoute } from "@tanstack/react-router";
-import { SolutionsContent } from "@/routes/automation";
+import { createFileRoute, redirect } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/solutions")({
-  head: () => ({
-    meta: [
-      { title: "Services & Solutions — Modtech Machine" },
-      {
-        name: "description",
-        content:
-          "Turnkey robotic packaging, palletizing, pick-and-place and vision solutions engineered by Modtech.",
-      },
-      { property: "og:title", content: "Modtech Services & Automation Solutions" },
-      {
-        property: "og:description",
-        content:
-          "Explore Modtech's engineering services and turnkey robotic automation solutions for industrial production lines.",
-      },
-    ],
-  }),
-  component: SolutionsContent,
+  beforeLoad: () => {
+    throw redirect({ to: "/about", hash: "solutions", replace: true });
+  },
 });

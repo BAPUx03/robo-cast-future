@@ -127,7 +127,7 @@ export const SITE_CONTENT_PAGES: SiteContentPage[] = [
   },
   {
     id: "solutions",
-    label: "Solutions page",
+    label: "About: solutions section",
     description: "Automation services and solutions introduction.",
     fields: [
       { key: "eyebrow", label: "Hero eyebrow", defaultValue: "/ services & solutions" },
@@ -144,8 +144,8 @@ export const SITE_CONTENT_PAGES: SiteContentPage[] = [
   },
   {
     id: "industries",
-    label: "Industries page",
-    description: "Industries served introduction.",
+    label: "About: industries section",
+    description: "Industries served section on the About page.",
     fields: [
       { key: "eyebrow", label: "Hero eyebrow", defaultValue: "/ industries served" },
       { key: "title", label: "Hero title", defaultValue: "Engineered for the" },
@@ -165,8 +165,8 @@ export const SITE_CONTENT_PAGES: SiteContentPage[] = [
   },
   {
     id: "process",
-    label: "Process page",
-    description: "Engineering process introduction.",
+    label: "About: process section",
+    description: "Engineering process section on the About page.",
     fields: [
       { key: "eyebrow", label: "Hero eyebrow", defaultValue: "/ process" },
       { key: "title", label: "Hero title", defaultValue: "A transparent path" },

@@ -114,11 +114,17 @@ export function YouTubeBackground({
 
   useEffect(() => {
     const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
-    const updatePlaybackPreference = () => setCanPlayVideo(!reducedMotion.matches);
+    const smallScreen = window.matchMedia("(max-width: 47.99rem)");
+    const updatePlaybackPreference = () =>
+      setCanPlayVideo(!reducedMotion.matches && !smallScreen.matches);
 
     updatePlaybackPreference();
     reducedMotion.addEventListener("change", updatePlaybackPreference);
-    return () => reducedMotion.removeEventListener("change", updatePlaybackPreference);
+    smallScreen.addEventListener("change", updatePlaybackPreference);
+    return () => {
+      reducedMotion.removeEventListener("change", updatePlaybackPreference);
+      smallScreen.removeEventListener("change", updatePlaybackPreference);
+    };
   }, []);
 
   useEffect(() => {
@@ -217,7 +223,7 @@ export function YouTubeBackground({
           }
           className="absolute inset-0 h-full w-full object-cover"
         />
-        {fallbackVideoSrc && (
+        {fallbackVideoSrc && canPlayVideo && (
           <video
             autoPlay
             muted
