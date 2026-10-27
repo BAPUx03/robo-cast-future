@@ -4,7 +4,7 @@ import { PageShell } from "@/components/page-shell";
 import { YouTubeBackground } from "@/components/youtube-background";
 import { Button } from "@/components/ui/button";
 import { useRevealOnScroll } from "@/hooks/use-reveal-on-scroll";
-import { stats } from "@/content/site-data";
+import { divisions, stats, type Mode } from "@/content/site-data";
 import { useSiteContent } from "@/lib/site-content";
 import { automationPartners, automationImages } from "@/content/automation-data";
 
@@ -140,6 +140,76 @@ function HomePage() {
         </div>
       </section>
 
+      <section className="bg-background px-5 py-12 sm:px-8 sm:py-16">
+        <div className="mx-auto max-w-7xl">
+          <header className="mb-7 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+            <div>
+              <p className="font-mono text-[10px] uppercase tracking-[0.22em] text-brand">
+                Our divisions
+              </p>
+              <h2 className="mt-2 font-display text-3xl font-bold tracking-tight sm:text-4xl">
+                Two specialist portfolios.
+              </h2>
+            </div>
+            <p className="max-w-lg text-sm leading-relaxed text-muted-foreground">
+              Precision casting machinery and integrated factory automation, engineered by one team.
+            </p>
+          </header>
+
+          <div className="grid gap-4 sm:gap-5 md:grid-cols-2">
+            {divisions.map((division) => {
+              const mode: Mode = division.category === "casting" ? "casting" : "robotics";
+              return (
+                <article
+                  key={division.code}
+                  className="overflow-hidden rounded-2xl border border-border bg-card"
+                >
+                  <div className="relative h-40 overflow-hidden sm:h-48">
+                    <img
+                      src={division.image}
+                      alt={division.title}
+                      className="h-full w-full object-cover transition duration-500 hover:scale-[1.03]"
+                      loading="lazy"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-carbon/85 via-carbon/10 to-transparent" />
+                    <span className="absolute bottom-3 left-4 font-mono text-[10px] uppercase tracking-[0.2em] text-white/80">
+                      {division.code}
+                    </span>
+                  </div>
+                  <div className="p-5 sm:p-6">
+                    <p className="font-mono text-[10px] uppercase tracking-[0.18em] text-brand">
+                      {division.tag}
+                    </p>
+                    <h3 className="mt-2 font-display text-xl font-bold sm:text-2xl">
+                      {division.title}
+                    </h3>
+                    <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
+                      {division.description}
+                    </p>
+                    <ul className="mt-4 grid grid-cols-2 gap-2">
+                      {division.points.slice(0, 4).map((point) => (
+                        <li
+                          key={point}
+                          className="rounded-lg border border-border/70 bg-background/50 px-2.5 py-2 text-xs leading-snug text-foreground/80 sm:px-3"
+                        >
+                          {point}
+                        </li>
+                      ))}
+                    </ul>
+                    <Link
+                      to="/machines"
+                      search={{ division: mode }}
+                      className="mt-5 inline-flex min-h-11 items-center gap-2 font-mono text-[11px] font-semibold uppercase tracking-wider text-brand"
+                    >
+                      Explore portfolio <ArrowRight className="h-4 w-4" />
+                    </Link>
+                  </div>
+                </article>
+              );
+            })}
+          </div>
+        </div>
+      </section>
       <section className="bg-background px-5 py-10 sm:px-8 sm:py-16">
         <div className="mx-auto max-w-7xl">
           <div className="reveal-on-scroll grid gap-7 lg:grid-cols-[0.8fr_1.2fr] lg:gap-10">
