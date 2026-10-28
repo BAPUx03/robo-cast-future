@@ -18,6 +18,7 @@ const expectedTables = [
   "products",
   "news_items",
   "exhibitions",
+  "career_vacancies",
   "gallery_items",
   "site_content",
   "site_settings",

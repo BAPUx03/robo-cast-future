@@ -15,9 +15,9 @@ import { Route as AboutRouteImport } from './routes/about'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AutomationRouteImport } from './routes/automation'
 import { Route as BlogRouteImport } from './routes/blog'
+import { Route as CareersRouteImport } from './routes/careers'
 import { Route as ContactRouteImport } from './routes/contact'
 import { Route as DivisionsRouteImport } from './routes/divisions'
-import { Route as GalleryRouteImport } from './routes/gallery'
 import { Route as IndustriesRouteImport } from './routes/industries'
 import { Route as MachinesRouteImport } from './routes/machines'
 import { Route as NewsRouteImport } from './routes/news'
@@ -57,6 +57,11 @@ const BlogRoute = BlogRouteImport.update({
   path: '/blog',
   getParentRoute: () => rootRouteImport,
 } as any)
+const CareersRoute = CareersRouteImport.update({
+  id: '/careers',
+  path: '/careers',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ContactRoute = ContactRouteImport.update({
   id: '/contact',
   path: '/contact',
@@ -65,11 +70,6 @@ const ContactRoute = ContactRouteImport.update({
 const DivisionsRoute = DivisionsRouteImport.update({
   id: '/divisions',
   path: '/divisions',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const GalleryRoute = GalleryRouteImport.update({
-  id: '/gallery',
-  path: '/gallery',
   getParentRoute: () => rootRouteImport,
 } as any)
 const IndustriesRoute = IndustriesRouteImport.update({
@@ -124,9 +124,9 @@ export interface FileRoutesByFullPath {
   '/auth': typeof AuthRoute
   '/automation': typeof AutomationRoute
   '/blog': typeof BlogRouteWithChildren
+  '/careers': typeof CareersRoute
   '/contact': typeof ContactRoute
   '/divisions': typeof DivisionsRoute
-  '/gallery': typeof GalleryRoute
   '/industries': typeof IndustriesRoute
   '/machines': typeof MachinesRouteWithChildren
   '/news': typeof NewsRoute
@@ -142,9 +142,9 @@ export interface FileRoutesByTo {
   '/about': typeof AboutRoute
   '/auth': typeof AuthRoute
   '/automation': typeof AutomationRoute
+  '/careers': typeof CareersRoute
   '/contact': typeof ContactRoute
   '/divisions': typeof DivisionsRoute
-  '/gallery': typeof GalleryRoute
   '/industries': typeof IndustriesRoute
   '/machines': typeof MachinesRouteWithChildren
   '/news': typeof NewsRoute
@@ -163,9 +163,9 @@ export interface FileRoutesById {
   '/auth': typeof AuthRoute
   '/automation': typeof AutomationRoute
   '/blog': typeof BlogRouteWithChildren
+  '/careers': typeof CareersRoute
   '/contact': typeof ContactRoute
   '/divisions': typeof DivisionsRoute
-  '/gallery': typeof GalleryRoute
   '/industries': typeof IndustriesRoute
   '/machines': typeof MachinesRouteWithChildren
   '/news': typeof NewsRoute
@@ -184,9 +184,9 @@ export interface FileRouteTypes {
     | '/auth'
     | '/automation'
     | '/blog'
+    | '/careers'
     | '/contact'
     | '/divisions'
-    | '/gallery'
     | '/industries'
     | '/machines'
     | '/news'
@@ -202,9 +202,9 @@ export interface FileRouteTypes {
     | '/about'
     | '/auth'
     | '/automation'
+    | '/careers'
     | '/contact'
     | '/divisions'
-    | '/gallery'
     | '/industries'
     | '/machines'
     | '/news'
@@ -222,9 +222,9 @@ export interface FileRouteTypes {
     | '/auth'
     | '/automation'
     | '/blog'
+    | '/careers'
     | '/contact'
     | '/divisions'
-    | '/gallery'
     | '/industries'
     | '/machines'
     | '/news'
@@ -243,9 +243,9 @@ export interface RootRouteChildren {
   AuthRoute: typeof AuthRoute
   AutomationRoute: typeof AutomationRoute
   BlogRoute: typeof BlogRouteWithChildren
+  CareersRoute: typeof CareersRoute
   ContactRoute: typeof ContactRoute
   DivisionsRoute: typeof DivisionsRoute
-  GalleryRoute: typeof GalleryRoute
   IndustriesRoute: typeof IndustriesRoute
   MachinesRoute: typeof MachinesRouteWithChildren
   NewsRoute: typeof NewsRoute
@@ -297,6 +297,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof BlogRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/careers': {
+      id: '/careers'
+      path: '/careers'
+      fullPath: '/careers'
+      preLoaderRoute: typeof CareersRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/contact': {
       id: '/contact'
       path: '/contact'
@@ -309,13 +316,6 @@ declare module '@tanstack/react-router' {
       path: '/divisions'
       fullPath: '/divisions'
       preLoaderRoute: typeof DivisionsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/gallery': {
-      id: '/gallery'
-      path: '/gallery'
-      fullPath: '/gallery'
-      preLoaderRoute: typeof GalleryRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/industries': {
@@ -426,9 +426,9 @@ const rootRouteChildren: RootRouteChildren = {
   AuthRoute: AuthRoute,
   AutomationRoute: AutomationRoute,
   BlogRoute: BlogRouteWithChildren,
+  CareersRoute: CareersRoute,
   ContactRoute: ContactRoute,
   DivisionsRoute: DivisionsRoute,
-  GalleryRoute: GalleryRoute,
   IndustriesRoute: IndustriesRoute,
   MachinesRoute: MachinesRouteWithChildren,
   NewsRoute: NewsRoute,

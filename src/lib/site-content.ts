@@ -7,6 +7,7 @@ export type SiteContentField = {
   label: string;
   defaultValue: string;
   multiline?: boolean;
+  image?: boolean;
 };
 
 export type SiteContentPage = {
@@ -43,7 +44,7 @@ export const SITE_CONTENT_PAGES: SiteContentPage[] = [
   {
     id: "about",
     label: "About page",
-    description: "Company introduction shown at the top of the About page.",
+    description: "Company introduction and project photos on the About page.",
     fields: [
       { key: "eyebrow", label: "Hero eyebrow", defaultValue: "/ About Modtech · Since 1990" },
       { key: "title", label: "Hero title", defaultValue: "Engineering that moves" },
@@ -54,6 +55,24 @@ export const SITE_CONTENT_PAGES: SiteContentPage[] = [
         defaultValue:
           "We design, build and integrate production systems—from precision wax machinery to autonomous robotic cells—under one roof in Ahmedabad.",
         multiline: true,
+      },
+      {
+        key: "about_photo_1",
+        label: "Commissioning photo URL",
+        defaultValue: "/gallery/customer-visits/international-machine-commissioning.webp",
+        image: true,
+      },
+      {
+        key: "about_photo_2",
+        label: "Technical collaboration photo URL",
+        defaultValue: "/gallery/customer-visits/international-technical-collaboration.webp",
+        image: true,
+      },
+      {
+        key: "about_photo_3",
+        label: "Customer machine visit photo URL",
+        defaultValue: "/gallery/customer-visits/uk-customer-machine-visit.webp",
+        image: true,
       },
     ],
   },
@@ -263,10 +282,12 @@ export async function fetchSiteContent(pageId: string) {
 
 export async function saveSiteContent(pageId: string, values: Record<string, string>) {
   if (!DEMO_MODE) {
-    const { error } = await supabase
+    const { data, error } = await supabase
       .from("site_content" as never)
-      .upsert({ page_id: pageId, content: values } as never, { onConflict: "page_id" });
+      .upsert({ page_id: pageId, content: values } as never, { onConflict: "page_id" })
+      .select("page_id");
     if (error) throw error;
+    if (!data?.length) throw new Error("Page update was not confirmed. Please retry.");
   }
   cacheSiteContent(pageId, values);
 }

@@ -4,13 +4,14 @@ import { Moon, Sun } from "lucide-react";
 type Theme = "light" | "dark";
 
 function getInitialTheme(): Theme {
-  // Dark is the default; light only when the visitor picked it before.
   if (typeof window === "undefined") return "dark";
   try {
-    return window.localStorage.getItem("mw-theme") === "light" ? "light" : "dark";
+    const saved = window.localStorage.getItem("mw-theme");
+    if (saved === "light" || saved === "dark") return saved;
   } catch {
-    return "dark";
+    // System preference still works when storage is unavailable.
   }
+  return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
 }
 
 function applyTheme(theme: Theme) {
@@ -29,6 +30,23 @@ export function ThemeToggle({ className = "" }: { className?: string }) {
     setTheme(initial);
     applyTheme(initial);
     setMounted(true);
+    const preference = window.matchMedia("(prefers-color-scheme: dark)");
+    const onPreferenceChange = () => {
+      try {
+        if (
+          window.localStorage.getItem("mw-theme") === "light" ||
+          window.localStorage.getItem("mw-theme") === "dark"
+        )
+          return;
+      } catch {
+        // Follow the system when storage is unavailable.
+      }
+      const next = preference.matches ? "dark" : "light";
+      setTheme(next);
+      applyTheme(next);
+    };
+    preference.addEventListener("change", onPreferenceChange);
+    return () => preference.removeEventListener("change", onPreferenceChange);
   }, []);
 
   const toggle = () => {
@@ -50,9 +68,8 @@ export function ThemeToggle({ className = "" }: { className?: string }) {
       onClick={toggle}
       aria-label={`Switch to ${isDark ? "light" : "dark"} theme`}
       title={`Switch to ${isDark ? "light" : "dark"} theme`}
-      className={`group relative inline-flex h-11 w-11 items-center justify-center overflow-hidden rounded-full border border-border bg-card/60 text-foreground backdrop-blur transition hover:border-brand/50 hover:text-brand ${className}`}
+      className={`group relative inline-flex h-11 w-11 items-center justify-center overflow-hidden rounded-full border border-border bg-card text-foreground transition hover:border-brand/50 hover:text-brand ${className}`}
     >
-      {/* Sun (light mode active visual = sun shown when dark, since clicking will go to light? We show CURRENT theme icon) */}
       <Sun
         className={`absolute h-4 w-4 transition-all duration-300 ${
           mounted && !isDark ? "rotate-0 scale-100 opacity-100" : "-rotate-90 scale-50 opacity-0"

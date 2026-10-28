@@ -71,8 +71,7 @@ export const Route = createRootRoute({
 });
 
 function RootShell({ children }: { children: React.ReactNode }) {
-  // Dark is the default theme; only an explicit stored choice switches to light.
-  const themeInit = `(function(){try{var r=document.documentElement;var t=localStorage.getItem('mw-theme')==='light'?'light':'dark';r.classList.toggle('light',t==='light');r.classList.toggle('dark',t==='dark');r.style.colorScheme=t;}catch(e){}})();`;
+  const themeInit = `(function(){var r=document.documentElement;var saved;try{saved=localStorage.getItem('mw-theme')}catch(e){}var t=saved==='light'||saved==='dark'?saved:(matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');r.classList.toggle('light',t==='light');r.classList.toggle('dark',t==='dark');r.style.colorScheme=t})();`;
   return (
     <html lang="en" className="dark" suppressHydrationWarning>
       <head>

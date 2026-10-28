@@ -19,7 +19,7 @@ export function PageShell({ children }: { children: React.ReactNode }) {
   return (
     <>
       <SiteHeader />
-      <main className="relative min-h-screen overflow-hidden bg-background pt-28 text-foreground sm:pt-32">
+      <main className="relative min-h-screen overflow-hidden bg-background pt-16 text-foreground sm:pt-[4.5rem]">
         {children}
       </main>
       <SiteFooter />
@@ -40,7 +40,7 @@ export function PageHero({
 }) {
   return (
     <section
-      className={`relative isolate overflow-hidden bg-carbon px-5 py-12 sm:px-8 sm:py-20 ${image ? "on-dark" : ""}`}
+      className={`relative isolate overflow-hidden bg-carbon px-5 py-10 sm:px-8 sm:py-20 ${image ? "on-dark" : ""}`}
     >
       {image && (
         <div className="pointer-events-none absolute inset-0 -z-10">
@@ -78,16 +78,16 @@ function FloatingActions() {
     "Hello Modtech, I would like to discuss a project requirement.",
   );
   return (
-    <div className="floating-actions fixed bottom-5 right-4 z-40 flex flex-col gap-3 transition-opacity duration-300 sm:bottom-7 sm:right-7">
+    <div className="floating-actions fixed bottom-[max(1rem,env(safe-area-inset-bottom))] right-4 z-40 flex flex-col gap-3 transition-opacity duration-300 sm:bottom-7 sm:right-7">
       <a
         href={`https://wa.me/${whatsappNumber}?text=${whatsappMessage}`}
         target="_blank"
         rel="noopener noreferrer"
         aria-label="Chat with Modtech on WhatsApp"
         title="Chat with Modtech on WhatsApp"
-        className="group relative grid h-14 w-14 place-items-center rounded-full bg-[#25d366] text-white shadow-[0_12px_35px_rgba(37,211,102,0.42)] ring-2 ring-white/40 transition duration-200 hover:-translate-y-1 hover:scale-105 hover:bg-[#20bd5a] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[#25d366]/35 sm:h-16 sm:w-16"
+        className="group relative grid h-12 w-12 place-items-center rounded-full bg-[#25d366] text-white shadow-[0_12px_35px_rgba(37,211,102,0.42)] ring-2 ring-white/40 transition duration-200 hover:-translate-y-1 hover:scale-105 hover:bg-[#20bd5a] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[#25d366]/35 sm:h-16 sm:w-16"
       >
-        <WhatsAppIcon className="h-7 w-7 sm:h-8 sm:w-8" />
+        <WhatsAppIcon className="h-6 w-6 sm:h-8 sm:w-8" />
         <span
           aria-hidden="true"
           className="pointer-events-none absolute right-full top-1/2 mr-3 hidden -translate-y-1/2 whitespace-nowrap rounded-lg border border-border bg-carbon px-3 py-2 font-display text-xs font-semibold text-foreground opacity-0 shadow-deep transition-opacity group-hover:opacity-100 group-focus-visible:opacity-100 sm:block"
@@ -134,13 +134,13 @@ function SiteFooter() {
     },
   ];
   const links: Array<{
-    to: "/" | "/about" | "/divisions" | "/gallery" | "/blog" | "/contact";
+    to: "/" | "/about" | "/divisions" | "/blog" | "/careers" | "/contact";
     label: string;
   }> = [
     { to: "/about", label: "About Us" },
     { to: "/divisions", label: "Divisions / Machines" },
-    { to: "/gallery", label: "Gallery" },
     { to: "/blog", label: "Blogs" },
+    { to: "/careers", label: "Careers" },
     { to: "/contact", label: "Contact Us" },
   ];
   const socials = [
@@ -170,8 +170,8 @@ function SiteFooter() {
     },
   ];
   return (
-    <footer className="relative border-t border-border bg-carbon-2 px-5 py-14 sm:px-8">
-      <div className="mx-auto grid max-w-7xl gap-10 lg:grid-cols-[1.05fr_0.72fr_1.3fr] lg:gap-12">
+    <footer className="relative border-t border-border bg-carbon-2 px-5 py-10 sm:px-8 sm:py-14">
+      <div className="mx-auto grid max-w-7xl gap-8 sm:gap-10 lg:grid-cols-[1.05fr_0.72fr_1.3fr] lg:gap-12">
         <div>
           <Link to="/" className="inline-flex flex-col gap-3" aria-label="Modtech Machine — home">
             <BrandLogo className="h-11 text-foreground" />
@@ -257,7 +257,7 @@ function SiteFooter() {
         </div>
       </div>
 
-      <div className="mx-auto mt-10 flex max-w-7xl flex-col items-center justify-between gap-3 border-t border-border/60 pt-6 sm:flex-row">
+      <div className="mx-auto mt-8 flex max-w-7xl flex-col items-center justify-between gap-3 border-t border-border/60 pt-5 text-center sm:mt-10 sm:flex-row sm:pt-6 sm:text-left">
         <p className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
           © {new Date().getFullYear()} Modtech Machine · All rights reserved
         </p>

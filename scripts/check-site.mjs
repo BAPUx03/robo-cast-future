@@ -9,6 +9,7 @@ const seeds = [
   "/process",
   "/news",
   "/blog",
+  "/careers",
   "/contact",
 ];
 

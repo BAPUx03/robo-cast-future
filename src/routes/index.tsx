@@ -64,7 +64,7 @@ function HomePage() {
 
   return (
     <PageShell>
-      <section className="home-hero on-dark relative isolate -mt-28 min-h-[calc(100svh-1rem)] overflow-hidden bg-carbon pt-28 sm:-mt-32 sm:pt-32">
+      <section className="home-hero on-dark relative isolate -mt-16 min-h-svh overflow-hidden bg-carbon pt-16 sm:-mt-[4.5rem] sm:pt-[4.5rem]">
         <YouTubeBackground
           videoId="bd5fXFXLylE"
           title="Future of Smart Factory in India — Modtech Automation"
@@ -78,7 +78,7 @@ function HomePage() {
         <div className="pointer-events-none absolute inset-0 -z-10 bg-gradient-to-t from-carbon via-transparent to-carbon/40" />
         <div className="pointer-events-none absolute inset-0 -z-10 bg-grid opacity-20" />
 
-        <div className="mx-auto grid min-h-[calc(100svh-8rem)] max-w-7xl content-center gap-8 px-5 pb-10 pt-10 sm:gap-10 sm:px-8 sm:pb-20 sm:pt-12 lg:grid-cols-[minmax(0,1fr)_16rem] lg:items-end lg:pb-16 xl:grid-cols-[minmax(0,1fr)_18rem]">
+        <div className="mx-auto grid min-h-[calc(100svh-4rem)] max-w-7xl content-center gap-8 px-5 pb-10 pt-8 sm:min-h-[calc(100svh-4.5rem)] sm:gap-10 sm:px-8 sm:pb-16 sm:pt-10 lg:grid-cols-[minmax(0,1fr)_16rem] lg:items-end xl:grid-cols-[minmax(0,1fr)_18rem]">
           <div className="min-w-0 max-w-4xl">
             <h1
               className="reveal max-w-4xl font-display text-[clamp(2.2rem,7vw,6rem)] font-bold leading-[1.02] sm:leading-[0.98]"
@@ -323,4 +323,3 @@ function ProofRow({ label, items }: { label: string; items: string[] }) {
     </div>
   );
 }
-

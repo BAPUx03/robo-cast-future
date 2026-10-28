@@ -92,6 +92,42 @@ export type Database = {
         };
         Relationships: [];
       };
+      career_vacancies: {
+        Row: {
+          id: string;
+          title: string;
+          openings: number;
+          qualification: string;
+          experience: string;
+          sort_order: number;
+          published: boolean;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          title: string;
+          openings: number;
+          qualification: string;
+          experience: string;
+          sort_order?: number;
+          published?: boolean;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          title?: string;
+          openings?: number;
+          qualification?: string;
+          experience?: string;
+          sort_order?: number;
+          published?: boolean;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Relationships: [];
+      };
       auth_email_requests: {
         Row: {
           email_hash: string;

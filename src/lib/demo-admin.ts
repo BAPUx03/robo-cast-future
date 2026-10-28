@@ -90,6 +90,18 @@ const initialData: DemoData = {
       updated_at: "2026-09-18T10:00:00.000Z",
     },
   ],
+  career_vacancies: [
+    {
+      id: "demo-career-1",
+      title: "Automation Engineer",
+      openings: 2,
+      qualification: "Degree or diploma in engineering",
+      experience: "2+ years in industrial automation",
+      sort_order: 100,
+      published: true,
+      updated_at: "2026-09-18T10:00:00.000Z",
+    },
+  ],
   gallery_items: [
     {
       id: "demo-gallery-1",

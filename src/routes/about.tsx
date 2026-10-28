@@ -244,6 +244,27 @@ const demoTestimonials = [
   },
 ] as const;
 
+const aboutPhotos = [
+  {
+    key: "about_photo_1",
+    alt: "Modtech engineers and customers beside a commissioned machine",
+    title: "Commissioning together",
+    description: "Hands-on support at the machine, from installation to production readiness.",
+  },
+  {
+    key: "about_photo_2",
+    alt: "Modtech team and international partners on a factory floor",
+    title: "Technical collaboration",
+    description: "Working alongside customers and partners on practical factory solutions.",
+  },
+  {
+    key: "about_photo_3",
+    alt: "Modtech representative with customers in front of a casting machine",
+    title: "Customer machine visits",
+    description: "Real equipment and real conversations where the systems are used.",
+  },
+] as const;
+
 function AboutPage() {
   useRevealOnScroll();
   const content = useSiteContent("about");
@@ -344,6 +365,46 @@ function AboutPage() {
                 </li>
               ))}
             </ol>
+          </div>
+        </div>
+      </section>
+
+      <section className="border-y border-border bg-carbon-2 px-5 py-12 sm:px-8 sm:py-16">
+        <div className="mx-auto max-w-7xl">
+          <header className="reveal-on-scroll mb-6 grid gap-3 sm:mb-8 lg:grid-cols-[1fr_0.8fr] lg:items-end">
+            <div>
+              <p className="font-mono text-[10px] font-semibold uppercase tracking-[0.18em] text-brand">
+                Modtech in the field
+              </p>
+              <h2 className="mt-2 font-display text-3xl font-bold sm:text-5xl">
+                Engineering in action.
+              </h2>
+            </div>
+            <p className="max-w-xl text-sm leading-relaxed text-muted-foreground sm:text-base lg:justify-self-end">
+              A closer look at the people, machines and partnerships behind our work.
+            </p>
+          </header>
+          <div className="grid gap-4 md:grid-cols-3">
+            {aboutPhotos.map((photo) => (
+              <figure
+                key={photo.key}
+                className="reveal-on-scroll min-w-0 overflow-hidden rounded-2xl border border-border bg-card shadow-card"
+              >
+                <img
+                  src={content[photo.key]}
+                  alt={photo.alt}
+                  loading="lazy"
+                  decoding="async"
+                  className="aspect-[4/3] w-full object-cover object-[center_35%] md:aspect-[3/4] lg:aspect-[4/3]"
+                />
+                <figcaption className="p-4 sm:p-5">
+                  <h3 className="font-display text-lg font-semibold">{photo.title}</h3>
+                  <p className="mt-1 text-sm leading-relaxed text-muted-foreground">
+                    {photo.description}
+                  </p>
+                </figcaption>
+              </figure>
+            ))}
           </div>
         </div>
       </section>

@@ -102,7 +102,7 @@ function DivisionsPage() {
 
       <section
         id="division-selector"
-        className="relative scroll-mt-32 bg-background px-5 py-16 sm:px-8 sm:py-24"
+        className="relative scroll-mt-20 bg-background px-5 py-12 sm:scroll-mt-24 sm:px-8 sm:py-20"
       >
         <div className="pointer-events-none absolute inset-0 bg-grid bg-grid-fade opacity-20" />
         <div className="relative mx-auto max-w-7xl">

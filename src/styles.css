@@ -195,7 +195,7 @@
   html {
     scroll-behavior: smooth;
     color-scheme: dark;
-    scroll-padding-top: 7rem; /* fixed header never covers an anchored section */
+    scroll-padding-top: 5rem; /* fixed header never covers an anchored section */
   }
   html.light {
     color-scheme: light;
@@ -635,32 +635,9 @@
     background: color-mix(in oklab, var(--brand) 10%, transparent);
   }
 
-  /* Sticky header surface — always slightly tinted so buttons stay readable over hero video */
+  /* A solid, stationary surface keeps navigation readable in both themes. */
   .nav-shell {
-    background: linear-gradient(
-      180deg,
-      color-mix(in oklab, var(--background) 55%, transparent),
-      color-mix(in oklab, var(--background) 25%, transparent)
-    );
-    backdrop-filter: blur(10px) saturate(1.1);
-    -webkit-backdrop-filter: blur(10px) saturate(1.1);
-    transition:
-      background-color 0.4s ease,
-      backdrop-filter 0.4s ease,
-      border-color 0.4s ease,
-      box-shadow 0.4s ease,
-      padding 0.3s ease;
-  }
-  .nav-shell[data-scrolled="true"] {
-    background: linear-gradient(
-      180deg,
-      color-mix(in oklab, var(--background) 99%, transparent),
-      color-mix(in oklab, var(--background) 96%, transparent)
-    );
-    backdrop-filter: blur(20px) saturate(1.15);
-    -webkit-backdrop-filter: blur(20px) saturate(1.15);
-    border-bottom: 1px solid var(--line);
-    box-shadow: 0 10px 30px -20px oklch(0 0 0 / 0.45);
+    background: var(--background);
   }
 
   /* Scroll progress bar */

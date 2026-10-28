@@ -66,6 +66,12 @@ Apply these migrations in order:
 5. `drizzle/migrations/0004_profile_integrity.sql`
 6. `drizzle/migrations/0005_enquiry_rate_limit.sql`
 7. `drizzle/migrations/0006_product_sections.sql`
+8. `drizzle/migrations/0007_gallery_items.sql`
+9. `drizzle/migrations/0008_announcement_bar.sql`
+10. `drizzle/migrations/0009_brand_text_machine.sql`
+11. `drizzle/migrations/0010_lead_notification_email.sql`
+12. `drizzle/migrations/0011_product_specification_metadata.sql`
+13. `drizzle/migrations/0012_career_vacancies.sql`
 
 The third migration adds the CRM and role policies. The fourth adds the server-only, atomic resend
 rate limit for authentication emails. The fifth keeps profiles and roles linked to Supabase Auth

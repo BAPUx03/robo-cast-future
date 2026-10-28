@@ -6,6 +6,7 @@ import {
   AlertTriangle,
   ArrowRight,
   Bold,
+  BriefcaseBusiness,
   CalendarDays,
   Download,
   Clock3,
@@ -13,7 +14,6 @@ import {
   FileText,
   Globe2,
   Heading2,
-  Images,
   Inbox,
   Italic,
   LayoutDashboard,
@@ -83,8 +83,7 @@ export const Route = createFileRoute("/_authenticated/admin")({
       "products",
       "news",
       "exhibitions",
-      "gallery",
-      "announcement",
+      "careers",
       "enquiries",
       "team",
       "settings",
@@ -117,8 +116,7 @@ type Tab =
   | "products"
   | "news"
   | "exhibitions"
-  | "gallery"
-  | "announcement"
+  | "careers"
   | "enquiries"
   | "team"
   | "settings";
@@ -130,13 +128,7 @@ const TABS = [
   { id: "products", label: "Products", description: "Machine catalogue", Icon: Package },
   { id: "news", label: "Blog Updates", description: "Short updates & resources", Icon: Newspaper },
   { id: "exhibitions", label: "Exhibitions", description: "Events calendar", Icon: CalendarDays },
-  { id: "gallery", label: "Gallery", description: "Office & facility photos", Icon: Images },
-  {
-    id: "announcement",
-    label: "Announcement",
-    description: "Top bar message",
-    Icon: Megaphone,
-  },
+  { id: "careers", label: "Careers", description: "Job openings", Icon: BriefcaseBusiness },
   { id: "enquiries", label: "Enquiries", description: "Sales leads", Icon: Inbox },
   { id: "team", label: "Team & Access", description: "People, roles & access", Icon: Users },
   { id: "settings", label: "Email Settings", description: "Notifications", Icon: Settings2 },
@@ -257,10 +249,7 @@ const PRODUCT_SECTION_OPTIONS = (
   label: `${section.division === "casting" ? "Casting" : "Robotics"} — ${section.label}`,
 }));
 
-type CollectionTab = Exclude<
-  Tab,
-  "overview" | "website" | "announcement" | "enquiries" | "team" | "settings"
->;
+type CollectionTab = Exclude<Tab, "overview" | "website" | "enquiries" | "team" | "settings">;
 
 const SCHEMAS: Record<
   CollectionTab,
@@ -300,7 +289,6 @@ const SCHEMAS: Record<
         options: ["casting", "automation", "robotics", "company"],
       },
       { key: "author", label: "Author" },
-      { key: "read_minutes", label: "Read minutes", type: "number" },
       { key: "cover_url", label: "Cover image URL", full: true },
       { key: "excerpt", label: "Short summary", type: "textarea", full: true },
       { key: "body", label: "Article content", type: "richtext", full: true },
@@ -350,7 +338,6 @@ const SCHEMAS: Record<
         full: true,
         hint: "Controls the section where this product appears on the public Machines page.",
       },
-      { key: "sort_order", label: "Sort order", type: "number" },
       { key: "image_url", label: "Image URL", full: true },
       {
         key: "gallery_images",
@@ -444,7 +431,6 @@ const SCHEMAS: Record<
         options: ["casting", "automation", "robotics"],
       },
       { key: "date_label", label: "Date text" },
-      { key: "sort_order", label: "Sort order", type: "number" },
       { key: "image_url", label: "Image URL", full: true },
       { key: "excerpt", label: "Summary", type: "textarea", full: true },
       { key: "body", label: "Full story", type: "richtext", full: true },
@@ -472,7 +458,6 @@ const SCHEMAS: Record<
       { key: "title", label: "Event name", full: true, required: true },
       { key: "date_label", label: "Date text" },
       { key: "location", label: "Location" },
-      { key: "sort_order", label: "Sort order", type: "number" },
       { key: "image_url", label: "Image URL", full: true },
       { key: "published", label: "Published", type: "bool" },
     ],
@@ -485,58 +470,26 @@ const SCHEMAS: Record<
       published: true,
     },
   },
-  gallery: {
-    table: "gallery_items",
+  careers: {
+    table: "career_vacancies",
     order: "sort_order",
     asc: true,
     titleKey: "title",
-    description:
-      "Manage office, facility, factory-floor, team and event photographs shown in the public gallery.",
+    description: "Publish vacancies with the details candidates need before emailing HR.",
     fields: [
-      { key: "title", label: "Image title", full: true, required: true },
-      {
-        key: "category",
-        label: "Category",
-        type: "select",
-        options: [
-          { value: "office", label: "Office" },
-          { value: "facility", label: "Facility" },
-          { value: "factory", label: "Factory floor" },
-          { value: "team", label: "People / team" },
-          { value: "events", label: "Events" },
-        ],
-        required: true,
-      },
-      { key: "location", label: "Location" },
-      { key: "sort_order", label: "Sort order", type: "number" },
-      {
-        key: "image_url",
-        label: "Image URL",
-        full: true,
-        required: true,
-        hint: "Use a public image URL or a project path such as /gallery/office.jpg.",
-      },
-      {
-        key: "alt_text",
-        label: "Accessible image description",
-        full: true,
-        required: true,
-        hint: "Briefly describe what is visible for screen-reader users.",
-      },
-      { key: "caption", label: "Caption", type: "textarea", full: true },
-      { key: "featured", label: "Featured large tile", type: "bool" },
+      { key: "title", label: "Vacancy name", full: true, required: true },
+      { key: "openings", label: "No. of vacancies", type: "number", required: true },
+      { key: "qualification", label: "Educational qualification", full: true, required: true },
+      { key: "experience", label: "Required experience", full: true, required: true },
       { key: "published", label: "Published", type: "bool" },
     ],
     blank: {
       title: "",
-      category: "facility",
-      location: "Modtech Machine",
+      openings: 1,
+      qualification: "",
+      experience: "",
       sort_order: 100,
-      image_url: "",
-      alt_text: "",
-      caption: "",
-      featured: false,
-      published: true,
+      published: false,
     },
   },
 };
@@ -615,13 +568,12 @@ function AdminPage() {
       "products",
       "news",
       "exhibitions",
-      "gallery",
-      "announcement",
+      "careers",
       "enquiries",
       "team",
       "settings",
     ],
-    editor: ["overview", "website", "posts", "products", "news", "exhibitions", "gallery"],
+    editor: ["overview", "website", "posts", "products", "news", "exhibitions", "careers"],
     sales_manager: ["overview", "enquiries", "team"],
     sales: ["overview", "enquiries"],
   };
@@ -738,8 +690,6 @@ function AdminPage() {
             <DashboardOverview demo={demo} onNavigate={setTab} role={role} />
           ) : activeTab === "website" ? (
             <WebsiteContent demo={demo} />
-          ) : activeTab === "announcement" ? (
-            <AnnouncementSettings demo={demo} />
           ) : activeTab === "enquiries" ? (
             <Enquiries demo={demo} role={role} userId={user.id} />
           ) : activeTab === "team" ? (
@@ -773,7 +723,6 @@ function DashboardOverview({
           products: getDemoRows("products"),
           news: getDemoRows("news_items"),
           exhibitions: getDemoRows("exhibitions"),
-          gallery: getDemoRows("gallery_items"),
           enquiries: getDemoRows("enquiries") as EnquiryRow[],
         };
       }
@@ -788,22 +737,20 @@ function DashboardOverview({
           products: [],
           news: [],
           exhibitions: [],
-          gallery: [],
           enquiries: enquiries ?? [],
         };
       }
-      const [posts, products, news, exhibitions, gallery, enquiries] = await Promise.all([
+      const [posts, products, news, exhibitions, enquiries] = await Promise.all([
         supabase.from("blog_posts").select("id, published, updated_at"),
         supabase.from("products").select("id, published, updated_at"),
         supabase.from("news_items").select("id, published, updated_at"),
         supabase.from("exhibitions").select("id, published, updated_at"),
-        supabase.from("gallery_items").select("id, published, updated_at"),
         supabase
           .from("enquiries")
           .select("id, name, company, status, created_at")
           .order("created_at", { ascending: false }),
       ]);
-      const failure = [posts, products, news, exhibitions, gallery, enquiries].find(
+      const failure = [posts, products, news, exhibitions, enquiries].find(
         (result) => result.error,
       )?.error;
       if (failure) throw failure;
@@ -812,7 +759,6 @@ function DashboardOverview({
         products: products.data ?? [],
         news: news.data ?? [],
         exhibitions: exhibitions.data ?? [],
-        gallery: gallery.data ?? [],
         enquiries: enquiries.data ?? [],
       };
     },
@@ -849,13 +795,6 @@ function DashboardOverview({
             value: data?.exhibitions.length ?? 0,
             published: data?.exhibitions.filter((item) => item.published).length ?? 0,
             Icon: CalendarDays,
-          },
-          {
-            tab: "gallery" as const,
-            label: "Gallery images",
-            value: data?.gallery.length ?? 0,
-            published: data?.gallery.filter((item) => item.published).length ?? 0,
-            Icon: Images,
           },
         ];
   const newEnquiries = data?.enquiries.filter((item) => item.status === "new") ?? [];
@@ -1103,6 +1042,15 @@ function WebsiteContent({ demo }: { demo: boolean }) {
           className="overflow-hidden rounded-2xl border border-border bg-card shadow-card"
           onSubmit={async (event) => {
             event.preventDefault();
+            const invalidImage = page.fields.find(
+              (field) =>
+                field.image &&
+                !/^(\/[^/]|https?:\/\/)/i.test(String(values[field.key] ?? "").trim()),
+            );
+            if (invalidImage) {
+              toast.error(`${invalidImage.label} needs a site path or an http(s) URL.`);
+              return;
+            }
             setSaving(true);
             try {
               await saveSiteContent(pageId, values);
@@ -1144,11 +1092,21 @@ function WebsiteContent({ demo }: { demo: boolean }) {
                 ) : (
                   <input
                     id={`site-${pageId}-${field.key}`}
+                    type="text"
+                    inputMode={field.image ? "url" : undefined}
                     value={values[field.key] ?? ""}
                     onChange={(event) =>
                       setValues((current) => ({ ...current, [field.key]: event.target.value }))
                     }
                     className="mt-2 w-full rounded-xl border border-border bg-background px-4 py-3 text-sm outline-none ring-brand/30 transition focus:border-brand focus:ring-2"
+                  />
+                )}
+                {field.image && values[field.key] && (
+                  <img
+                    src={values[field.key]}
+                    alt={`${field.label} preview`}
+                    loading="lazy"
+                    className="mt-3 aspect-video w-full max-w-sm rounded-xl border border-border bg-secondary object-cover"
                   />
                 )}
               </div>
@@ -1239,10 +1197,15 @@ function Collection({ tab, demo }: { tab: CollectionTab; demo: boolean }) {
       const id = payload["id"] as string | undefined;
       delete payload["id"];
       const client = supabase.from(schema.table as never);
-      const { error } = id
-        ? await client.update(payload as never).eq("id", id)
-        : await client.insert(payload as never);
-      if (error) throw error;
+      const result = id
+        ? await client
+            .update(payload as never)
+            .eq("id", id)
+            .select("id")
+        : await client.insert(payload as never).select("id");
+      if (result.error) throw result.error;
+      if (!result.data?.length)
+        throw new Error("Save was not confirmed. Please check your access and retry.");
     },
     onSuccess: () => {
       toast.success("Saved");
@@ -1254,7 +1217,8 @@ function Collection({ tab, demo }: { tab: CollectionTab; demo: boolean }) {
       if (tab === "news") queryClient.invalidateQueries({ queryKey: ["public-news"] });
       if (tab === "exhibitions")
         queryClient.invalidateQueries({ queryKey: ["public-exhibitions"] });
-      if (tab === "gallery") queryClient.invalidateQueries({ queryKey: ["public-gallery"] });
+      if (tab === "careers")
+        queryClient.invalidateQueries({ queryKey: ["public-career-vacancies"] });
     },
     onError: (e: Error) => toast.error(e.message),
   });
@@ -1265,11 +1229,13 @@ function Collection({ tab, demo }: { tab: CollectionTab; demo: boolean }) {
         deleteDemoRow(schema.table, id);
         return;
       }
-      const { error } = await supabase
+      const { data, error } = await supabase
         .from(schema.table as never)
         .delete()
-        .eq("id", id);
+        .eq("id", id)
+        .select("id");
       if (error) throw error;
+      if (!data?.length) throw new Error("Delete was not confirmed. Please refresh and retry.");
     },
     onSuccess: () => {
       toast.success("Entry deleted");
@@ -1281,7 +1247,8 @@ function Collection({ tab, demo }: { tab: CollectionTab; demo: boolean }) {
       if (tab === "news") queryClient.invalidateQueries({ queryKey: ["public-news"] });
       if (tab === "exhibitions")
         queryClient.invalidateQueries({ queryKey: ["public-exhibitions"] });
-      if (tab === "gallery") queryClient.invalidateQueries({ queryKey: ["public-gallery"] });
+      if (tab === "careers")
+        queryClient.invalidateQueries({ queryKey: ["public-career-vacancies"] });
     },
     onError: (e: Error) => toast.error(e.message),
   });
@@ -1303,7 +1270,7 @@ function Collection({ tab, demo }: { tab: CollectionTab; demo: boolean }) {
     if (tab === "posts" && row["slug"]) return `/blog/${String(row["slug"])}`;
     if (tab === "products" && row["slug"]) return `/machines/${String(row["slug"])}`;
     if (tab === "news" || tab === "exhibitions") return "/blog";
-    if (tab === "gallery") return "/gallery";
+    if (tab === "careers") return "/careers";
     return null;
   };
   const SectionIcon = TABS.find((item) => item.id === tab)?.Icon ?? FileText;
@@ -1322,8 +1289,9 @@ function Collection({ tab, demo }: { tab: CollectionTab; demo: boolean }) {
         </div>
         <button
           type="button"
+          disabled={Boolean(error) || isLoading}
           onClick={() => setEditing({ ...schema.blank })}
-          className="inline-flex items-center gap-2 rounded-full bg-brand px-5 py-2.5 font-mono text-[10px] font-semibold uppercase tracking-[0.2em] text-brand-foreground shadow-glow transition hover:-translate-y-0.5"
+          className="inline-flex items-center gap-2 rounded-full bg-brand px-5 py-2.5 font-mono text-[10px] font-semibold uppercase tracking-[0.2em] text-brand-foreground shadow-glow transition hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:opacity-50"
         >
           <Plus className="h-4 w-4" /> New entry
         </button>
@@ -1366,7 +1334,9 @@ function Collection({ tab, demo }: { tab: CollectionTab; demo: boolean }) {
         </div>
       ) : error ? (
         <div className="mt-8 rounded-2xl border border-destructive/30 bg-destructive/5 p-6 text-sm text-destructive">
-          Could not load this collection.
+          {tab === "careers" && String(error.message).includes("career_vacancies")
+            ? "Careers table is not available in Supabase yet. Apply migration 0012_career_vacancies.sql before adding vacancies."
+            : `Could not load this collection: ${error.message}`}
           <button
             type="button"
             onClick={() => void refetch()}
@@ -1422,6 +1392,7 @@ function Collection({ tab, demo }: { tab: CollectionTab; demo: boolean }) {
                     </span>
                   )}
                   {Boolean(row["date_label"]) && <span>{String(row["date_label"])}</span>}
+                  {tab === "careers" && <span>{String(row["openings"])} openings</span>}
                   {Boolean(row["updated_at"]) && (
                     <span className="inline-flex items-center gap-1">
                       <Clock3 className="h-3 w-3" /> {formatAdminDate(row["updated_at"])}
@@ -1512,6 +1483,20 @@ function Collection({ tab, demo }: { tab: CollectionTab; demo: boolean }) {
                 toast.error("Choose a product section that belongs to the selected division.");
                 return;
               }
+            }
+            if (tab === "posts") {
+              const words = String(next["body"] ?? "")
+                .trim()
+                .split(/\s+/)
+                .filter(Boolean).length;
+              next["read_minutes"] = Math.max(1, Math.ceil(words / 200));
+            }
+            if (
+              tab === "careers" &&
+              (!Number.isInteger(next["openings"]) || Number(next["openings"]) < 1)
+            ) {
+              toast.error("No. of vacancies must be a whole number greater than zero.");
+              return;
             }
             for (const field of schema.fields.filter((item) => item.type === "json")) {
               if (typeof next[field.key] === "string") {
@@ -1822,11 +1807,19 @@ function EditorDrawer({
                       <input
                         id={f.key}
                         required={f.required}
-                        type={f.type === "number" ? "number" : "text"}
+                        type="text"
+                        inputMode={f.type === "number" ? "numeric" : undefined}
+                        pattern={f.type === "number" ? "[0-9]*" : undefined}
                         value={String(value ?? "")}
-                        onChange={(e) =>
-                          set(f.key, f.type === "number" ? Number(e.target.value) : e.target.value)
-                        }
+                        onChange={(e) => {
+                          if (f.type === "number" && !/^\d*$/.test(e.target.value)) return;
+                          set(
+                            f.key,
+                            f.type === "number" && e.target.value !== ""
+                              ? Number(e.target.value)
+                              : e.target.value,
+                          );
+                        }}
                         className={input}
                       />
                     )}
@@ -2093,8 +2086,13 @@ function Enquiries({
         updateDemoRow("enquiries", id, changes);
         return;
       }
-      const { error } = await supabase.from("enquiries").update(changes).eq("id", id);
+      const { data: updated, error } = await supabase
+        .from("enquiries")
+        .update(changes)
+        .eq("id", id)
+        .select("id");
       if (error) throw error;
+      if (!updated?.length) throw new Error("Enquiry update was not confirmed. Refresh and retry.");
       const { error: activityError } = await supabase.from("lead_activities").insert({
         enquiry_id: id,
         actor_id: userId,
