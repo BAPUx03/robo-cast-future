@@ -23,7 +23,31 @@ const server = await createServer({
 try {
   const demo = await server.ssrLoadModule("/src/lib/demo-admin.ts");
   const content = await server.ssrLoadModule("/src/lib/site-content.ts");
+  const careers = await server.ssrLoadModule("/src/lib/career-admin.ts");
   assert.equal(demo.DEMO_MODE, true);
+
+  const draft = {
+    title: "  Test vacancy  ",
+    openings: "2",
+    qualification: "  Engineering diploma  ",
+    experience: "  1 year  ",
+    published: true,
+  };
+  const validated = careers.validateCareerDraft(draft);
+  assert.equal(validated.error, null);
+  assert.equal(validated.value.title, "Test vacancy");
+  assert.equal(validated.value.openings, 2);
+  assert.equal(validated.value.qualification, "Engineering diploma");
+  assert.equal(draft.title, "  Test vacancy  ", "validation must not mutate the form draft");
+  for (const openings of [0, -1, 1.5, "abc", Number.MAX_SAFE_INTEGER + 1]) {
+    assert.match(careers.validateCareerDraft({ ...draft, openings }).error, /whole number/);
+  }
+  assert.match(careers.validateCareerDraft({ ...draft, title: " ".repeat(2) }).error, /required/);
+  assert.match(careers.validateCareerDraft({ ...draft, title: "x".repeat(161) }).error, /160/);
+  assert.match(
+    careers.validateCareerDraft({ ...draft, qualification: "x".repeat(301) }).error,
+    /300/,
+  );
 
   for (const table of ["blog_posts", "products", "news_items", "exhibitions", "career_vacancies"]) {
     const original = demo.getDemoRows(table).length;
@@ -57,7 +81,7 @@ try {
   assert.equal(content.getSiteContent("about").about_photo_1, changed.about_photo_1);
   assert.equal((await content.fetchSiteContent("about")).about_photo_1, changed.about_photo_1);
 
-  console.log("Admin demo CRUD and About content save/reload passed.");
+  console.log("Admin demo CRUD, Careers validation, and About content save/reload passed.");
 } finally {
   await server.close();
 }

@@ -40,6 +40,7 @@ import {
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { slugify } from "@/lib/cms";
+import { validateCareerDraft } from "@/lib/career-admin";
 import { assignLead, inviteTeamMember, updateTeamMember } from "@/lib/team.functions";
 import { requestAuthEmail } from "@/lib/auth-email.functions";
 import {
@@ -648,7 +649,7 @@ function AdminPage() {
       <div className="mx-auto grid max-w-[90rem] lg:grid-cols-[16rem_minmax(0,1fr)]">
         <aside className="border-b border-border bg-card/30 p-4 lg:min-h-[calc(100vh-73px)] lg:border-b-0 lg:border-r lg:p-5">
           <nav
-            className="grid grid-cols-2 gap-2 sm:grid-cols-4 lg:sticky lg:top-24 lg:grid-cols-1"
+            className="-mx-4 flex gap-2 overflow-x-auto px-4 pb-2 sm:-mx-5 sm:px-5 lg:sticky lg:top-24 lg:mx-0 lg:grid lg:grid-cols-1 lg:overflow-visible lg:px-0 lg:pb-0"
             aria-label="Admin sections"
           >
             {visibleTabs.map(({ id, label, description, Icon }) => (
@@ -657,14 +658,14 @@ function AdminPage() {
                 type="button"
                 onClick={() => setTab(id)}
                 aria-current={activeTab === id ? "page" : undefined}
-                className={`flex min-w-0 items-center gap-3 rounded-xl border px-3 py-3 text-left transition ${
+                className={`flex min-w-max shrink-0 items-center gap-2 rounded-xl border px-3 py-2.5 text-left transition lg:min-w-0 lg:gap-3 lg:py-3 ${
                   activeTab === id
                     ? "border-brand/50 bg-brand/10 text-foreground shadow-card"
                     : "border-transparent text-muted-foreground hover:border-border hover:bg-card hover:text-foreground"
                 }`}
               >
                 <span
-                  className={`grid h-8 w-8 shrink-0 place-items-center rounded-lg ${activeTab === id ? "bg-brand text-brand-foreground" : "bg-secondary text-muted-foreground"}`}
+                  className={`hidden h-8 w-8 shrink-0 place-items-center rounded-lg sm:grid ${activeTab === id ? "bg-brand text-brand-foreground" : "bg-secondary text-muted-foreground"}`}
                 >
                   <Icon className="h-4 w-4" />
                 </span>
@@ -678,7 +679,7 @@ function AdminPage() {
             ))}
             <Link
               to="/"
-              className="col-span-2 mt-1 inline-flex items-center justify-center gap-2 rounded-xl border border-border px-4 py-3 font-mono text-[10px] uppercase tracking-[0.16em] text-muted-foreground transition hover:border-brand hover:text-brand sm:col-span-1 lg:col-span-1 lg:mt-4"
+              className="inline-flex shrink-0 items-center justify-center gap-2 rounded-xl border border-border px-4 py-2.5 font-mono text-[10px] uppercase tracking-[0.16em] text-muted-foreground transition hover:border-brand hover:text-brand lg:mt-4 lg:py-3"
             >
               <Eye className="h-4 w-4" /> View website
             </Link>
@@ -1290,7 +1291,10 @@ function Collection({ tab, demo }: { tab: CollectionTab; demo: boolean }) {
         <button
           type="button"
           disabled={Boolean(error) || isLoading}
-          onClick={() => setEditing({ ...schema.blank })}
+          onClick={() => {
+            save.reset();
+            setEditing({ ...schema.blank });
+          }}
           className="inline-flex items-center gap-2 rounded-full bg-brand px-5 py-2.5 font-mono text-[10px] font-semibold uppercase tracking-[0.2em] text-brand-foreground shadow-glow transition hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:opacity-50"
         >
           <Plus className="h-4 w-4" /> New entry
@@ -1428,7 +1432,10 @@ function Collection({ tab, demo }: { tab: CollectionTab; demo: boolean }) {
               )}
               <button
                 type="button"
-                onClick={() => setEditing({ ...row })}
+                onClick={() => {
+                  save.reset();
+                  setEditing({ ...row });
+                }}
                 className="rounded-full border border-border px-4 py-1.5 font-mono text-[10px] uppercase tracking-[0.18em] transition hover:border-brand hover:text-brand"
               >
                 Edit
@@ -1455,7 +1462,11 @@ function Collection({ tab, demo }: { tab: CollectionTab; demo: boolean }) {
           fields={schema.fields}
           row={editing}
           busy={save.isPending}
-          onChange={setEditing}
+          error={save.isError ? save.error.message : undefined}
+          onChange={(row) => {
+            if (save.isError) save.reset();
+            setEditing(row);
+          }}
           onClose={() => setEditing(null)}
           onSave={(row) => {
             const next = { ...row };
@@ -1491,12 +1502,13 @@ function Collection({ tab, demo }: { tab: CollectionTab; demo: boolean }) {
                 .filter(Boolean).length;
               next["read_minutes"] = Math.max(1, Math.ceil(words / 200));
             }
-            if (
-              tab === "careers" &&
-              (!Number.isInteger(next["openings"]) || Number(next["openings"]) < 1)
-            ) {
-              toast.error("No. of vacancies must be a whole number greater than zero.");
-              return;
+            if (tab === "careers") {
+              const validated = validateCareerDraft(next);
+              if (validated.error) {
+                toast.error(validated.error);
+                return;
+              }
+              Object.assign(next, validated.value);
             }
             for (const field of schema.fields.filter((item) => item.type === "json")) {
               if (typeof next[field.key] === "string") {
@@ -1590,6 +1602,7 @@ function EditorDrawer({
   fields,
   row,
   busy,
+  error,
   onChange,
   onClose,
   onSave,
@@ -1597,6 +1610,7 @@ function EditorDrawer({
   fields: FieldDef[];
   row: Row;
   busy: boolean;
+  error?: string;
   onChange: (row: Row) => void;
   onClose: () => void;
   onSave: (row: Row) => void;
@@ -1604,6 +1618,7 @@ function EditorDrawer({
   const initialValue = useRef(JSON.stringify(row));
   const [confirmDiscard, setConfirmDiscard] = useState(false);
   const dirty = JSON.stringify(row) !== initialValue.current;
+  const isCareerEditor = fields.some((field) => field.key === "qualification");
 
   const requestClose = useCallback(() => {
     if (busy) return;
@@ -1660,9 +1675,9 @@ function EditorDrawer({
       }}
     >
       <div
-        className={`h-full w-full overflow-y-auto border-l border-border bg-background px-6 shadow-deep sm:px-8 ${fields.some((field) => field.type === "richtext") ? "max-w-4xl" : "max-w-2xl"}`}
+        className={`h-dvh w-full overflow-y-auto border-l border-border bg-background px-5 shadow-deep sm:px-8 ${fields.some((field) => field.type === "richtext") ? "max-w-4xl" : "max-w-2xl"}`}
       >
-        <div className="sticky top-0 z-10 -mx-6 flex items-center justify-between border-b border-border bg-background/95 px-6 py-5 backdrop-blur sm:-mx-8 sm:px-8">
+        <div className="sticky top-0 z-10 -mx-5 flex items-center justify-between border-b border-border bg-background/95 px-5 py-5 backdrop-blur sm:-mx-8 sm:px-8">
           <div className="min-w-0 pr-4">
             <p className="font-mono text-[9px] uppercase tracking-[0.2em] text-brand">
               {row["id"] ? "Editing content" : "Creating content"}
@@ -1690,6 +1705,15 @@ function EditorDrawer({
               className="aspect-[16/7] w-full object-cover"
             />
           </div>
+        )}
+
+        {error && (
+          <p
+            role="alert"
+            className="mt-6 rounded-xl border border-destructive/30 bg-destructive/5 p-4 text-sm text-destructive"
+          >
+            Save failed: {error}
+          </p>
         )}
 
         <form
@@ -1810,6 +1834,15 @@ function EditorDrawer({
                         type="text"
                         inputMode={f.type === "number" ? "numeric" : undefined}
                         pattern={f.type === "number" ? "[0-9]*" : undefined}
+                        maxLength={
+                          isCareerEditor
+                            ? f.key === "qualification"
+                              ? 300
+                              : f.key === "title" || f.key === "experience"
+                                ? 160
+                                : undefined
+                            : undefined
+                        }
                         value={String(value ?? "")}
                         onChange={(e) => {
                           if (f.type === "number" && !/^\d*$/.test(e.target.value)) return;
@@ -1834,7 +1867,7 @@ function EditorDrawer({
             );
           })}
 
-          <div className="sticky bottom-0 -mx-6 mt-2 flex items-center justify-between border-t border-border bg-background/95 px-6 py-4 backdrop-blur sm:col-span-2 sm:-mx-8 sm:px-8">
+          <div className="sticky bottom-0 -mx-5 mt-2 flex items-center justify-between border-t border-border bg-background/95 px-5 py-4 pb-[max(1rem,env(safe-area-inset-bottom))] backdrop-blur sm:col-span-2 sm:-mx-8 sm:px-8">
             <span className="hidden text-xs text-muted-foreground sm:block">
               Press Esc to close this editor.
             </span>
