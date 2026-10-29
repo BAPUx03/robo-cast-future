@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ArrowRight, Bot, Factory, Layers3 } from "lucide-react";
+import { ArrowRight, Bot, Factory } from "lucide-react";
 import { PageShell } from "@/components/page-shell";
 import { YouTubeBackground } from "@/components/youtube-background";
 import { useRevealOnScroll } from "@/hooks/use-reveal-on-scroll";
@@ -53,6 +53,9 @@ const divisionVideos = {
 function DivisionsPage() {
   useRevealOnScroll();
   const content = useSiteContent("divisions");
+  const description = content.description.startsWith("Each division ships a complete portfolio")
+    ? "Choose a division to see its machines and systems."
+    : content.description;
   const { data: catalogue } = useQuery({
     queryKey: ["public-machines"],
     queryFn: fetchPublishedMachines,
@@ -61,7 +64,7 @@ function DivisionsPage() {
 
   return (
     <PageShell>
-      <section className="division-hero on-dark relative isolate overflow-hidden bg-carbon px-5 pb-16 pt-14 sm:px-8 sm:pb-20 sm:pt-20">
+      <section className="division-hero on-dark relative isolate overflow-hidden bg-carbon px-5 py-10 sm:px-8 sm:py-14">
         <div className="pointer-events-none absolute inset-0 -z-20">
           <img
             src={automationImages.robot6Axis}
@@ -76,47 +79,32 @@ function DivisionsPage() {
         <div className="pointer-events-none absolute -right-32 top-0 -z-10 h-96 w-96 rounded-full bg-brand/15 blur-[110px]" />
 
         <div className="relative mx-auto max-w-7xl">
-          <div className="reveal inline-flex items-center gap-3 rounded-full border border-brand/25 bg-brand/10 px-4 py-2 font-mono text-[10px] uppercase tracking-[0.24em] text-brand backdrop-blur">
-            <span className="h-1.5 w-1.5 rounded-full bg-brand blink-dot" />
-            Step 01 / 02 · Select a division
-          </div>
-          <div className="mt-8 grid gap-8 lg:grid-cols-[1.15fr_0.85fr] lg:items-end">
-            <h1
-              className="reveal max-w-4xl font-display text-[clamp(2.7rem,6vw,6.25rem)] font-bold leading-[0.94] tracking-[-0.045em]"
-              style={{ animationDelay: "80ms" }}
-            >
-              {content.title} <span className="block text-gradient-brand">{content.accent}</span>
-            </h1>
-            <div className="reveal lg:pb-2" style={{ animationDelay: "160ms" }}>
-              <p className="max-w-xl text-base leading-relaxed text-foreground/70 sm:text-lg">
-                {content.description}
-              </p>
-              <div className="mt-6 flex items-center gap-3 border-t border-foreground/15 pt-5 font-mono text-[10px] uppercase tracking-[0.2em] text-foreground/55">
-                <Layers3 className="h-4 w-4 text-brand" />
-                Choose once · See the complete portfolio
-              </div>
-            </div>
-          </div>
+          <p className="reveal font-mono text-[10px] font-semibold uppercase tracking-[0.2em] text-brand">
+            Modtech divisions
+          </p>
+          <h1 className="reveal mt-3 max-w-3xl font-display text-3xl font-bold leading-tight sm:text-5xl">
+            Choose your division.
+          </h1>
+          <p className="reveal mt-3 max-w-xl text-sm leading-relaxed text-foreground/75 sm:text-base">
+            Explore investment casting machines or robotics and automation systems.
+          </p>
         </div>
       </section>
 
       <section
         id="division-selector"
-        className="relative scroll-mt-20 bg-background px-5 py-12 sm:scroll-mt-24 sm:px-8 sm:py-20"
+        className="relative scroll-mt-20 bg-background px-5 py-10 sm:scroll-mt-24 sm:px-8 sm:py-14"
       >
         <div className="pointer-events-none absolute inset-0 bg-grid bg-grid-fade opacity-20" />
         <div className="relative mx-auto max-w-7xl">
-          <header className="reveal-on-scroll mb-9 flex flex-col gap-4 border-b border-border pb-7 sm:flex-row sm:items-end sm:justify-between">
+          <header className="reveal-on-scroll mb-6 flex flex-col gap-3 border-b border-border pb-5 sm:flex-row sm:items-end sm:justify-between">
             <div>
-              <p className="font-mono text-[10px] uppercase tracking-[0.28em] text-brand">
-                Two specialist portfolios
-              </p>
-              <h2 className="mt-3 font-display text-3xl font-bold tracking-tight sm:text-5xl">
-                What do you want to explore?
+              <h2 className="max-w-2xl font-display text-2xl font-bold leading-tight sm:text-4xl">
+                {content.title} <span className="text-brand">{content.accent}</span>
               </h2>
             </div>
             <p className="max-w-md text-sm leading-relaxed text-muted-foreground sm:text-right">
-              Select a division to open every machine and system available in that portfolio.
+              {description}
             </p>
           </header>
 

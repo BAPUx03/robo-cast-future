@@ -1,4 +1,5 @@
 import { Link } from "@tanstack/react-router";
+import { useQuery } from "@tanstack/react-query";
 import {
   ArrowUpRight,
   Bot,
@@ -14,12 +15,23 @@ import { SiteHeader } from "@/components/site-header";
 import { BrandLogo } from "@/components/brand-logo";
 import { useSiteContent } from "@/lib/site-content";
 import { companyContact } from "@/content/automation-data";
+import { fetchPublicAnnouncement, isAnnouncementActive } from "@/lib/announcement";
 
 export function PageShell({ children }: { children: React.ReactNode }) {
+  const { data } = useQuery({
+    queryKey: ["public-announcement"],
+    queryFn: fetchPublicAnnouncement,
+    enabled: typeof window !== "undefined",
+    refetchInterval: 60_000,
+  });
+  const announcement = data && isAnnouncementActive(data) ? data : null;
+
   return (
     <>
-      <SiteHeader />
-      <main className="relative min-h-screen overflow-hidden bg-background pt-16 text-foreground sm:pt-[4.5rem]">
+      <SiteHeader announcement={announcement} />
+      <main
+        className={`relative min-h-screen overflow-hidden bg-background text-foreground ${announcement ? "pt-[6.125rem] sm:pt-[6.625rem]" : "pt-16 sm:pt-[4.5rem]"}`}
+      >
         {children}
       </main>
       <SiteFooter />

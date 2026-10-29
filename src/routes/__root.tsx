@@ -71,7 +71,7 @@ export const Route = createRootRoute({
 });
 
 function RootShell({ children }: { children: React.ReactNode }) {
-  const themeInit = `(function(){var r=document.documentElement;var saved;try{saved=localStorage.getItem('mw-theme')}catch(e){}var t=saved==='light'||saved==='dark'?saved:(matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');r.classList.toggle('light',t==='light');r.classList.toggle('dark',t==='dark');r.style.colorScheme=t})();`;
+  const themeInit = `(function(){var r=document.documentElement;var t=matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light';r.classList.toggle('light',t==='light');r.classList.toggle('dark',t==='dark');r.style.colorScheme=t})();`;
   return (
     <html lang="en" className="dark" suppressHydrationWarning>
       <head>

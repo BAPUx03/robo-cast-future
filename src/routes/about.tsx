@@ -1,19 +1,17 @@
+import { useEffect, useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import {
   ArrowRight,
   ArrowUpRight,
   Anchor,
-  Award,
   BadgeCheck,
   Bot,
   Car,
-  CalendarDays,
   Check,
-  ChevronDown,
+  ChevronLeft,
+  ChevronRight,
   Cpu,
-  Download,
   Eye,
-  FileCheck2,
   Globe2,
   Hammer,
   Handshake,
@@ -23,7 +21,8 @@ import {
   MoveHorizontal,
   Pill,
   Plane,
-  Package,
+  Pause,
+  Play,
   Quote,
   Settings2,
   Shield,
@@ -43,12 +42,7 @@ import { DragRail } from "@/components/drag-rail";
 import { Button } from "@/components/ui/button";
 import { useRevealOnScroll } from "@/hooks/use-reveal-on-scroll";
 import { stats, partnerCapabilities, processSteps } from "@/content/site-data";
-import {
-  automationImages,
-  automationPartners,
-  automationSolutions,
-  robotTypes,
-} from "@/content/automation-data";
+import { automationImages, automationPartners } from "@/content/automation-data";
 import { useSiteContent } from "@/lib/site-content";
 import { isAboutPhotoUrl, parseAboutFieldGallery } from "@/lib/about-field-gallery";
 
@@ -144,6 +138,114 @@ const servedIndustries = [
   },
 ];
 
+const INDUSTRIES_PER_PAGE = 4;
+
+function IndustryCard({ industry }: { industry: (typeof servedIndustries)[number] }) {
+  return (
+    <li className="rounded-xl border border-border bg-card p-3 shadow-card sm:rounded-2xl sm:p-5">
+      <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-3">
+        <span className="grid h-9 w-9 shrink-0 place-items-center rounded-lg bg-brand/10 text-brand sm:h-10 sm:w-10 sm:rounded-xl">
+          <industry.Icon className="h-4 w-4 sm:h-5 sm:w-5" aria-hidden="true" />
+        </span>
+        <h3 className="font-display text-sm font-bold leading-tight sm:text-lg">{industry.name}</h3>
+      </div>
+      <p className="mt-2 line-clamp-2 text-xs leading-snug text-muted-foreground sm:mt-3 sm:line-clamp-none sm:text-sm sm:leading-relaxed">
+        {industry.desc}
+      </p>
+    </li>
+  );
+}
+
+function IndustriesGallery() {
+  const [page, setPage] = useState(0);
+  const [autoAdvance, setAutoAdvance] = useState(false);
+  const [paused, setPaused] = useState(false);
+  const pageCount = Math.ceil(servedIndustries.length / INDUSTRIES_PER_PAGE);
+
+  useEffect(() => {
+    const mobile = window.matchMedia("(max-width: 639px)");
+    const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+    const update = () => setAutoAdvance(mobile.matches && !reducedMotion.matches);
+    update();
+    mobile.addEventListener("change", update);
+    reducedMotion.addEventListener("change", update);
+    return () => {
+      mobile.removeEventListener("change", update);
+      reducedMotion.removeEventListener("change", update);
+    };
+  }, []);
+
+  useEffect(() => {
+    if (!autoAdvance || paused) return;
+    const timer = window.setInterval(() => setPage((current) => (current + 1) % pageCount), 5500);
+    return () => window.clearInterval(timer);
+  }, [autoAdvance, paused, pageCount]);
+
+  const goToPage = (next: number) => {
+    setPaused(true);
+    setPage((next + pageCount) % pageCount);
+  };
+
+  return (
+    <>
+      <div className="mt-5 sm:hidden">
+        <ul
+          key={page}
+          className="grid grid-cols-2 auto-rows-fr gap-2.5 motion-safe:animate-in motion-safe:fade-in motion-safe:duration-500"
+        >
+          {servedIndustries
+            .slice(page * INDUSTRIES_PER_PAGE, (page + 1) * INDUSTRIES_PER_PAGE)
+            .map((industry) => (
+              <IndustryCard key={industry.name} industry={industry} />
+            ))}
+        </ul>
+        <div className="mt-4 flex items-center justify-between gap-3">
+          <span className="font-mono text-xs text-muted-foreground">
+            {String(page + 1).padStart(2, "0")} / {String(pageCount).padStart(2, "0")}
+          </span>
+          <div className="flex items-center gap-2">
+            {autoAdvance && (
+              <button
+                type="button"
+                onClick={() => setPaused((current) => !current)}
+                aria-label={paused ? "Play industry slides" : "Pause industry slides"}
+                className="grid h-11 w-11 place-items-center rounded-full border border-border bg-card text-foreground transition-colors hover:border-brand hover:text-brand"
+              >
+                {paused ? (
+                  <Play className="h-4 w-4" aria-hidden="true" />
+                ) : (
+                  <Pause className="h-4 w-4" aria-hidden="true" />
+                )}
+              </button>
+            )}
+            <button
+              type="button"
+              onClick={() => goToPage(page - 1)}
+              aria-label="Previous industries"
+              className="grid h-11 w-11 place-items-center rounded-full border border-border bg-card text-foreground transition-colors hover:border-brand hover:text-brand"
+            >
+              <ChevronLeft className="h-5 w-5" aria-hidden="true" />
+            </button>
+            <button
+              type="button"
+              onClick={() => goToPage(page + 1)}
+              aria-label="Next industries"
+              className="grid h-11 w-11 place-items-center rounded-full border border-border bg-card text-foreground transition-colors hover:border-brand hover:text-brand"
+            >
+              <ChevronRight className="h-5 w-5" aria-hidden="true" />
+            </button>
+          </div>
+        </div>
+      </div>
+      <ul className="mt-6 hidden gap-3 sm:grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+        {servedIndustries.map((industry) => (
+          <IndustryCard key={industry.name} industry={industry} />
+        ))}
+      </ul>
+    </>
+  );
+}
+
 const capabilities = [
   {
     t: "In-house Engineering",
@@ -173,25 +275,13 @@ const capabilities = [
   },
 ];
 
-const promises = [
-  "Fast service backed by a three-tier support structure",
-  "Dedicated RITE service programme and service centre",
-  "24 × 7 online technical support from India",
-  "Globally standardised parts with dependable spare backup",
-];
-
-const certifications = [
-  {
-    standard: "ISO 9001:2015",
-    system: "Quality Management System",
-    certificateNumber: "IN260718008",
-    issuedOn: "18 July 2026",
-    validThrough: "17 July 2029",
-    document: "/certifications/modtech-iso-9001-2015.pdf",
-    scope:
-      "Design, engineering, fabrication, assembly, testing, supply, installation and servicing of investment casting machinery, industrial automation systems, robotics and special purpose machines.",
-  },
-] as const;
+const certification = {
+  standard: "ISO 9001:2015",
+  system: "Quality Management System",
+  certificateNumber: "IN260718008",
+  validThrough: "17 July 2029",
+  document: "/certifications/modtech-iso-9001-2015.pdf",
+} as const;
 
 const customerPanels = Array.from({ length: 9 }, (_, index) => ({
   number: String(index + 1).padStart(2, "0"),
@@ -251,7 +341,6 @@ function AboutPage() {
   );
   const processContent = useSiteContent("process");
   const industriesContent = useSiteContent("industries");
-  const solutionsContent = useSiteContent("solutions");
 
   return (
     <PageShell>
@@ -421,7 +510,7 @@ function AboutPage() {
         </div>
       </section>
 
-      <section id="industries" className="bg-background px-5 py-12 sm:px-8 sm:py-16">
+      <section id="industries" className="bg-background px-5 py-10 sm:px-8 sm:py-16">
         <div className="mx-auto max-w-7xl">
           <header className="reveal-on-scroll grid gap-4 border-b border-border pb-6 lg:grid-cols-[minmax(0,1.15fr)_minmax(18rem,0.85fr)] lg:items-end lg:gap-12">
             <div>
@@ -438,159 +527,7 @@ function AboutPage() {
             </p>
           </header>
 
-          <ul className="mt-6 grid gap-3 min-[520px]:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-            {servedIndustries.map((industry) => (
-              <li
-                key={industry.name}
-                className="reveal-on-scroll rounded-2xl border border-border bg-card p-5 shadow-card"
-              >
-                <div className="flex items-center gap-3">
-                  <span className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-brand/10 text-brand">
-                    <industry.Icon className="h-5 w-5" aria-hidden="true" />
-                  </span>
-                  <h3 className="font-display text-lg font-bold leading-tight">{industry.name}</h3>
-                </div>
-                <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
-                  {industry.desc}
-                </p>
-              </li>
-            ))}
-          </ul>
-        </div>
-      </section>
-
-      <section
-        id="solutions"
-        className="border-y border-border bg-carbon-2 px-5 py-12 sm:px-8 sm:py-16"
-      >
-        <div className="mx-auto max-w-7xl">
-          <header className="reveal-on-scroll grid gap-4 border-b border-border pb-6 lg:grid-cols-[minmax(0,1.15fr)_minmax(18rem,0.85fr)] lg:items-end lg:gap-12">
-            <div>
-              <p className="font-mono text-[10px] font-semibold uppercase tracking-[0.18em] text-brand">
-                {solutionsContent.eyebrow.replace(/^\/\s*/, "")}
-              </p>
-              <h2 className="mt-3 max-w-3xl font-display text-[clamp(1.9rem,4vw,3.5rem)] font-bold leading-[1.08] tracking-tight">
-                {solutionsContent.title}{" "}
-                <span className="text-brand">{solutionsContent.accent}</span>
-              </h2>
-            </div>
-            <p className="max-w-xl text-sm leading-relaxed text-muted-foreground sm:text-base lg:justify-self-end">
-              {solutionsContent.description}
-            </p>
-          </header>
-
-          <ul className="mt-6 grid gap-4 lg:grid-cols-2">
-            {automationSolutions.map((solution) => (
-              <li
-                key={solution.slug}
-                id={solution.slug}
-                className="reveal-on-scroll min-w-0 overflow-hidden rounded-2xl border border-border bg-card shadow-card"
-              >
-                <img
-                  src={solution.image}
-                  alt={solution.title}
-                  loading="lazy"
-                  className="h-40 w-full object-cover sm:h-48"
-                />
-                <div className="p-5 sm:p-6">
-                  <h3 className="font-display text-xl font-bold sm:text-2xl">{solution.title}</h3>
-                  <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
-                    {solution.summary}
-                  </p>
-                  <details className="group mt-4 border-t border-border pt-4">
-                    <summary className="flex cursor-pointer list-none items-center justify-between gap-3 font-mono text-[11px] font-semibold uppercase tracking-wider text-brand focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand">
-                      System details
-                      <ChevronDown className="h-4 w-4 shrink-0 transition-transform group-open:rotate-180" />
-                    </summary>
-                    <div className="mt-5 grid gap-5 sm:grid-cols-2">
-                      <div>
-                        <h4 className="font-mono text-[10px] font-semibold uppercase tracking-wider text-foreground">
-                          Value addition
-                        </h4>
-                        <ul className="mt-3 space-y-2">
-                          {solution.valueAdds.map((value) => (
-                            <li
-                              key={value}
-                              className="flex gap-2 text-sm leading-relaxed text-muted-foreground"
-                            >
-                              <Check className="mt-0.5 h-4 w-4 shrink-0 text-brand" />
-                              {value}
-                            </li>
-                          ))}
-                        </ul>
-                      </div>
-                      <div>
-                        <h4 className="font-mono text-[10px] font-semibold uppercase tracking-wider text-foreground">
-                          The system includes
-                        </h4>
-                        <ul className="mt-3 space-y-2">
-                          {solution.includes.map((item) => (
-                            <li
-                              key={item}
-                              className="flex gap-2 text-sm leading-relaxed text-muted-foreground"
-                            >
-                              <Package className="mt-0.5 h-4 w-4 shrink-0 text-brand" />
-                              {item}
-                            </li>
-                          ))}
-                        </ul>
-                      </div>
-                    </div>
-                    <div className="mt-5 flex flex-wrap gap-2">
-                      {solution.applications.map((application) => (
-                        <span
-                          key={application}
-                          className="rounded-full border border-border px-3 py-1 text-xs text-muted-foreground"
-                        >
-                          {application}
-                        </span>
-                      ))}
-                    </div>
-                    {solution.gallery && solution.gallery.length > 0 && (
-                      <div className="mt-5 grid grid-cols-2 gap-2">
-                        {solution.gallery.map((image, index) => (
-                          <img
-                            key={image}
-                            src={image}
-                            alt={`${solution.title} installation ${index + 1}`}
-                            loading="lazy"
-                            className="h-28 w-full rounded-lg object-cover"
-                          />
-                        ))}
-                      </div>
-                    )}
-                  </details>
-                </div>
-              </li>
-            ))}
-          </ul>
-
-          <div className="reveal-on-scroll mt-8 border-t border-border pt-7">
-            <h3 className="font-display text-2xl font-bold">Robot platforms for every task</h3>
-            <ul className="mt-4 grid gap-3 min-[520px]:grid-cols-2 lg:grid-cols-3">
-              {robotTypes.map((robot) => (
-                <li
-                  key={robot.name}
-                  className="flex items-start gap-3 rounded-xl border border-border bg-card p-3"
-                >
-                  <img
-                    src={robot.image}
-                    alt=""
-                    loading="lazy"
-                    className="h-14 w-14 shrink-0 rounded-lg object-cover"
-                  />
-                  <div className="min-w-0">
-                    <h4 className="font-display text-sm font-semibold leading-snug">
-                      {robot.name}
-                    </h4>
-                    <p className="mt-1 text-xs leading-relaxed text-muted-foreground">
-                      {robot.desc}
-                    </p>
-                  </div>
-                </li>
-              ))}
-            </ul>
-          </div>
+          <IndustriesGallery />
         </div>
       </section>
 
@@ -652,135 +589,42 @@ function AboutPage() {
 
       <section
         id="certifications"
-        className="on-dark relative isolate overflow-hidden border-y border-border bg-carbon px-5 py-12 sm:px-8 sm:py-16"
+        className="on-dark border-y border-border bg-carbon px-5 py-9 sm:px-8 sm:py-12"
       >
-        <div className="pointer-events-none absolute inset-0 -z-20 bg-grid opacity-25" />
-        <div className="pointer-events-none absolute -left-32 top-1/3 -z-10 h-80 w-80 rounded-full bg-brand/12 blur-[120px]" />
-        <div className="pointer-events-none absolute -right-28 bottom-0 -z-10 h-72 w-72 rounded-full bg-cyan/10 blur-[110px]" />
-
         <div className="mx-auto max-w-7xl">
-          <header className="reveal-on-scroll grid gap-7 border-b border-foreground/15 pb-8 lg:grid-cols-[1fr_0.72fr] lg:items-end">
-            <div>
-              <div className="inline-flex items-center gap-2 rounded-full border border-brand/25 bg-brand/10 px-3.5 py-2 font-mono text-[9px] font-semibold uppercase tracking-[0.22em] text-brand">
-                <ShieldCheck className="h-3.5 w-3.5" /> Certified quality system
-              </div>
-              <h2 className="mt-5 max-w-3xl font-display text-3xl font-bold tracking-[-0.035em] sm:text-5xl">
-                Quality you can verify.
-                <span className="block text-gradient-brand">Standards we work by.</span>
-              </h2>
-            </div>
-            <p className="max-w-xl text-sm leading-relaxed text-foreground/60 sm:text-base">
-              Our management system is independently certified for the engineering and lifecycle
-              support behind Modtech Machine, automation and robotic systems.
+          <div className="reveal-on-scroll mb-5 sm:mb-7">
+            <p className="font-mono text-[10px] font-semibold uppercase tracking-[0.18em] text-brand">
+              Certified quality
             </p>
-          </header>
-
-          <div className="mt-8 grid gap-6">
-            {certifications.map((certificate) => (
-              <article
-                key={certificate.certificateNumber}
-                className="reveal-on-scroll group grid overflow-hidden rounded-3xl border border-foreground/15 bg-card shadow-deep lg:grid-cols-[0.72fr_1fr]"
-              >
-                <div className="relative border-b border-border bg-secondary/35 p-4 sm:p-6 lg:border-b-0 lg:border-r">
-                  <div className="relative mx-auto aspect-[612/792] max-w-[25rem] overflow-hidden rounded-xl border border-foreground/15 bg-white shadow-[0_24px_70px_rgba(0,0,0,0.3)]">
-                    <object
-                      data={`${certificate.document}#toolbar=0&navpanes=0&scrollbar=0&view=FitH`}
-                      type="application/pdf"
-                      aria-label={`${certificate.standard} certificate preview`}
-                      className="h-full w-full"
-                    >
-                      <div className="flex h-full flex-col items-center justify-center bg-white p-8 text-center text-slate-900">
-                        <Award className="h-14 w-14 text-emerald-600" />
-                        <strong className="mt-5 text-2xl">{certificate.standard}</strong>
-                        <span className="mt-2 text-sm text-slate-600">{certificate.system}</span>
-                        <a
-                          href={certificate.document}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="mt-6 text-sm font-semibold text-emerald-700 underline"
-                        >
-                          Open certificate PDF
-                        </a>
-                      </div>
-                    </object>
-                  </div>
-                  <div className="pointer-events-none absolute bottom-7 left-7 inline-flex items-center gap-2 rounded-full border border-white/15 bg-carbon/80 px-3 py-2 font-mono text-[8px] uppercase tracking-[0.18em] text-white shadow-lg backdrop-blur sm:bottom-9 sm:left-9">
-                    <FileCheck2 className="h-3.5 w-3.5 text-brand" /> Official document
-                  </div>
-                </div>
-
-                <div className="flex flex-col justify-center p-6 sm:p-9 lg:p-12">
-                  <div className="flex flex-wrap items-start justify-between gap-5">
-                    <div>
-                      <p className="font-mono text-[9px] font-semibold uppercase tracking-[0.22em] text-brand">
-                        Quality management certification
-                      </p>
-                      <h3 className="mt-2 font-display text-3xl font-bold tracking-tight sm:text-4xl">
-                        {certificate.standard}
-                      </h3>
-                      <p className="mt-2 text-base font-medium text-foreground/70">
-                        {certificate.system}
-                      </p>
-                    </div>
-                    <span className="grid h-12 w-12 place-items-center rounded-2xl border border-brand/25 bg-brand/10 text-brand shadow-glow">
-                      <BadgeCheck className="h-6 w-6" />
-                    </span>
-                  </div>
-
-                  <p className="mt-7 text-sm leading-7 text-muted-foreground">
-                    {certificate.scope}
-                  </p>
-
-                  <dl className="mt-7 grid gap-px overflow-hidden rounded-2xl border border-border bg-border sm:grid-cols-3">
-                    <div className="bg-card p-4">
-                      <dt className="font-mono text-[8px] uppercase tracking-[0.18em] text-muted-foreground">
-                        Certificate no.
-                      </dt>
-                      <dd className="mt-2 font-display text-sm font-semibold text-foreground">
-                        {certificate.certificateNumber}
-                      </dd>
-                    </div>
-                    <div className="bg-card p-4">
-                      <dt className="inline-flex items-center gap-1.5 font-mono text-[8px] uppercase tracking-[0.18em] text-muted-foreground">
-                        <CalendarDays className="h-3 w-3 text-brand" /> Issued
-                      </dt>
-                      <dd className="mt-2 font-display text-sm font-semibold text-foreground">
-                        {certificate.issuedOn}
-                      </dd>
-                    </div>
-                    <div className="bg-card p-4">
-                      <dt className="inline-flex items-center gap-1.5 font-mono text-[8px] uppercase tracking-[0.18em] text-muted-foreground">
-                        <ShieldCheck className="h-3 w-3 text-brand" /> Valid through
-                      </dt>
-                      <dd className="mt-2 font-display text-sm font-semibold text-foreground">
-                        {certificate.validThrough}
-                      </dd>
-                    </div>
-                  </dl>
-
-                  <div className="mt-7 flex flex-wrap gap-3">
-                    <Button asChild size="lg">
-                      <a href={certificate.document} target="_blank" rel="noopener noreferrer">
-                        View certificate <ArrowUpRight />
-                      </a>
-                    </Button>
-                    <Button asChild size="lg" variant="outline">
-                      <a href={certificate.document} download>
-                        Download PDF <Download />
-                      </a>
-                    </Button>
-                  </div>
-                </div>
-              </article>
-            ))}
+            <h2 className="mt-2 font-display text-2xl font-bold sm:text-4xl">
+              Quality you can verify.
+            </h2>
           </div>
 
-          <div className="reveal-on-scroll mt-6 flex flex-col gap-2 rounded-2xl border border-foreground/15 bg-foreground/[0.035] px-5 py-4 text-sm text-foreground/60 sm:flex-row sm:items-center sm:justify-between">
-            <span>This section contains every certificate currently published by Modtech.</span>
-            <span className="font-mono text-[9px] uppercase tracking-[0.18em] text-brand">
-              1 verified certificate
-            </span>
-          </div>
+          <article className="reveal-on-scroll grid grid-cols-[3.5rem_minmax(0,1fr)] gap-4 rounded-2xl border border-foreground/15 bg-card p-4 shadow-card sm:grid-cols-[auto_minmax(0,1fr)_auto] sm:items-center sm:gap-6 sm:p-6">
+            <div className="grid h-14 w-14 place-items-center rounded-xl border border-brand/25 bg-brand/10 text-brand sm:h-16 sm:w-16">
+              <BadgeCheck className="h-7 w-7 sm:h-8 sm:w-8" aria-hidden="true" />
+            </div>
+            <div className="min-w-0">
+              <h3 className="font-display text-xl font-bold sm:text-2xl">
+                {certification.standard}
+              </h3>
+              <p className="mt-0.5 text-sm text-foreground/70">{certification.system}</p>
+              <p className="mt-2 text-xs leading-relaxed text-muted-foreground sm:text-sm">
+                Certificate {certification.certificateNumber} · Valid through{" "}
+                {certification.validThrough}
+              </p>
+            </div>
+            <Button
+              asChild
+              variant="outline"
+              className="col-span-2 w-full border-brand/40 sm:col-auto sm:w-auto"
+            >
+              <a href={certification.document} target="_blank" rel="noopener noreferrer">
+                View certificate <ArrowUpRight className="h-4 w-4" aria-hidden="true" />
+              </a>
+            </Button>
+          </article>
         </div>
       </section>
 
@@ -991,8 +835,8 @@ function AboutPage() {
                 variant="outline"
                 className="mt-8 w-fit border-brand/40 bg-transparent text-foreground hover:bg-brand hover:text-brand-foreground"
               >
-                <Link to="/about" hash="solutions">
-                  Explore automation solutions <ArrowRight />
+                <Link to="/machines" search={{ division: "robotics" }}>
+                  Explore automation machines <ArrowRight />
                 </Link>
               </Button>
             </div>
@@ -1000,51 +844,28 @@ function AboutPage() {
         </div>
       </section>
 
-      <section className="bg-brand px-5 py-12 text-brand-foreground sm:px-8 sm:py-16">
-        <div className="mx-auto grid max-w-7xl gap-10 lg:grid-cols-[0.7fr_1.3fr] lg:items-start">
-          <div className="reveal-on-scroll">
-            <h2 className="max-w-lg font-display text-3xl font-bold sm:text-5xl">
-              Support designed around uptime.
-            </h2>
-          </div>
-          <ul className="reveal-on-scroll grid border-t border-brand-foreground/25 sm:grid-cols-2">
-            {promises.map((promise) => (
-              <li
-                key={promise}
-                className="flex gap-4 border-b border-brand-foreground/25 py-6 sm:px-5 sm:odd:border-r"
-              >
-                <span className="font-display text-base font-semibold leading-snug">{promise}</span>
-              </li>
-            ))}
-          </ul>
-        </div>
-      </section>
-
-      <section className="bg-background px-5 py-12 sm:px-8 sm:py-16">
+      <section className="bg-background px-5 py-9 sm:px-8 sm:py-12">
         <div className="mx-auto max-w-7xl">
-          <div className="reveal-on-scroll grid gap-6 lg:grid-cols-[0.45fr_1fr] lg:gap-12">
+          <div className="reveal-on-scroll grid gap-5 lg:grid-cols-[0.4fr_1fr] lg:gap-10">
             <div>
-              <h2 className="font-display text-3xl font-bold sm:text-5xl">
+              <h2 className="max-w-md font-display text-2xl font-bold leading-tight sm:text-4xl">
                 One accountable engineering team.
               </h2>
-              <p className="mt-5 text-sm leading-relaxed text-muted-foreground">
-                From concept and controls to commissioning and support, every discipline works
-                together.
+              <p className="mt-2 max-w-md text-sm leading-relaxed text-muted-foreground">
+                Design, controls, commissioning and support under one roof.
               </p>
             </div>
-            <ul className="grid border-l border-t border-border sm:grid-cols-2">
+            <ul className="grid grid-cols-2 gap-2.5 lg:grid-cols-3">
               {capabilities.map((capability) => (
                 <li
                   key={capability.t}
-                  className="group border-b border-r border-border p-5 transition hover:bg-card sm:p-6"
+                  className="group rounded-xl border border-border bg-card p-3 transition-colors hover:border-brand/50 sm:p-4"
                 >
-                  <div className="flex items-center justify-between">
-                    <capability.Icon className="h-5 w-5 text-brand" />
-                  </div>
-                  <h3 className="mt-5 font-display text-lg font-semibold group-hover:text-brand">
+                  <capability.Icon className="h-5 w-5 text-brand" aria-hidden="true" />
+                  <h3 className="mt-2 font-display text-sm font-semibold leading-tight group-hover:text-brand sm:text-base">
                     {capability.t}
                   </h3>
-                  <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
+                  <p className="mt-1 text-xs leading-snug text-muted-foreground sm:text-sm sm:leading-relaxed">
                     {capability.d}
                   </p>
                 </li>
@@ -1052,7 +873,7 @@ function AboutPage() {
             </ul>
           </div>
 
-          <div className="reveal-on-scroll mt-14 border-y border-border py-7">
+          <div className="reveal-on-scroll mt-9 border-y border-border py-5">
             <div className="flex flex-col gap-7 lg:flex-row lg:items-center lg:justify-between">
               <div>
                 <h2 className="font-display text-2xl font-bold">

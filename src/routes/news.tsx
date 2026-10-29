@@ -244,7 +244,7 @@ export function BlogsPage() {
 
   return (
     <PageShell>
-      <section className="on-dark relative isolate overflow-hidden bg-carbon px-5 pb-16 pt-14 sm:px-8 sm:pb-20 sm:pt-20">
+      <section className="on-dark relative isolate overflow-hidden bg-carbon px-5 py-10 sm:px-8 sm:py-16">
         <div className="pointer-events-none absolute inset-0 -z-20">
           <img
             src={automationImages.palletizingLine}
@@ -262,14 +262,14 @@ export function BlogsPage() {
           <div className="reveal inline-flex items-center gap-2 rounded-full border border-brand/25 bg-brand/10 px-4 py-2 font-mono text-[10px] uppercase tracking-[0.22em] text-brand backdrop-blur">
             <Sparkles className="h-3.5 w-3.5" /> Blogs · Insights · Events
           </div>
-          <div className="mt-8 grid gap-10 lg:grid-cols-[1fr_0.72fr] lg:items-end">
+          <div className="mt-5 grid gap-6 sm:mt-8 lg:grid-cols-[1fr_0.72fr] lg:items-end lg:gap-10">
             <div>
-              <h1 className="reveal max-w-4xl font-display text-[clamp(2.8rem,6vw,6.5rem)] font-bold leading-[0.92] tracking-[-0.05em]">
+              <h1 className="reveal max-w-4xl font-display text-[clamp(2.25rem,6vw,6.5rem)] font-bold leading-[1.02] tracking-[-0.05em] sm:leading-[0.92]">
                 Ideas in motion.{" "}
                 <span className="block text-gradient-brand">Progress in practice.</span>
               </h1>
               <p
-                className="reveal mt-6 max-w-2xl text-base leading-relaxed text-foreground/65 sm:text-lg"
+                className="reveal mt-3 max-w-2xl text-sm leading-relaxed text-foreground/70 sm:mt-6 sm:text-lg"
                 style={{ animationDelay: "100ms" }}
               >
                 Engineering knowledge, company updates, real-world case studies and exhibition
@@ -285,52 +285,63 @@ export function BlogsPage() {
         </div>
       </section>
 
-      <section className="relative bg-background px-5 py-14 sm:px-8 sm:py-20">
+      <section className="relative bg-background px-5 py-10 sm:px-8 sm:py-16">
         <div className="pointer-events-none absolute inset-0 bg-grid bg-grid-fade opacity-15" />
         <div className="relative mx-auto max-w-7xl">
-          <header className="mb-8 flex flex-col gap-4 border-b border-border pb-7 sm:flex-row sm:items-end sm:justify-between">
+          <header className="mb-5 flex flex-col gap-3 border-b border-border pb-5 sm:mb-8 sm:flex-row sm:items-end sm:justify-between sm:pb-7">
             <div>
               <p className="font-mono text-[10px] uppercase tracking-[0.26em] text-brand">
                 Knowledge centre
               </p>
-              <h2 className="mt-3 font-display text-3xl font-bold tracking-tight sm:text-5xl">
+              <h2 className="mt-2 font-display text-2xl font-bold tracking-tight sm:text-5xl">
                 Explore the latest from Modtech.
               </h2>
             </div>
-            <p className="max-w-md text-sm leading-relaxed text-muted-foreground sm:text-right">
+            <p className="hidden max-w-md text-sm leading-relaxed text-muted-foreground sm:block sm:text-right">
               Search across announcements, technical articles and field-proven case studies.
             </p>
           </header>
 
-          <div className="rounded-2xl border border-border bg-card/70 p-4 shadow-card backdrop-blur sm:p-6">
-            <label className="relative block">
+          <div className="rounded-2xl border border-border bg-card p-3 shadow-card sm:p-6">
+            <div className="relative">
+              <label htmlFor="blogs-search" className="sr-only">
+                Search blogs and insights
+              </label>
               <Search className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
               <input
+                id="blogs-search"
                 value={query}
                 onChange={(event) => setQuery(event.target.value)}
-                placeholder="Search blogs, case studies or topics..."
-                aria-label="Search blogs and insights"
-                className="w-full rounded-xl border border-border bg-background py-3.5 pl-11 pr-4 text-sm outline-none ring-brand/40 transition focus:border-brand focus:ring-2"
+                placeholder="Search stories or topics"
+                type="search"
+                className="h-12 w-full rounded-xl border border-border bg-background pl-11 pr-11 text-base outline-none ring-brand/40 transition focus:border-brand focus:ring-2 sm:text-sm [&::-webkit-search-cancel-button]:hidden"
               />
-            </label>
+              {query && (
+                <button
+                  type="button"
+                  onClick={() => setQuery("")}
+                  aria-label="Clear search"
+                  className="absolute right-1 top-1 grid h-10 w-10 place-items-center rounded-lg text-muted-foreground hover:text-foreground"
+                >
+                  <X className="h-4 w-4" aria-hidden="true" />
+                </button>
+              )}
+            </div>
 
-            <div className="mt-5 grid gap-5 border-t border-border pt-5 lg:grid-cols-[auto_1fr] lg:gap-10">
-              <FilterGroup label="Content">
+            <div className="mt-4 grid min-w-0 gap-4 border-t border-border pt-4 lg:grid-cols-[auto_minmax(0,1fr)] lg:gap-8">
+              <FilterGroup label="Content type" layout="segmented">
                 {(["all", "news", "insights"] as ContentFilter[]).map((value) => (
                   <FilterChip
                     key={value}
                     active={contentType === value}
                     onClick={() => setContentType(value)}
+                    segmented
                   >
-                    {value === "all"
-                      ? "All blogs"
-                      : value === "news"
-                        ? "Company updates"
-                        : "Insights"}
+                    {value === "all" ? "All" : value === "news" ? "Updates" : "Insights"}
                   </FilterChip>
                 ))}
               </FilterGroup>
-              <FilterGroup label="Topic">
+              <FilterGroup label="Topics" layout="rail">
                 <FilterChip active={category === "all"} onClick={() => setCategory("all")}>
                   All topics
                 </FilterChip>
@@ -349,14 +360,14 @@ export function BlogsPage() {
             </div>
 
             {hasFilters && (
-              <div className="mt-5 flex items-center justify-between gap-4 border-t border-border pt-4">
+              <div className="mt-4 flex flex-wrap items-center justify-between gap-2 border-t border-border pt-3">
                 <span className="text-sm text-muted-foreground">
                   {filtered.length} matching {filtered.length === 1 ? "story" : "stories"}
                 </span>
                 <button
                   type="button"
                   onClick={clearFilters}
-                  className="inline-flex items-center gap-1.5 font-mono text-[10px] uppercase tracking-[0.16em] text-brand transition hover:text-foreground"
+                  className="inline-flex min-h-10 items-center gap-1.5 rounded-lg px-2 text-xs font-semibold text-brand transition hover:bg-brand/10 hover:text-foreground"
                 >
                   <X className="h-3.5 w-3.5" /> Clear filters
                 </button>
@@ -483,25 +494,41 @@ function HeroStat({
   Icon: typeof Newspaper;
 }) {
   return (
-    <div className="rounded-2xl border border-foreground/15 bg-foreground/[0.04] p-4 backdrop-blur sm:p-5">
+    <div className="rounded-xl border border-foreground/15 bg-foreground/[0.04] p-3 backdrop-blur sm:rounded-2xl sm:p-5">
       <Icon className="h-4 w-4 text-brand" />
-      <span className="mt-5 block font-display text-3xl font-bold sm:text-4xl">
+      <span className="mt-2 block font-display text-2xl font-bold sm:mt-5 sm:text-4xl">
         {String(value).padStart(2, "0")}
       </span>
-      <span className="mt-1 block font-mono text-[9px] uppercase tracking-[0.2em] text-foreground/50">
+      <span className="mt-1 block font-mono text-[9px] uppercase tracking-[0.08em] text-foreground/60 sm:tracking-[0.2em]">
         {label}
       </span>
     </div>
   );
 }
 
-function FilterGroup({ label, children }: { label: string; children: React.ReactNode }) {
+function FilterGroup({
+  label,
+  layout,
+  children,
+}: {
+  label: string;
+  layout: "segmented" | "rail";
+  children: React.ReactNode;
+}) {
   return (
-    <fieldset>
-      <legend className="mb-2 font-mono text-[9px] uppercase tracking-[0.2em] text-muted-foreground">
+    <fieldset className="min-w-0">
+      <legend className="mb-2 font-mono text-[10px] font-semibold uppercase tracking-[0.15em] text-muted-foreground">
         {label}
       </legend>
-      <div className="flex flex-wrap gap-2">{children}</div>
+      <div
+        className={
+          layout === "segmented"
+            ? "grid grid-cols-3 gap-1 rounded-xl bg-muted p-1 sm:flex sm:w-fit"
+            : "-mx-3 flex gap-2 overflow-x-auto px-3 pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden sm:mx-0 sm:px-0"
+        }
+      >
+        {children}
+      </div>
     </fieldset>
   );
 }
@@ -509,10 +536,12 @@ function FilterGroup({ label, children }: { label: string; children: React.React
 function FilterChip({
   active,
   onClick,
+  segmented = false,
   children,
 }: {
   active: boolean;
   onClick: () => void;
+  segmented?: boolean;
   children: React.ReactNode;
 }) {
   return (
@@ -520,10 +549,12 @@ function FilterChip({
       type="button"
       aria-pressed={active}
       onClick={onClick}
-      className={`rounded-full border px-4 py-2 font-mono text-[9px] uppercase tracking-[0.17em] transition ${
+      className={`${segmented ? "min-w-0 rounded-lg px-1.5 sm:px-4" : "shrink-0 rounded-full px-3 sm:px-4"} inline-flex min-h-10 items-center justify-center whitespace-nowrap border text-xs font-semibold transition-colors sm:text-[10px] sm:uppercase sm:tracking-[0.12em] ${
         active
-          ? "border-brand bg-brand text-brand-foreground shadow-glow"
-          : "border-border bg-background text-muted-foreground hover:border-brand/60 hover:text-foreground"
+          ? "border-brand bg-brand text-brand-foreground"
+          : segmented
+            ? "border-transparent bg-transparent text-muted-foreground hover:bg-background hover:text-foreground"
+            : "border-border bg-background text-muted-foreground hover:border-brand/60 hover:text-foreground"
       }`}
     >
       {children}

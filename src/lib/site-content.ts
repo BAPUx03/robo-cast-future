@@ -130,16 +130,14 @@ export const SITE_CONTENT_PAGES: SiteContentPage[] = [
   {
     id: "divisions",
     label: "Divisions page",
-    description: "Divisions overview introduction.",
+    description: "Text above the two division cards.",
     fields: [
-      { key: "eyebrow", label: "Hero eyebrow", defaultValue: "/ divisions" },
-      { key: "title", label: "Hero title", defaultValue: "Two divisions." },
-      { key: "accent", label: "Hero accent title", defaultValue: "One engineering team." },
+      { key: "title", label: "Division heading", defaultValue: "Two divisions." },
+      { key: "accent", label: "Heading highlight", defaultValue: "One engineering team." },
       {
         key: "description",
-        label: "Hero description",
-        defaultValue:
-          "Each division ships a complete portfolio of machines, robots and process tooling—engineered, built and integrated under one roof.",
+        label: "Short division description",
+        defaultValue: "Choose a division to see its machines and systems.",
         multiline: true,
       },
     ],

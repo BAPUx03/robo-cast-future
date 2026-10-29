@@ -17,10 +17,7 @@ function Field({
 }) {
   return (
     <div>
-      <label
-        className="block font-mono text-[10px] uppercase tracking-[0.2em] text-muted-foreground"
-        htmlFor={`f-${name}`}
-      >
+      <label className="block text-xs font-medium text-muted-foreground" htmlFor={`f-${name}`}>
         {label}
         {required && <span className="text-brand"> *</span>}
       </label>
@@ -41,7 +38,7 @@ function Field({
         }
         required={required}
         maxLength={type === "email" ? 255 : 120}
-        className="mt-2 w-full rounded-xl border border-border bg-background px-4 py-3 text-sm text-foreground outline-none ring-brand/40 transition placeholder:text-muted-foreground focus:border-brand focus:ring-2"
+        className="mt-1.5 min-h-12 w-full rounded-xl border border-border bg-background px-4 py-3 text-base text-foreground outline-none ring-brand/40 transition placeholder:text-muted-foreground focus:border-brand focus:ring-2 sm:text-sm"
       />
     </div>
   );
@@ -83,31 +80,28 @@ export function EnquiryForm({
 
   return (
     <form
-      className="reveal-on-scroll relative overflow-hidden rounded-2xl border border-border bg-card p-7 sm:p-8"
+      className="reveal-on-scroll relative overflow-hidden rounded-2xl border border-border bg-card p-5 sm:p-8"
       onSubmit={handleSubmit}
     >
       <h2 className="font-display text-2xl font-bold tracking-tight">{heading}</h2>
 
-      <div className="mt-6 grid gap-4 sm:grid-cols-2">
+      <div className="mt-5 grid gap-4 sm:grid-cols-2">
         <Field name="name" label="Name" required />
         <Field name="company" label="Company" />
         <Field name="email" type="email" label="Email" required />
         <Field name="phone" type="tel" label="Phone" />
         <div className="sm:col-span-2">
-          <label
-            className="block font-mono text-[10px] uppercase tracking-[0.2em] text-muted-foreground"
-            htmlFor="f-message"
-          >
+          <label className="block text-xs font-medium text-muted-foreground" htmlFor="f-message">
             Message<span className="text-brand"> *</span>
           </label>
           <textarea
             id="f-message"
             name="message"
-            rows={5}
+            rows={4}
             required
             maxLength={2000}
             defaultValue={initialMessage}
-            className="mt-2 w-full rounded-xl border border-border bg-background px-4 py-3 text-sm text-foreground outline-none ring-brand/40 transition placeholder:text-muted-foreground focus:border-brand focus:ring-2"
+            className="mt-1.5 w-full rounded-xl border border-border bg-background px-4 py-3 text-base text-foreground outline-none ring-brand/40 transition placeholder:text-muted-foreground focus:border-brand focus:ring-2 sm:text-sm"
             placeholder="Tell us about the part, the volume, and the cycle time…"
           />
         </div>
@@ -116,7 +110,7 @@ export function EnquiryForm({
       <button
         type="submit"
         disabled={busy}
-        className="mt-6 inline-flex items-center gap-3 rounded-full bg-brand px-6 py-3 font-mono text-xs font-semibold uppercase tracking-wider text-brand-foreground shadow-glow transition hover:translate-y-[-2px] disabled:opacity-60"
+        className="mt-5 inline-flex min-h-12 w-full items-center justify-center gap-3 rounded-xl bg-brand px-6 py-3 text-sm font-semibold text-brand-foreground transition hover:bg-brand-soft disabled:opacity-60 sm:w-auto sm:rounded-full"
       >
         {busy ? (
           <>

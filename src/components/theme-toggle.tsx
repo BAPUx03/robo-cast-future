@@ -5,12 +5,6 @@ type Theme = "light" | "dark";
 
 function getInitialTheme(): Theme {
   if (typeof window === "undefined") return "dark";
-  try {
-    const saved = window.localStorage.getItem("mw-theme");
-    if (saved === "light" || saved === "dark") return saved;
-  } catch {
-    // System preference still works when storage is unavailable.
-  }
   return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
 }
 
@@ -32,15 +26,6 @@ export function ThemeToggle({ className = "" }: { className?: string }) {
     setMounted(true);
     const preference = window.matchMedia("(prefers-color-scheme: dark)");
     const onPreferenceChange = () => {
-      try {
-        if (
-          window.localStorage.getItem("mw-theme") === "light" ||
-          window.localStorage.getItem("mw-theme") === "dark"
-        )
-          return;
-      } catch {
-        // Follow the system when storage is unavailable.
-      }
       const next = preference.matches ? "dark" : "light";
       setTheme(next);
       applyTheme(next);
@@ -53,11 +38,6 @@ export function ThemeToggle({ className = "" }: { className?: string }) {
     const next: Theme = theme === "dark" ? "light" : "dark";
     setTheme(next);
     applyTheme(next);
-    try {
-      window.localStorage.setItem("mw-theme", next);
-    } catch {
-      /* ignore storage errors */
-    }
   };
 
   const isDark = theme === "dark";

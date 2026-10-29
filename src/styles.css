@@ -524,6 +524,22 @@
     box-shadow: 0 0 0 4px color-mix(in oklab, var(--brand-foreground) 14%, transparent);
     animation: announcement-signal 1.8s ease-in-out infinite;
   }
+  @media (max-width: 639px) {
+    .announcement-label {
+      padding-inline: 0.75rem;
+      font-size: 0.55rem;
+      letter-spacing: 0.1em;
+    }
+    .announcement-viewport {
+      mask-image: linear-gradient(90deg, #000 0%, #000 88%, transparent);
+    }
+    .announcement-segment {
+      gap: 0.6rem;
+      padding-inline: 1rem;
+      font-size: 0.6rem;
+      letter-spacing: 0.07em;
+    }
+  }
   .blink-dot {
     animation: blink-dot 1.6s ease-in-out infinite;
   }

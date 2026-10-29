@@ -106,7 +106,7 @@ function HomePage() {
                 variant="outline"
                 className="h-12 border-foreground/30 bg-carbon/50 px-6 font-mono text-xs uppercase tracking-wider backdrop-blur hover:border-brand hover:bg-carbon/80 hover:text-brand max-[420px]:w-full"
               >
-                <Link to="/about" hash="solutions">
+                <Link to="/machines" search={{ division: "robotics" }}>
                   {content.secondary_cta} <ArrowUpRight />
                 </Link>
               </Button>
@@ -178,30 +178,30 @@ function HomePage() {
           </div>
         </div>
       </section>
-      <section className="bg-background px-5 py-10 sm:px-8 sm:py-16">
+      <section className="bg-background px-5 py-9 sm:px-8 sm:py-12">
         <div className="mx-auto max-w-7xl">
-          <div className="reveal-on-scroll grid gap-10 lg:grid-cols-[0.8fr_1.2fr]">
-            <div className="lg:sticky lg:top-32 lg:self-start">
-              <h2 className="max-w-lg font-display text-4xl font-bold sm:text-6xl">
+          <div className="reveal-on-scroll grid gap-6 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)] lg:items-start lg:gap-14">
+            <div>
+              <h2 className="max-w-lg font-display text-3xl font-bold leading-tight sm:text-4xl lg:text-5xl">
                 Engineering that stays accountable.
               </h2>
-              <p className="mt-5 max-w-lg leading-relaxed text-muted-foreground">
-                From the first layout to commissioning and after-sales support, one engineering
-                partner owns the complete system.
+              <p className="mt-3 max-w-lg text-sm leading-relaxed text-muted-foreground sm:text-base">
+                One engineering partner, from first layout through commissioning and after-sales
+                support.
               </p>
             </div>
             <ol className="border-t border-border">
               {advantages.map(({ Icon, title, text }) => (
                 <li
                   key={title}
-                  className="grid gap-4 border-b border-border py-7 sm:grid-cols-[4rem_1fr] sm:py-9"
+                  className="grid grid-cols-[2rem_minmax(0,1fr)] gap-3 border-b border-border py-4 sm:gap-4 sm:py-5"
                 >
-                  <div className="flex items-center sm:block">
-                    <Icon className="h-5 w-5 text-brand" />
+                  <div className="pt-0.5">
+                    <Icon className="h-5 w-5 text-brand" aria-hidden="true" />
                   </div>
                   <div>
-                    <h3 className="font-display text-2xl font-bold">{title}</h3>
-                    <p className="mt-2 max-w-xl text-sm leading-relaxed text-muted-foreground sm:text-base">
+                    <h3 className="font-display text-lg font-bold sm:text-xl">{title}</h3>
+                    <p className="mt-1 max-w-xl text-sm leading-relaxed text-muted-foreground">
                       {text}
                     </p>
                   </div>
