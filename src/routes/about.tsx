@@ -38,6 +38,7 @@ import {
   Wrench,
 } from "lucide-react";
 import { PageShell } from "@/components/page-shell";
+import { HeroVideoBackground } from "@/components/hero-video-background";
 import { DragRail } from "@/components/drag-rail";
 import { Button } from "@/components/ui/button";
 import { useRevealOnScroll } from "@/hooks/use-reveal-on-scroll";
@@ -49,6 +50,7 @@ import {
   robotTypes,
 } from "@/content/automation-data";
 import { useSiteContent } from "@/lib/site-content";
+import { isAboutPhotoUrl, parseAboutFieldGallery } from "@/lib/about-field-gallery";
 
 export const Route = createFileRoute("/about")({
   head: () => ({
@@ -72,7 +74,7 @@ export const Route = createFileRoute("/about")({
       {
         rel: "preload",
         as: "image",
-        href: automationImages.casting,
+        href: "/modtech-about-video-poster.webp",
       },
     ],
   }),
@@ -82,18 +84,18 @@ export const Route = createFileRoute("/about")({
 const story = [
   {
     year: "1990",
-    title: "Built here. Proven everywhere.",
-    body: "Modtech began by developing investment casting machinery in-house. That hands-on engineering culture still shapes every machine, cell and production line we deliver.",
+    title: "Engineering starts in-house.",
+    body: "We began with investment casting machinery and still design around real production needs.",
   },
   {
     year: "45+ countries",
-    title: "Indian engineering, global installation base.",
-    body: "Our special-purpose machines now operate across the UK, France, Germany, Japan, the USA, Russia and major manufacturing markets worldwide.",
+    title: "Built in India. Working worldwide.",
+    body: "Our machines support manufacturers across more than 45 countries, backed by commissioning and service.",
   },
   {
     year: "Future ready",
-    title: "Advanced technology without unnecessary complexity.",
-    body: "We continually upgrade our equipment while keeping operation intuitive, maintenance practical and every system ready for long-term production.",
+    title: "Designed to keep improving.",
+    body: "Practical controls, maintainable systems and ongoing upgrades help production stay ready for what comes next.",
   },
 ];
 
@@ -241,80 +243,33 @@ const demoTestimonials = [
   },
 ] as const;
 
-const aboutPhotos = [
-  {
-    key: "about_photo_1",
-    alt: "Modtech engineers and customers beside a commissioned machine",
-    title: "Commissioning together",
-    description: "Hands-on support at the machine, from installation to production readiness.",
-  },
-  {
-    key: "about_photo_2",
-    alt: "Modtech team and international partners on a factory floor",
-    title: "Technical collaboration",
-    description: "Working alongside customers and partners on practical factory solutions.",
-  },
-  {
-    key: "about_photo_3",
-    alt: "Modtech representative with customers in front of a casting machine",
-    title: "Customer machine visits",
-    description: "Real equipment and real conversations where the systems are used.",
-  },
-] as const;
-
 function AboutPage() {
   useRevealOnScroll();
   const content = useSiteContent("about");
+  const fieldPhotos = parseAboutFieldGallery(content).filter((photo) =>
+    isAboutPhotoUrl(photo.image_url),
+  );
   const processContent = useSiteContent("process");
   const industriesContent = useSiteContent("industries");
   const solutionsContent = useSiteContent("solutions");
 
   return (
     <PageShell>
-      <section className="on-dark relative isolate min-h-[480px] overflow-hidden border-b border-border bg-carbon px-5 pb-8 pt-10 sm:min-h-[560px] sm:px-8 sm:pb-10 lg:min-h-[640px] lg:pt-16">
-        <img
-          src={automationImages.casting}
-          alt=""
-          aria-hidden="true"
-          className="pointer-events-none absolute inset-0 -z-20 h-full w-full object-cover"
-        />
-        <div className="absolute inset-0 -z-10 bg-gradient-to-r from-carbon via-carbon/90 to-carbon/20" />
-        <div className="absolute inset-0 -z-10 bg-gradient-to-t from-carbon via-transparent to-carbon/40" />
-        <div className="mx-auto flex min-h-[400px] max-w-7xl flex-col justify-between sm:min-h-[470px] lg:min-h-[530px]">
-          <div className="grid gap-5 lg:grid-cols-[1.3fr_0.7fr] lg:items-end lg:gap-10">
-            <div>
-              <h1 className="reveal max-w-5xl font-display text-[clamp(2.25rem,7vw,6.2rem)] font-bold leading-[1.02] sm:leading-[0.96]">
-                {content.title} <span className="text-brand">{content.accent}</span>
-              </h1>
-            </div>
-            <div className="reveal lg:mb-2" style={{ animationDelay: "120ms" }}>
-              <p className="max-w-lg border-l border-brand/50 pl-5 text-sm leading-relaxed text-muted-foreground sm:text-base lg:text-lg">
-                {content.description}
-              </p>
-              <nav aria-label="About page sections" className="mt-5 flex flex-wrap gap-2">
-                <a
-                  href="#process"
-                  className="rounded-full border border-brand/40 px-4 py-2 text-xs font-semibold text-brand transition hover:bg-brand/10"
-                >
-                  Our process
-                </a>
-                <a
-                  href="#industries"
-                  className="rounded-full border border-brand/40 px-4 py-2 text-xs font-semibold text-brand transition hover:bg-brand/10"
-                >
-                  Industries served
-                </a>
-                <a
-                  href="#solutions"
-                  className="rounded-full border border-brand/40 px-4 py-2 text-xs font-semibold text-brand transition hover:bg-brand/10"
-                >
-                  Solutions
-                </a>
-              </nav>
-            </div>
-          </div>
+      <section className="on-dark relative isolate overflow-hidden border-b border-border bg-carbon lg:min-h-[640px]">
+        <div className="relative isolate aspect-video w-full overflow-hidden lg:absolute lg:inset-0 lg:-z-20 lg:aspect-auto">
+          <HeroVideoBackground
+            videoSrc="/modtech-about-automation.mp4"
+            posterSrc="/modtech-about-video-poster.webp"
+          />
+        </div>
+        <div className="pointer-events-none absolute inset-0 -z-10 hidden bg-gradient-to-r from-carbon via-carbon/90 to-carbon/20 lg:block" />
+        <div className="pointer-events-none absolute inset-0 -z-10 hidden bg-gradient-to-t from-carbon via-transparent to-carbon/40 lg:block" />
+        <div className="mx-auto flex max-w-7xl flex-col justify-between px-5 pb-8 pt-8 sm:px-8 sm:pb-10 lg:min-h-[640px] lg:pt-16">
+          <h1 className="reveal max-w-5xl font-display text-[clamp(2.25rem,7vw,6.2rem)] font-bold leading-[1.02] sm:leading-[0.96]">
+            {content.title} <span className="text-brand">{content.accent}</span>
+          </h1>
 
-          <dl className="mt-8 grid grid-cols-2 border-y border-border/70 bg-carbon/55 backdrop-blur-md lg:grid-cols-4">
+          <dl className="mt-8 grid grid-cols-2 border-y border-border/70 bg-carbon/30 lg:grid-cols-4 lg:bg-carbon/55 lg:backdrop-blur-md">
             {stats.map((stat) => (
               <div
                 key={stat.label}
@@ -332,59 +287,28 @@ function AboutPage() {
         </div>
       </section>
 
-      <section className="border-b border-border bg-background px-5 py-12 sm:px-8 sm:py-16">
+      <section className="bg-background px-5 py-9 sm:px-8 sm:py-12">
         <div className="mx-auto max-w-7xl">
-          <div className="mb-6 grid gap-3 sm:mb-8 lg:grid-cols-[1fr_0.8fr] lg:items-end">
+          <div className="reveal-on-scroll grid gap-5 lg:grid-cols-[minmax(0,0.4fr)_minmax(0,1fr)] lg:gap-10">
             <div>
-              <p className="font-mono text-[10px] font-semibold uppercase tracking-[0.18em] text-brand">
-                Modtech in motion
-              </p>
-              <h2 className="mt-2 font-display text-3xl font-bold sm:text-5xl">
-                See our automation at work.
-              </h2>
-            </div>
-            <p className="max-w-xl text-sm leading-relaxed text-muted-foreground sm:text-base lg:justify-self-end">
-              A closer look at the machinery and production lines behind our engineering.
-            </p>
-          </div>
-          <div className="mx-auto max-w-6xl overflow-hidden rounded-xl border border-border bg-carbon shadow-card sm:rounded-2xl">
-            <video
-              controls
-              playsInline
-              preload="metadata"
-              poster="/modtech-about-video-poster.webp"
-              aria-label="Modtech automation machinery and production lines in operation"
-              className="aspect-video w-full object-contain"
-            >
-              <source src="/modtech-about-automation.mp4" type="video/mp4" />
-              Your browser does not support video playback.
-            </video>
-          </div>
-        </div>
-      </section>
-
-      <section className="bg-background px-5 py-12 sm:px-8 sm:py-16">
-        <div className="mx-auto max-w-7xl">
-          <div className="reveal-on-scroll grid gap-6 lg:grid-cols-[0.42fr_1fr] lg:gap-12">
-            <div>
-              <h2 className="font-display text-3xl font-bold sm:text-5xl">
-                Three decades of building what production demands.
+              <h2 className="max-w-sm font-display text-3xl font-bold leading-tight sm:text-4xl">
+                Built for production since 1990.
               </h2>
             </div>
             <ol className="border-t border-border">
               {story.map((item) => (
                 <li
                   key={item.year}
-                  className="group grid gap-3 border-b border-border py-5 sm:grid-cols-[150px_1fr] sm:items-start sm:py-6"
+                  className="group grid gap-1.5 border-b border-border py-3.5 sm:grid-cols-[125px_1fr] sm:items-start sm:gap-4 sm:py-4"
                 >
                   <span className="font-display text-sm font-semibold text-foreground sm:text-base">
                     {item.year}
                   </span>
                   <div>
-                    <h3 className="font-display text-xl font-semibold transition group-hover:text-brand sm:text-2xl">
+                    <h3 className="font-display text-lg font-semibold transition group-hover:text-brand sm:text-xl">
                       {item.title}
                     </h3>
-                    <p className="mt-3 max-w-2xl text-sm leading-relaxed text-muted-foreground sm:text-base">
+                    <p className="mt-1.5 max-w-2xl text-sm leading-relaxed text-muted-foreground">
                       {item.body}
                     </p>
                   </div>
@@ -395,45 +319,65 @@ function AboutPage() {
         </div>
       </section>
 
-      <section className="border-y border-border bg-carbon-2 px-5 py-12 sm:px-8 sm:py-16">
-        <div className="mx-auto max-w-7xl">
-          <header className="reveal-on-scroll mb-6 grid gap-3 sm:mb-8 lg:grid-cols-[1fr_0.8fr] lg:items-end">
-            <div>
-              <p className="font-mono text-[10px] font-semibold uppercase tracking-[0.18em] text-brand">
-                Modtech in the field
+      {fieldPhotos.length > 0 && (
+        <section className="border-y border-border bg-carbon-2 px-5 py-12 sm:px-8 sm:py-16">
+          <div className="mx-auto max-w-7xl">
+            <header className="mb-6 grid gap-3 sm:mb-8 lg:grid-cols-[1fr_0.8fr] lg:items-end">
+              <div>
+                <p className="font-mono text-[10px] font-semibold uppercase tracking-[0.18em] text-brand">
+                  Modtech in the field
+                </p>
+                <h2 className="mt-2 font-display text-3xl font-bold sm:text-5xl">
+                  Engineering in action.
+                </h2>
+              </div>
+              <p className="max-w-xl text-sm leading-relaxed text-muted-foreground sm:text-base lg:justify-self-end">
+                A closer look at the people, machines and partnerships behind our work.
               </p>
-              <h2 className="mt-2 font-display text-3xl font-bold sm:text-5xl">
-                Engineering in action.
-              </h2>
-            </div>
-            <p className="max-w-xl text-sm leading-relaxed text-muted-foreground sm:text-base lg:justify-self-end">
-              A closer look at the people, machines and partnerships behind our work.
+            </header>
+            <DragRail
+              ariaLabel="Modtech people and project photos"
+              step="item"
+              controlsPlacement="below"
+              className="-mx-1 px-1 sm:-mx-2 sm:px-2"
+            >
+              {fieldPhotos.map((photo, index) => (
+                <figure
+                  key={photo.id}
+                  style={{ animationDelay: `${Math.min(index, 5) * 75}ms` }}
+                  className="field-story-card group flex w-[78vw] max-w-[21rem] shrink-0 snap-start flex-col overflow-hidden rounded-2xl border border-border bg-card shadow-card transition-colors duration-300 hover:border-brand/50 hover:shadow-deep sm:w-[22rem] lg:w-[25rem]"
+                >
+                  <div className="overflow-hidden">
+                    <img
+                      src={photo.image_url}
+                      alt={photo.alt_text}
+                      loading="lazy"
+                      decoding="async"
+                      className="aspect-[4/3] w-full object-cover object-[center_35%] transition-transform duration-700 ease-out group-hover:scale-[1.045] motion-reduce:transition-none"
+                    />
+                  </div>
+                  <figcaption className="flex flex-1 flex-col p-4 sm:p-5">
+                    <span className="mb-2 font-mono text-[9px] uppercase tracking-[0.18em] text-brand">
+                      {String(index + 1).padStart(2, "0")} /{" "}
+                      {String(fieldPhotos.length).padStart(2, "0")}
+                    </span>
+                    <h3 className="font-display text-lg font-semibold">{photo.title}</h3>
+                    {photo.description && (
+                      <p className="mt-1 text-sm leading-relaxed text-muted-foreground">
+                        {photo.description}
+                      </p>
+                    )}
+                  </figcaption>
+                </figure>
+              ))}
+            </DragRail>
+            <p className="mt-1 flex items-center gap-2 font-mono text-[9px] uppercase tracking-[0.16em] text-muted-foreground">
+              <MoveHorizontal className="h-3.5 w-3.5 text-brand" aria-hidden="true" /> Swipe, drag
+              or use the arrows
             </p>
-          </header>
-          <div className="grid gap-4 md:grid-cols-3">
-            {aboutPhotos.map((photo) => (
-              <figure
-                key={photo.key}
-                className="reveal-on-scroll min-w-0 overflow-hidden rounded-2xl border border-border bg-card shadow-card"
-              >
-                <img
-                  src={content[photo.key]}
-                  alt={photo.alt}
-                  loading="lazy"
-                  decoding="async"
-                  className="aspect-[4/3] w-full object-cover object-[center_35%] md:aspect-[3/4] lg:aspect-[4/3]"
-                />
-                <figcaption className="p-4 sm:p-5">
-                  <h3 className="font-display text-lg font-semibold">{photo.title}</h3>
-                  <p className="mt-1 text-sm leading-relaxed text-muted-foreground">
-                    {photo.description}
-                  </p>
-                </figcaption>
-              </figure>
-            ))}
           </div>
-        </div>
-      </section>
+        </section>
+      )}
 
       <section
         id="process"

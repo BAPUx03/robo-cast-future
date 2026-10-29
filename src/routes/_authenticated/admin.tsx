@@ -51,6 +51,12 @@ import {
 } from "@/lib/announcement";
 import { BrandLogo } from "@/components/brand-logo";
 import { MarkdownContent } from "@/components/markdown-content";
+import { FieldGalleryEditor } from "@/components/field-gallery-editor";
+import {
+  parseAboutFieldGallery,
+  serializeAboutFieldGallery,
+  validateAboutFieldGallery,
+} from "@/lib/about-field-gallery";
 import {
   deleteDemoRow,
   endDemoSession,
@@ -999,7 +1005,7 @@ function WebsiteContent({ demo }: { demo: boolean }) {
           </p>
           <h1 className="mt-2 font-display text-3xl font-bold tracking-tight">Website Content</h1>
           <p className="mt-2 max-w-2xl text-sm leading-relaxed text-muted-foreground">
-            Update key page copy and global contact information.{" "}
+            Update page copy, About photos and global contact information.{" "}
             {demo
               ? "Local demo changes stay in this browser."
               : "Published changes are shared across the live website."}
@@ -1043,9 +1049,17 @@ function WebsiteContent({ demo }: { demo: boolean }) {
           className="overflow-hidden rounded-2xl border border-border bg-card shadow-card"
           onSubmit={async (event) => {
             event.preventDefault();
+            if (pageId === "about") {
+              const galleryError = validateAboutFieldGallery(parseAboutFieldGallery(values));
+              if (galleryError) {
+                toast.error(galleryError);
+                return;
+              }
+            }
             const invalidImage = page.fields.find(
               (field) =>
                 field.image &&
+                (pageId !== "about" || !field.key.startsWith("about_photo_")) &&
                 !/^(\/[^/]|https?:\/\/)/i.test(String(values[field.key] ?? "").trim()),
             );
             if (invalidImage) {
@@ -1072,46 +1086,59 @@ function WebsiteContent({ demo }: { demo: boolean }) {
             disabled={loading || saving}
             className="grid gap-5 p-5 disabled:opacity-60 sm:p-6"
           >
-            {page.fields.map((field) => (
-              <div key={field.key}>
-                <label
-                  htmlFor={`site-${pageId}-${field.key}`}
-                  className="block font-mono text-[10px] uppercase tracking-[0.18em] text-muted-foreground"
-                >
-                  {field.label}
-                </label>
-                {field.multiline ? (
-                  <textarea
-                    id={`site-${pageId}-${field.key}`}
-                    rows={4}
-                    value={values[field.key] ?? ""}
-                    onChange={(event) =>
-                      setValues((current) => ({ ...current, [field.key]: event.target.value }))
-                    }
-                    className="mt-2 w-full rounded-xl border border-border bg-background px-4 py-3 text-sm leading-relaxed outline-none ring-brand/30 transition focus:border-brand focus:ring-2"
-                  />
-                ) : (
-                  <input
-                    id={`site-${pageId}-${field.key}`}
-                    type="text"
-                    inputMode={field.image ? "url" : undefined}
-                    value={values[field.key] ?? ""}
-                    onChange={(event) =>
-                      setValues((current) => ({ ...current, [field.key]: event.target.value }))
-                    }
-                    className="mt-2 w-full rounded-xl border border-border bg-background px-4 py-3 text-sm outline-none ring-brand/30 transition focus:border-brand focus:ring-2"
-                  />
-                )}
-                {field.image && values[field.key] && (
-                  <img
-                    src={values[field.key]}
-                    alt={`${field.label} preview`}
-                    loading="lazy"
-                    className="mt-3 aspect-video w-full max-w-sm rounded-xl border border-border bg-secondary object-cover"
-                  />
-                )}
-              </div>
-            ))}
+            {page.fields
+              .filter((field) => pageId !== "about" || !field.key.startsWith("about_photo_"))
+              .map((field) => (
+                <div key={field.key}>
+                  <label
+                    htmlFor={`site-${pageId}-${field.key}`}
+                    className="block font-mono text-[10px] uppercase tracking-[0.18em] text-muted-foreground"
+                  >
+                    {field.label}
+                  </label>
+                  {field.multiline ? (
+                    <textarea
+                      id={`site-${pageId}-${field.key}`}
+                      rows={4}
+                      value={values[field.key] ?? ""}
+                      onChange={(event) =>
+                        setValues((current) => ({ ...current, [field.key]: event.target.value }))
+                      }
+                      className="mt-2 w-full rounded-xl border border-border bg-background px-4 py-3 text-sm leading-relaxed outline-none ring-brand/30 transition focus:border-brand focus:ring-2"
+                    />
+                  ) : (
+                    <input
+                      id={`site-${pageId}-${field.key}`}
+                      type="text"
+                      inputMode={field.image ? "url" : undefined}
+                      value={values[field.key] ?? ""}
+                      onChange={(event) =>
+                        setValues((current) => ({ ...current, [field.key]: event.target.value }))
+                      }
+                      className="mt-2 w-full rounded-xl border border-border bg-background px-4 py-3 text-sm outline-none ring-brand/30 transition focus:border-brand focus:ring-2"
+                    />
+                  )}
+                  {field.image && values[field.key] && (
+                    <img
+                      src={values[field.key]}
+                      alt={`${field.label} preview`}
+                      loading="lazy"
+                      className="mt-3 aspect-video w-full max-w-sm rounded-xl border border-border bg-secondary object-cover"
+                    />
+                  )}
+                </div>
+              ))}
+            {pageId === "about" && (
+              <FieldGalleryEditor
+                photos={parseAboutFieldGallery(values)}
+                onChange={(photos) =>
+                  setValues((current) => ({
+                    ...current,
+                    field_gallery: serializeAboutFieldGallery(photos),
+                  }))
+                }
+              />
+            )}
           </fieldset>
           <div className="flex items-center justify-between border-t border-border bg-secondary/20 px-5 py-4 sm:px-6">
             <span

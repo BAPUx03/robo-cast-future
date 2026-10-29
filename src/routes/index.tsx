@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { ArrowRight, ArrowUpRight, Check, Factory, Globe2, Wrench } from "lucide-react";
 import { PageShell } from "@/components/page-shell";
-import { HomeHeroBackground } from "@/components/home-hero-background";
+import { HeroVideoBackground } from "@/components/hero-video-background";
 import { Button } from "@/components/ui/button";
 import { useRevealOnScroll } from "@/hooks/use-reveal-on-scroll";
 import { stats, type Mode } from "@/content/site-data";
@@ -63,7 +63,10 @@ function HomePage() {
     <PageShell>
       <section className="home-hero on-dark relative isolate overflow-hidden bg-carbon lg:-mt-[4.5rem] lg:min-h-svh lg:pt-[4.5rem]">
         <div className="relative isolate aspect-video w-full overflow-hidden lg:absolute lg:inset-0 lg:-z-20 lg:aspect-auto">
-          <HomeHeroBackground />
+          <HeroVideoBackground
+            videoSrc="/modtech-home-hero.mp4"
+            posterSrc="/modtech-home-poster.webp"
+          />
         </div>
         <div className="pointer-events-none absolute inset-0 -z-10 hidden bg-gradient-to-r from-carbon via-carbon/80 to-carbon/20 lg:block" />
         <div className="pointer-events-none absolute inset-0 -z-10 hidden bg-gradient-to-t from-carbon via-transparent to-carbon/40 lg:block" />

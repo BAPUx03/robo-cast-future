@@ -13,12 +13,14 @@ export function DragRail({
   className = "",
   step,
   ariaLabel = "Horizontal scroller",
+  controlsPlacement = "overlay",
 }: {
   children: React.ReactNode;
   className?: string;
-  /** pixels per arrow click. Defaults to 80% of the rail width. */
-  step?: number;
+  /** Pixels per arrow click, or one card at a time. Defaults to 80% of the rail width. */
+  step?: number | "item";
   ariaLabel?: string;
+  controlsPlacement?: "overlay" | "below";
 }) {
   const ref = useRef<HTMLDivElement>(null);
   const [canPrev, setCanPrev] = useState(false);
@@ -39,9 +41,12 @@ export function DragRail({
     el.addEventListener("scroll", update, { passive: true });
     const ro = new ResizeObserver(update);
     ro.observe(el);
+    const mo = new MutationObserver(update);
+    mo.observe(el, { childList: true });
     return () => {
       el.removeEventListener("scroll", update);
       ro.disconnect();
+      mo.disconnect();
     };
   }, []);
 
@@ -121,6 +126,17 @@ export function DragRail({
   const scrollBy = (dir: 1 | -1) => {
     const el = ref.current;
     if (!el) return;
+    if (step === "item") {
+      const positions = Array.from(el.children, (child) =>
+        Math.max(0, (child as HTMLElement).offsetLeft - el.offsetLeft),
+      );
+      const target =
+        dir === 1
+          ? positions.find((position) => position > el.scrollLeft + 8)
+          : [...positions].reverse().find((position) => position < el.scrollLeft - 8);
+      if (target !== undefined) el.scrollTo({ left: target, behavior: "smooth" });
+      return;
+    }
     const amount = step ?? Math.round(el.clientWidth * 0.8);
     el.scrollBy({ left: dir * amount, behavior: "smooth" });
   };
@@ -137,7 +153,13 @@ export function DragRail({
       </div>
 
       {/* Arrow controls */}
-      <div className="pointer-events-none absolute inset-y-0 left-0 right-0 flex items-center justify-between px-2 sm:px-4">
+      <div
+        className={
+          controlsPlacement === "below"
+            ? "mt-1 flex justify-end gap-2"
+            : "pointer-events-none absolute inset-y-0 left-0 right-0 flex items-center justify-between px-2 sm:px-4"
+        }
+      >
         <button
           type="button"
           aria-label="Scroll left"
