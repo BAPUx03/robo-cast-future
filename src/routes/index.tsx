@@ -242,19 +242,19 @@ function HomePage() {
 
       <section
         id="process"
-        className="on-dark relative isolate overflow-hidden border-b border-border bg-carbon px-5 py-14 sm:px-8 sm:py-20"
+        className="on-dark relative isolate overflow-hidden border-b border-border bg-carbon px-5 py-10 sm:px-8 sm:py-14"
       >
         <div className="pointer-events-none absolute inset-0 -z-20 bg-grid opacity-15" />
         <div className="pointer-events-none absolute -right-40 -top-40 -z-10 h-[34rem] w-[34rem] rounded-full bg-brand/15 blur-[150px]" />
         <div className="pointer-events-none absolute -bottom-40 -left-40 -z-10 h-[30rem] w-[30rem] rounded-full bg-cyan/10 blur-[140px]" />
 
         <div className="mx-auto max-w-7xl">
-          <header className="reveal-on-scroll grid gap-6 border-b border-foreground/15 pb-8 lg:grid-cols-[minmax(0,1.15fr)_minmax(20rem,0.65fr)] lg:items-end lg:gap-16">
+          <header className="reveal-on-scroll grid gap-4 border-b border-foreground/15 pb-6 lg:grid-cols-[minmax(0,1.15fr)_minmax(20rem,0.65fr)] lg:items-end lg:gap-12">
             <div>
               <p className="font-mono text-[10px] font-semibold uppercase tracking-[0.22em] text-brand">
                 {processContent.eyebrow.replace(/^\/\s*/, "")}
               </p>
-              <h2 className="mt-4 max-w-4xl font-display text-[clamp(2.2rem,5vw,4.8rem)] font-bold leading-[0.98] tracking-[-0.035em]">
+              <h2 className="mt-3 max-w-4xl font-display text-[clamp(2rem,4vw,3.8rem)] font-bold leading-[1] tracking-[-0.03em]">
                 {processContent.title}
                 <span className="block text-gradient-brand">{processContent.accent}</span>
               </h2>
@@ -264,48 +264,52 @@ function HomePage() {
             </p>
           </header>
 
-          <div className="relative mt-9 lg:mt-12">
+          <div className="relative mt-6 lg:mt-8">
             <div
-              className="pointer-events-none absolute left-[10%] right-[10%] top-7 hidden h-px bg-gradient-to-r from-transparent via-brand/60 to-transparent lg:block"
+              className="pointer-events-none absolute left-[10%] right-[10%] top-5 hidden h-px bg-gradient-to-r from-transparent via-brand/60 to-transparent lg:block"
               aria-hidden="true"
             />
             <ol
-              className="grid gap-3 md:grid-cols-2 lg:grid-cols-5 lg:gap-0"
+              className="grid gap-2 sm:grid-cols-2 lg:grid-cols-5 lg:gap-0"
               aria-label="Engineering delivery process"
             >
               {processSteps.map((step, index) => (
                 <li
                   key={step.code}
-                  className="reveal-on-scroll group relative border border-foreground/10 bg-carbon-2/80 p-5 backdrop-blur-sm transition duration-300 hover:-translate-y-1 hover:border-brand/45 lg:border-r-0 lg:last:border-r"
+                  className="reveal-on-scroll group relative border border-foreground/10 bg-carbon-2/80 p-4 backdrop-blur-sm transition duration-300 hover:-translate-y-1 hover:border-brand/45 lg:border-r-0 lg:last:border-r"
+                  data-reveal-delay={index * 110}
                 >
-                  <div className="relative z-10 flex items-center justify-between gap-4">
-                    <span className="grid h-14 w-14 place-items-center rounded-full border border-brand/35 bg-carbon font-mono text-xs font-bold text-brand shadow-glow">
+                  <div className="relative z-10 flex items-center justify-between gap-3">
+                    <span className="grid h-10 w-10 place-items-center rounded-full border border-brand/35 bg-carbon font-mono text-[10px] font-bold text-brand shadow-glow">
                       {step.code}
                     </span>
                     <step.Icon
-                      className="h-5 w-5 text-foreground/35 transition-colors group-hover:text-brand"
+                      className="h-4 w-4 text-foreground/35 transition-colors group-hover:text-brand"
                       aria-hidden="true"
                     />
                   </div>
-                  <div className="mt-8">
-                    <p className="font-mono text-[9px] uppercase tracking-[0.18em] text-foreground/35">
+                  <div className="mt-5">
+                    <p className="font-mono text-[8px] uppercase tracking-[0.18em] text-foreground/35">
                       Step {String(index + 1).padStart(2, "0")}
                     </p>
-                    <h3 className="mt-2 font-display text-xl font-bold text-foreground">
+                    <h3 className="mt-1.5 font-display text-lg font-bold text-foreground">
                       {step.name}
                     </h3>
-                    <p className="mt-3 text-sm leading-relaxed text-foreground/55">{step.desc}</p>
+                    <p className="mt-2 text-xs leading-relaxed text-foreground/55">{step.desc}</p>
                   </div>
                 </li>
               ))}
             </ol>
           </div>
 
-          <div className="reveal-on-scroll mt-8 flex flex-col gap-5 border-t border-foreground/15 pt-8 sm:flex-row sm:items-center sm:justify-between">
-            <p className="max-w-xl font-display text-xl font-semibold text-foreground sm:text-2xl">
+          <div
+            className="reveal-on-scroll mt-6 flex flex-col gap-4 border-t border-foreground/15 pt-6 sm:flex-row sm:items-center sm:justify-between"
+            data-reveal-delay={processSteps.length * 110}
+          >
+            <p className="max-w-xl font-display text-lg font-semibold text-foreground sm:text-xl">
               Ready to turn a production challenge into a working line?
             </p>
-            <Button asChild size="lg" className="w-fit shrink-0">
+            <Button asChild className="w-fit shrink-0">
               <Link to="/contact" search={{ machine: undefined }}>
                 Start a project <ArrowUpRight />
               </Link>

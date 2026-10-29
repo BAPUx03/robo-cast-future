@@ -154,7 +154,10 @@ function IndustryCard({
   index: number;
 }) {
   return (
-    <article className="group flex min-h-44 w-[78vw] max-w-[18rem] shrink-0 snap-start flex-col justify-between rounded-2xl border border-foreground/10 bg-card p-5 shadow-card transition duration-300 hover:-translate-y-1 hover:border-brand/50 sm:w-[18rem]">
+    <article
+      className="reveal-on-scroll group flex min-h-44 w-[78vw] max-w-[18rem] shrink-0 snap-start flex-col justify-between rounded-2xl border border-foreground/10 bg-card p-5 shadow-card transition duration-300 hover:-translate-y-1 hover:border-brand/50 sm:w-[18rem]"
+      data-reveal-delay={(index % 4) * 110 + 80}
+    >
       <div className="flex items-start justify-between gap-4">
         <span className="grid h-11 w-11 shrink-0 place-items-center rounded-xl border border-brand/20 bg-brand/10 text-brand transition-colors group-hover:bg-brand group-hover:text-brand-foreground">
           <industry.Icon className="h-5 w-5" aria-hidden="true" />
@@ -180,7 +183,6 @@ function IndustriesRail() {
     <div className="mt-7">
       <DragRail
         ariaLabel="Industries served by Modtech"
-        step="item"
         controlsPlacement="below"
         className="-mx-1 px-1 sm:-mx-2 sm:px-2"
       >
@@ -190,7 +192,7 @@ function IndustriesRail() {
       </DragRail>
       <p className="mt-1 flex items-center gap-2 font-mono text-[9px] uppercase tracking-[0.16em] text-muted-foreground">
         <MoveHorizontal className="h-3.5 w-3.5 text-brand" aria-hidden="true" />
-        Drag, swipe or use the arrows to explore all 14 industries
+        Browse in groups · drag, swipe or use the arrows
       </p>
     </div>
   );
