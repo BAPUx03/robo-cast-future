@@ -435,47 +435,71 @@ function AboutPage() {
       </section>
 
       <section
-        id="certifications"
-        className="border-b border-border bg-carbon-2 px-5 py-12 sm:px-8 sm:py-16"
+        id="global-presence"
+        className="on-dark relative isolate overflow-hidden border-b border-border bg-carbon px-5 py-14 sm:px-8 sm:py-16"
       >
-        <div className="mx-auto grid max-w-7xl gap-4 lg:grid-cols-[0.9fr_1.1fr]">
-          <article className="on-dark relative isolate min-h-[320px] overflow-hidden rounded-3xl border border-foreground/10 bg-carbon">
-            <img
-              src="/gallery/modtech-office-hero.webp"
-              alt="Modtech engineering facility and team"
-              loading="lazy"
-              decoding="async"
-              className="absolute inset-0 -z-20 h-full w-full object-cover"
-            />
-            <div className="absolute inset-0 -z-10 bg-gradient-to-t from-carbon via-carbon/75 to-carbon/20" />
-            <div className="flex min-h-[320px] flex-col justify-between p-6 sm:p-8">
-              <div className="grid h-11 w-11 place-items-center rounded-xl border border-white/15 bg-carbon/55 text-brand backdrop-blur-md">
-                <Globe2 className="h-5 w-5" aria-hidden="true" />
-              </div>
-              <div>
-                <p className="font-mono text-[10px] font-semibold uppercase tracking-[0.2em] text-brand">
-                  Built in India. Working worldwide.
-                </p>
-                <p className="mt-3 font-display text-4xl font-bold text-white sm:text-5xl">
-                  45+ countries
-                </p>
-                <p className="mt-3 max-w-md text-sm leading-relaxed text-white/65">
-                  Commissioning, remote diagnostics and lifecycle support for production teams
-                  around the world.
-                </p>
-              </div>
-            </div>
-          </article>
+        <video
+          autoPlay
+          muted
+          loop
+          playsInline
+          preload="metadata"
+          disablePictureInPicture
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-0 -z-20 hidden h-full w-full object-cover md:block"
+        >
+          <source
+            src="/modtech-global-map.mp4"
+            type="video/mp4"
+            media="(min-width: 48rem) and (prefers-reduced-motion: no-preference)"
+          />
+        </video>
+        <div className="pointer-events-none absolute inset-0 -z-10 bg-gradient-to-r from-carbon via-carbon/90 to-carbon/35" />
+        <div className="pointer-events-none absolute inset-0 -z-10 bg-gradient-to-t from-carbon/90 via-transparent to-carbon/65" />
+        <div className="pointer-events-none absolute inset-0 -z-10 bg-grid opacity-15" />
 
-          <article className="reveal-on-scroll flex flex-col justify-between rounded-3xl border border-border bg-card p-6 shadow-card sm:p-8 lg:p-10">
+        <div className="mx-auto flex min-h-[320px] max-w-7xl items-center">
+          <div className="reveal-on-scroll max-w-3xl">
+            <div className="inline-flex items-center gap-2 rounded-full border border-brand/30 bg-carbon/55 px-3.5 py-2 font-mono text-[9px] font-semibold uppercase tracking-[0.22em] text-brand backdrop-blur-md">
+              <Globe2 className="h-3.5 w-3.5" aria-hidden="true" /> Global presence
+            </div>
+            <h2 className="mt-6 font-display text-[clamp(2.5rem,5.5vw,5.75rem)] font-bold leading-[0.98] tracking-[-0.04em]">
+              Expanding horizons.
+              <span className="block text-gradient-brand">Engineering without borders.</span>
+            </h2>
+            <p className="mt-6 max-w-2xl text-base leading-8 text-foreground/70 sm:text-lg">
+              Modtech machines and automation systems support manufacturers across more than 45
+              countries, backed by commissioning, remote diagnostics and lifecycle service.
+            </p>
+            <div className="mt-8 flex flex-wrap gap-3 font-mono text-[9px] uppercase tracking-[0.16em] text-foreground/70">
+              <span className="rounded-full border border-foreground/15 bg-carbon/55 px-4 py-2 backdrop-blur-md">
+                45+ countries
+              </span>
+              <span className="rounded-full border border-foreground/15 bg-carbon/55 px-4 py-2 backdrop-blur-md">
+                Worldwide support
+              </span>
+              <span className="rounded-full border border-foreground/15 bg-carbon/55 px-4 py-2 backdrop-blur-md">
+                Remote diagnostics
+              </span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section
+        id="certifications"
+        className="border-b border-border bg-carbon-2 px-5 py-10 sm:px-8 sm:py-14"
+      >
+        <div className="mx-auto max-w-7xl">
+          <article className="reveal-on-scroll grid gap-6 rounded-3xl border border-border bg-card p-6 shadow-card sm:p-8 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-end lg:p-10">
             <div>
               <div className="grid h-12 w-12 place-items-center rounded-xl border border-brand/25 bg-brand/10 text-brand">
                 <BadgeCheck className="h-6 w-6" aria-hidden="true" />
               </div>
-              <p className="mt-8 font-mono text-[10px] font-semibold uppercase tracking-[0.2em] text-brand">
+              <p className="mt-6 font-mono text-[10px] font-semibold uppercase tracking-[0.2em] text-brand">
                 Certified quality
               </p>
-              <h2 className="mt-3 max-w-xl font-display text-3xl font-bold leading-tight sm:text-5xl">
+              <h2 className="mt-3 max-w-xl font-display text-3xl font-bold leading-tight sm:text-4xl">
                 Quality you can verify.
               </h2>
               <p className="mt-4 max-w-xl text-sm leading-relaxed text-muted-foreground sm:text-base">
@@ -484,16 +508,14 @@ function AboutPage() {
               </p>
             </div>
 
-            <div className="mt-8 border-t border-border pt-6">
-              <div className="grid gap-5 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-end">
-                <div>
-                  <h3 className="font-display text-2xl font-bold">{certification.standard}</h3>
-                  <p className="mt-1 text-sm text-muted-foreground">{certification.system}</p>
-                  <p className="mt-3 font-mono text-[9px] uppercase tracking-[0.14em] text-muted-foreground">
-                    Certificate {certification.certificateNumber} · Valid through{" "}
-                    {certification.validThrough}
-                  </p>
-                </div>
+            <div className="border-t border-border pt-6 lg:min-w-[22rem]">
+              <h3 className="font-display text-2xl font-bold">{certification.standard}</h3>
+              <p className="mt-1 text-sm text-muted-foreground">{certification.system}</p>
+              <p className="mt-3 font-mono text-[9px] uppercase tracking-[0.14em] text-muted-foreground">
+                Certificate {certification.certificateNumber} · Valid through{" "}
+                {certification.validThrough}
+              </p>
+              <div className="mt-5">
                 <Button asChild variant="outline" className="w-full sm:w-auto">
                   <a href={certification.document} target="_blank" rel="noopener noreferrer">
                     View certificate <ArrowUpRight />
