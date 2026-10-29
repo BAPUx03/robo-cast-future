@@ -38,7 +38,6 @@ import {
   Wrench,
 } from "lucide-react";
 import { PageShell } from "@/components/page-shell";
-import { YouTubeBackground } from "@/components/youtube-background";
 import { DragRail } from "@/components/drag-rail";
 import { Button } from "@/components/ui/button";
 import { useRevealOnScroll } from "@/hooks/use-reveal-on-scroll";
@@ -70,8 +69,6 @@ export const Route = createFileRoute("/about")({
       { name: "twitter:card", content: "summary_large_image" },
     ],
     links: [
-      { rel: "preconnect", href: "https://www.youtube.com" },
-      { rel: "preconnect", href: "https://www.youtube-nocookie.com" },
       {
         rel: "preload",
         as: "image",
@@ -275,13 +272,11 @@ function AboutPage() {
   return (
     <PageShell>
       <section className="on-dark relative isolate min-h-[480px] overflow-hidden border-b border-border bg-carbon px-5 pb-8 pt-10 sm:min-h-[560px] sm:px-8 sm:pb-10 lg:min-h-[640px] lg:pt-16">
-        <YouTubeBackground
-          videoId="OVS9l9h-Bbc"
-          title="Modtech investment casting corporate video"
-          className="-z-20"
-          fallbackImageSrc={automationImages.casting}
-          startAt={10}
-          priority
+        <img
+          src={automationImages.casting}
+          alt=""
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-0 -z-20 h-full w-full object-cover"
         />
         <div className="absolute inset-0 -z-10 bg-gradient-to-r from-carbon via-carbon/90 to-carbon/20" />
         <div className="absolute inset-0 -z-10 bg-gradient-to-t from-carbon via-transparent to-carbon/40" />
@@ -334,6 +329,37 @@ function AboutPage() {
               </div>
             ))}
           </dl>
+        </div>
+      </section>
+
+      <section className="border-b border-border bg-background px-5 py-12 sm:px-8 sm:py-16">
+        <div className="mx-auto max-w-7xl">
+          <div className="mb-6 grid gap-3 sm:mb-8 lg:grid-cols-[1fr_0.8fr] lg:items-end">
+            <div>
+              <p className="font-mono text-[10px] font-semibold uppercase tracking-[0.18em] text-brand">
+                Modtech in motion
+              </p>
+              <h2 className="mt-2 font-display text-3xl font-bold sm:text-5xl">
+                See our automation at work.
+              </h2>
+            </div>
+            <p className="max-w-xl text-sm leading-relaxed text-muted-foreground sm:text-base lg:justify-self-end">
+              A closer look at the machinery and production lines behind our engineering.
+            </p>
+          </div>
+          <div className="mx-auto max-w-6xl overflow-hidden rounded-xl border border-border bg-carbon shadow-card sm:rounded-2xl">
+            <video
+              controls
+              playsInline
+              preload="metadata"
+              poster="/modtech-about-video-poster.webp"
+              aria-label="Modtech automation machinery and production lines in operation"
+              className="aspect-video w-full object-contain"
+            >
+              <source src="/modtech-about-automation.mp4" type="video/mp4" />
+              Your browser does not support video playback.
+            </video>
+          </div>
         </div>
       </section>
 

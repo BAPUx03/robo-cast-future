@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { ArrowRight, ArrowUpRight, Check, Factory, Globe2, Wrench } from "lucide-react";
 import { PageShell } from "@/components/page-shell";
-import { YouTubeBackground } from "@/components/youtube-background";
+import { HomeHeroBackground } from "@/components/home-hero-background";
 import { Button } from "@/components/ui/button";
 import { useRevealOnScroll } from "@/hooks/use-reveal-on-scroll";
 import { stats, type Mode } from "@/content/site-data";
@@ -27,13 +27,10 @@ export const Route = createFileRoute("/")({
       { name: "twitter:card", content: "summary_large_image" },
     ],
     links: [
-      { rel: "preconnect", href: "https://www.youtube.com" },
-      { rel: "preconnect", href: "https://www.youtube-nocookie.com" },
-      { rel: "preconnect", href: "https://i.ytimg.com" },
       {
         rel: "preload",
         as: "image",
-        href: automationImages.palletizer,
+        href: "/modtech-home-poster.webp",
       },
     ],
   }),
@@ -64,21 +61,15 @@ function HomePage() {
 
   return (
     <PageShell>
-      <section className="home-hero on-dark relative isolate -mt-16 min-h-svh overflow-hidden bg-carbon pt-16 sm:-mt-[4.5rem] sm:pt-[4.5rem]">
-        <YouTubeBackground
-          videoId="bd5fXFXLylE"
-          title="Future of Smart Factory in India — Modtech Automation"
-          className="home-hero-media -z-10"
-          fallbackImageSrc={automationImages.palletizer}
-          fallbackVideoSrc="/modtech-automation-hero.mp4"
-          startAt={15}
-          priority
-        />
-        <div className="pointer-events-none absolute inset-0 -z-10 bg-gradient-to-r from-carbon via-carbon/80 to-carbon/20" />
-        <div className="pointer-events-none absolute inset-0 -z-10 bg-gradient-to-t from-carbon via-transparent to-carbon/40" />
-        <div className="pointer-events-none absolute inset-0 -z-10 bg-grid opacity-20" />
+      <section className="home-hero on-dark relative isolate overflow-hidden bg-carbon lg:-mt-[4.5rem] lg:min-h-svh lg:pt-[4.5rem]">
+        <div className="relative isolate aspect-video w-full overflow-hidden lg:absolute lg:inset-0 lg:-z-20 lg:aspect-auto">
+          <HomeHeroBackground />
+        </div>
+        <div className="pointer-events-none absolute inset-0 -z-10 hidden bg-gradient-to-r from-carbon via-carbon/80 to-carbon/20 lg:block" />
+        <div className="pointer-events-none absolute inset-0 -z-10 hidden bg-gradient-to-t from-carbon via-transparent to-carbon/40 lg:block" />
+        <div className="pointer-events-none absolute inset-0 -z-10 hidden bg-grid opacity-20 lg:block" />
 
-        <div className="mx-auto grid min-h-[calc(100svh-4rem)] max-w-7xl content-center gap-8 px-5 pb-10 pt-8 sm:min-h-[calc(100svh-4.5rem)] sm:gap-10 sm:px-8 sm:pb-16 sm:pt-10 lg:grid-cols-[minmax(0,1fr)_16rem] lg:items-end xl:grid-cols-[minmax(0,1fr)_18rem]">
+        <div className="mx-auto grid max-w-7xl gap-8 px-5 pb-10 pt-8 sm:gap-10 sm:px-8 lg:min-h-[calc(100svh-4.5rem)] lg:content-center lg:grid-cols-[minmax(0,1fr)_16rem] lg:items-end lg:pb-16 lg:pt-10 xl:grid-cols-[minmax(0,1fr)_18rem]">
           <div className="min-w-0 max-w-4xl">
             <h1
               className="reveal max-w-4xl font-display text-[clamp(2.2rem,7vw,6rem)] font-bold leading-[1.02] sm:leading-[0.98]"
@@ -120,7 +111,7 @@ function HomePage() {
           </div>
 
           <dl
-            className="reveal grid grid-cols-3 border border-foreground/15 bg-carbon/65 backdrop-blur-md lg:grid-cols-1"
+            className="reveal grid grid-cols-3 border border-foreground/15 bg-carbon/40 lg:grid-cols-1 lg:bg-carbon/65 lg:backdrop-blur-md"
             style={{ animationDelay: "320ms" }}
           >
             {stats.slice(0, 3).map((item) => (

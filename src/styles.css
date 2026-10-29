@@ -575,10 +575,6 @@
     animation: machine-image-enter 0.55s cubic-bezier(0.2, 0.7, 0.2, 1) both;
   }
 
-  .home-hero-media video {
-    animation: home-hero-drift 18s ease-in-out infinite alternate;
-    transform-origin: 60% 50%;
-  }
   .home-image-reveal::after {
     content: "";
     position: absolute;
@@ -1157,8 +1153,7 @@
     .parallax-slow,
     .parallax-mid,
     .parallax-fast,
-    .home-marquee,
-    .home-hero-media video {
+    .home-marquee {
       animation: none !important;
       transition: none !important;
       transform: none !important;
@@ -1192,15 +1187,6 @@
     .home-image-reveal::after {
       display: none;
     }
-  }
-}
-
-@keyframes home-hero-drift {
-  from {
-    transform: scale(1.03) translate3d(0, 0, 0);
-  }
-  to {
-    transform: scale(1.09) translate3d(-1.5%, 1%, 0);
   }
 }
 
