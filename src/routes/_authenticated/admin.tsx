@@ -70,6 +70,7 @@ import {
   fetchSiteContent,
   getSiteContent,
   saveSiteContent,
+  SITE_CONTENT_GROUPS,
   SITE_CONTENT_PAGES,
 } from "@/lib/site-content";
 import {
@@ -130,7 +131,7 @@ type Tab =
 
 const TABS = [
   { id: "overview", label: "Overview", description: "Dashboard", Icon: LayoutDashboard },
-  { id: "website", label: "Website Content", description: "Pages & contact text", Icon: Globe2 },
+  { id: "website", label: "Website Content", description: "Pages & section copy", Icon: Globe2 },
   { id: "posts", label: "Blog & Articles", description: "Editorial content", Icon: FileText },
   { id: "products", label: "Products", description: "Machine catalogue", Icon: Package },
   { id: "news", label: "Blog Updates", description: "Short updates & resources", Icon: Newspaper },
@@ -967,18 +968,6 @@ function WebsiteContent({ demo }: { demo: boolean }) {
   const [reloadToken, setReloadToken] = useState(0);
   const page = SITE_CONTENT_PAGES.find((item) => item.id === pageId) ?? SITE_CONTENT_PAGES[0];
   const dirty = JSON.stringify(values) !== JSON.stringify(savedValues);
-  const previewPaths: Record<string, string> = {
-    home: "/",
-    about: "/about",
-    machines: "/machines",
-    news: "/blog",
-    contact: "/contact",
-    divisions: "/divisions",
-    solutions: "/solutions",
-    industries: "/industries",
-    process: "/process",
-    global: "/",
-  };
 
   useEffect(() => {
     let active = true;
@@ -1019,14 +1008,15 @@ function WebsiteContent({ demo }: { demo: boolean }) {
           </p>
           <h1 className="mt-2 font-display text-3xl font-bold tracking-tight">Website Content</h1>
           <p className="mt-2 max-w-2xl text-sm leading-relaxed text-muted-foreground">
-            Update page copy, About photos and global contact information.{" "}
+            Edit public page copy, the About field gallery, Home process content and shared contact
+            details.{" "}
             {demo
               ? "Local demo changes stay in this browser."
               : "Published changes are shared across the live website."}
           </p>
         </div>
         <a
-          href={previewPaths[pageId]}
+          href={page.previewPath}
           target="_blank"
           rel="noreferrer"
           className="inline-flex items-center gap-2 rounded-full border border-border px-4 py-2.5 font-mono text-[10px] uppercase tracking-[0.16em] text-muted-foreground transition hover:border-brand hover:text-brand"
@@ -1036,27 +1026,41 @@ function WebsiteContent({ demo }: { demo: boolean }) {
       </div>
 
       <div className="mt-8 grid gap-6 xl:grid-cols-[16rem_minmax(0,1fr)]">
-        <nav
-          className="grid grid-cols-2 gap-2 sm:grid-cols-3 xl:grid-cols-1"
-          aria-label="Website pages"
-        >
-          {SITE_CONTENT_PAGES.map((item) => (
-            <button
-              key={item.id}
-              type="button"
-              onClick={() => selectPage(item.id)}
-              className={`rounded-xl border px-4 py-3 text-left transition ${
-                pageId === item.id
-                  ? "border-brand/50 bg-brand/10"
-                  : "border-border bg-card hover:border-brand/40"
-              }`}
-            >
-              <span className="block font-display text-sm font-semibold">{item.label}</span>
-              <span className="mt-1 hidden text-[11px] leading-relaxed text-muted-foreground xl:block">
-                {item.description}
-              </span>
-            </button>
-          ))}
+        <nav className="space-y-5 xl:sticky xl:top-6 xl:self-start" aria-label="Website pages">
+          {SITE_CONTENT_GROUPS.map((group) => {
+            const items = SITE_CONTENT_PAGES.filter((item) => item.group === group);
+            const groupId = `content-group-${group.toLowerCase().replaceAll(" ", "-")}`;
+            return (
+              <section key={group} aria-labelledby={groupId}>
+                <p
+                  id={groupId}
+                  className="mb-2 font-mono text-[9px] uppercase tracking-[0.2em] text-muted-foreground"
+                >
+                  {group}
+                </p>
+                <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 xl:grid-cols-1">
+                  {items.map((item) => (
+                    <button
+                      key={item.id}
+                      type="button"
+                      onClick={() => selectPage(item.id)}
+                      aria-current={pageId === item.id ? "page" : undefined}
+                      className={`rounded-xl border px-4 py-3 text-left transition ${
+                        pageId === item.id
+                          ? "border-brand/50 bg-brand/10 shadow-[inset_3px_0_0_hsl(var(--brand))]"
+                          : "border-border bg-card hover:border-brand/40"
+                      }`}
+                    >
+                      <span className="block font-display text-sm font-semibold">{item.label}</span>
+                      <span className="mt-1 hidden text-[11px] leading-relaxed text-muted-foreground xl:block">
+                        {item.description}
+                      </span>
+                    </button>
+                  ))}
+                </div>
+              </section>
+            );
+          })}
         </nav>
 
         <form
@@ -1108,9 +1112,17 @@ function WebsiteContent({ demo }: { demo: boolean }) {
               </button>
             </div>
           )}
-          <div className="border-b border-border px-5 py-4 sm:px-6">
-            <h2 className="font-display text-lg font-bold">{page.label}</h2>
-            <p className="mt-1 text-xs text-muted-foreground">{page.description}</p>
+          <div className="flex flex-wrap items-start justify-between gap-3 border-b border-border px-5 py-4 sm:px-6">
+            <div>
+              <p className="font-mono text-[9px] uppercase tracking-[0.18em] text-brand">
+                {page.group}
+              </p>
+              <h2 className="mt-1 font-display text-lg font-bold">{page.label}</h2>
+              <p className="mt-1 text-xs text-muted-foreground">{page.description}</p>
+            </div>
+            <span className="rounded-full border border-border bg-secondary/40 px-3 py-1.5 font-mono text-[9px] tracking-[0.1em] text-muted-foreground">
+              Live at {page.previewPath}
+            </span>
           </div>
           <fieldset
             disabled={loading || saving || Boolean(loadError)}

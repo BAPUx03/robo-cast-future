@@ -14,14 +14,25 @@ export type SiteContentPage = {
   id: string;
   label: string;
   description: string;
+  group: "Main pages" | "Home sections" | "About sections" | "Shared details";
+  previewPath: string;
   fields: SiteContentField[];
 };
+
+export const SITE_CONTENT_GROUPS: SiteContentPage["group"][] = [
+  "Main pages",
+  "Home sections",
+  "About sections",
+  "Shared details",
+];
 
 export const SITE_CONTENT_PAGES: SiteContentPage[] = [
   {
     id: "home",
     label: "Home page",
     description: "Main hero message and primary calls to action.",
+    group: "Main pages",
+    previewPath: "/",
     fields: [
       {
         key: "eyebrow",
@@ -44,7 +55,9 @@ export const SITE_CONTENT_PAGES: SiteContentPage[] = [
   {
     id: "about",
     label: "About page",
-    description: "Company introduction and project photos on the About page.",
+    description: "Company introduction, field gallery and the redesigned About experience.",
+    group: "Main pages",
+    previewPath: "/about",
     fields: [
       { key: "eyebrow", label: "Hero eyebrow", defaultValue: "/ About Modtech · Since 1990" },
       { key: "title", label: "Hero title", defaultValue: "Engineering that moves" },
@@ -80,6 +93,8 @@ export const SITE_CONTENT_PAGES: SiteContentPage[] = [
     id: "machines",
     label: "Machines page",
     description: "Product catalogue introduction.",
+    group: "Main pages",
+    previewPath: "/machines",
     fields: [
       { key: "eyebrow", label: "Hero eyebrow", defaultValue: "/ machines" },
       { key: "title", label: "Hero title", defaultValue: "Solutions across the" },
@@ -97,6 +112,8 @@ export const SITE_CONTENT_PAGES: SiteContentPage[] = [
     id: "news",
     label: "Blogs page",
     description: "Blogs, insights and exhibitions page introduction.",
+    group: "Main pages",
+    previewPath: "/blog",
     fields: [
       { key: "eyebrow", label: "Hero eyebrow", defaultValue: "/ blogs @ modtech" },
       { key: "title", label: "Hero title", defaultValue: "Blogs, case studies &" },
@@ -114,6 +131,8 @@ export const SITE_CONTENT_PAGES: SiteContentPage[] = [
     id: "contact",
     label: "Contact page",
     description: "Contact-page headline and lead-in.",
+    group: "Main pages",
+    previewPath: "/contact",
     fields: [
       { key: "eyebrow", label: "Hero eyebrow", defaultValue: "/ contact" },
       { key: "title", label: "Hero title", defaultValue: "Let's engineer your" },
@@ -131,6 +150,8 @@ export const SITE_CONTENT_PAGES: SiteContentPage[] = [
     id: "divisions",
     label: "Divisions page",
     description: "Text above the two division cards.",
+    group: "Main pages",
+    previewPath: "/divisions",
     fields: [
       { key: "title", label: "Division heading", defaultValue: "Two divisions." },
       { key: "accent", label: "Heading highlight", defaultValue: "One engineering team." },
@@ -144,8 +165,10 @@ export const SITE_CONTENT_PAGES: SiteContentPage[] = [
   },
   {
     id: "solutions",
-    label: "About: solutions section",
-    description: "Automation services and solutions introduction.",
+    label: "Solutions page",
+    description: "Automation services and solutions page introduction.",
+    group: "Main pages",
+    previewPath: "/solutions",
     fields: [
       { key: "eyebrow", label: "Hero eyebrow", defaultValue: "/ services & solutions" },
       { key: "title", label: "Hero title", defaultValue: "Come & solve it with" },
@@ -161,19 +184,21 @@ export const SITE_CONTENT_PAGES: SiteContentPage[] = [
   },
   {
     id: "industries",
-    label: "About: industries section",
-    description: "Industries served section on the About page.",
+    label: "About · Industries",
+    description: "Compact industries rail on the About page.",
+    group: "About sections",
+    previewPath: "/about#industries",
     fields: [
-      { key: "eyebrow", label: "Hero eyebrow", defaultValue: "/ industries served" },
-      { key: "title", label: "Hero title", defaultValue: "Engineered for the" },
+      { key: "eyebrow", label: "Section eyebrow", defaultValue: "/ industries served" },
+      { key: "title", label: "Section title", defaultValue: "Engineered for the" },
       {
         key: "accent",
-        label: "Hero accent title",
+        label: "Highlighted title",
         defaultValue: "industries that build the world.",
       },
       {
         key: "description",
-        label: "Hero description",
+        label: "Section description",
         defaultValue:
           "From precision aerospace cores to high-volume automotive lines—Modtech machines run inside every major manufacturing sector.",
         multiline: true,
@@ -182,15 +207,21 @@ export const SITE_CONTENT_PAGES: SiteContentPage[] = [
   },
   {
     id: "process",
-    label: "About: process section",
-    description: "Engineering process section on the About page.",
+    label: "Home · Process",
+    description: "Five-step engineering process at the bottom of the Home page.",
+    group: "Home sections",
+    previewPath: "/#process",
     fields: [
-      { key: "eyebrow", label: "Hero eyebrow", defaultValue: "/ process" },
-      { key: "title", label: "Hero title", defaultValue: "A transparent path" },
-      { key: "accent", label: "Hero accent title", defaultValue: "from concept to production." },
+      { key: "eyebrow", label: "Section eyebrow", defaultValue: "/ process" },
+      { key: "title", label: "Section title", defaultValue: "A transparent path" },
+      {
+        key: "accent",
+        label: "Highlighted title",
+        defaultValue: "from concept to production.",
+      },
       {
         key: "description",
-        label: "Hero description",
+        label: "Section description",
         defaultValue:
           "Five clear steps. One accountable engineering team. Total visibility from first call to live production.",
         multiline: true,
@@ -201,6 +232,8 @@ export const SITE_CONTENT_PAGES: SiteContentPage[] = [
     id: "global",
     label: "Global details",
     description: "Contact information and footer messaging used across the website.",
+    group: "Shared details",
+    previewPath: "/contact",
     fields: [
       {
         key: "company_tagline",
