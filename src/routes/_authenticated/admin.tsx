@@ -727,9 +727,10 @@ function DashboardOverview({
       if (demo) {
         return {
           posts: getDemoRows("blog_posts"),
-          products: getDemoRows("products"),
+          products: mergeAdminProductRows(getDemoRows("products") as Row[]),
           news: getDemoRows("news_items"),
           exhibitions: getDemoRows("exhibitions"),
+          careers: getDemoRows("career_vacancies"),
           enquiries: getDemoRows("enquiries") as EnquiryRow[],
         };
       }
@@ -744,28 +745,31 @@ function DashboardOverview({
           products: [],
           news: [],
           exhibitions: [],
+          careers: [],
           enquiries: enquiries ?? [],
         };
       }
-      const [posts, products, news, exhibitions, enquiries] = await Promise.all([
+      const [posts, products, news, exhibitions, careers, enquiries] = await Promise.all([
         supabase.from("blog_posts").select("id, published, updated_at"),
-        supabase.from("products").select("id, published, updated_at"),
+        supabase.from("products").select("*"),
         supabase.from("news_items").select("id, published, updated_at"),
         supabase.from("exhibitions").select("id, published, updated_at"),
+        supabase.from("career_vacancies").select("id, published, updated_at"),
         supabase
           .from("enquiries")
           .select("id, name, company, status, created_at")
           .order("created_at", { ascending: false }),
       ]);
-      const failure = [posts, products, news, exhibitions, enquiries].find(
+      const failure = [posts, products, news, exhibitions, careers, enquiries].find(
         (result) => result.error,
       )?.error;
       if (failure) throw failure;
       return {
         posts: posts.data ?? [],
-        products: products.data ?? [],
+        products: mergeAdminProductRows((products.data ?? []) as Row[]),
         news: news.data ?? [],
         exhibitions: exhibitions.data ?? [],
+        careers: careers.data ?? [],
         enquiries: enquiries.data ?? [],
       };
     },
@@ -802,6 +806,13 @@ function DashboardOverview({
             value: data?.exhibitions.length ?? 0,
             published: data?.exhibitions.filter((item) => item.published).length ?? 0,
             Icon: CalendarDays,
+          },
+          {
+            tab: "careers" as const,
+            label: "Careers",
+            value: data?.careers.length ?? 0,
+            published: data?.careers.filter((item) => item.published).length ?? 0,
+            Icon: BriefcaseBusiness,
           },
         ];
   const newEnquiries = data?.enquiries.filter((item) => item.status === "new") ?? [];
@@ -952,6 +963,8 @@ function WebsiteContent({ demo }: { demo: boolean }) {
   );
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [loadError, setLoadError] = useState<string | null>(null);
+  const [reloadToken, setReloadToken] = useState(0);
   const page = SITE_CONTENT_PAGES.find((item) => item.id === pageId) ?? SITE_CONTENT_PAGES[0];
   const dirty = JSON.stringify(values) !== JSON.stringify(savedValues);
   const previewPaths: Record<string, string> = {
@@ -970,6 +983,7 @@ function WebsiteContent({ demo }: { demo: boolean }) {
   useEffect(() => {
     let active = true;
     setLoading(true);
+    setLoadError(null);
     void fetchSiteContent(pageId)
       .then((nextValues) => {
         if (!active) return;
@@ -978,7 +992,7 @@ function WebsiteContent({ demo }: { demo: boolean }) {
       })
       .catch((error: unknown) => {
         if (active)
-          toast.error(error instanceof Error ? error.message : "Could not load page content.");
+          setLoadError(error instanceof Error ? error.message : "Could not load page content.");
       })
       .finally(() => {
         if (active) setLoading(false);
@@ -986,7 +1000,7 @@ function WebsiteContent({ demo }: { demo: boolean }) {
     return () => {
       active = false;
     };
-  }, [pageId]);
+  }, [pageId, reloadToken]);
 
   function selectPage(nextPageId: string) {
     if (dirty) {
@@ -1049,6 +1063,7 @@ function WebsiteContent({ demo }: { demo: boolean }) {
           className="overflow-hidden rounded-2xl border border-border bg-card shadow-card"
           onSubmit={async (event) => {
             event.preventDefault();
+            if (loadError) return;
             if (pageId === "about") {
               const galleryError = validateAboutFieldGallery(parseAboutFieldGallery(values));
               if (galleryError) {
@@ -1078,12 +1093,27 @@ function WebsiteContent({ demo }: { demo: boolean }) {
             }
           }}
         >
+          {loadError && (
+            <div
+              role="alert"
+              className="flex flex-wrap items-center justify-between gap-3 border-b border-destructive/30 bg-destructive/5 px-5 py-4 text-sm text-destructive sm:px-6"
+            >
+              <span>Could not load live content: {loadError}</span>
+              <button
+                type="button"
+                onClick={() => setReloadToken((current) => current + 1)}
+                className="rounded-full border border-destructive/40 px-4 py-2 text-xs font-semibold hover:bg-destructive/10"
+              >
+                Retry
+              </button>
+            </div>
+          )}
           <div className="border-b border-border px-5 py-4 sm:px-6">
             <h2 className="font-display text-lg font-bold">{page.label}</h2>
             <p className="mt-1 text-xs text-muted-foreground">{page.description}</p>
           </div>
           <fieldset
-            disabled={loading || saving}
+            disabled={loading || saving || Boolean(loadError)}
             className="grid gap-5 p-5 disabled:opacity-60 sm:p-6"
           >
             {page.fields
@@ -1144,18 +1174,20 @@ function WebsiteContent({ demo }: { demo: boolean }) {
             <span
               className={`text-xs ${dirty ? "font-medium text-brand" : "text-muted-foreground"}`}
             >
-              {loading
-                ? "Loading content…"
-                : dirty
-                  ? "Unsaved changes"
-                  : demo
-                    ? "Saved in this browser"
-                    : "Published to the website"}
+              {loadError
+                ? "Not connected to live content"
+                : loading
+                  ? "Loading content…"
+                  : dirty
+                    ? "Unsaved changes"
+                    : demo
+                      ? "Saved in this browser"
+                      : "Published to the website"}
             </span>
             <div className="flex items-center gap-2">
               <button
                 type="button"
-                disabled={!dirty || loading || saving}
+                disabled={!dirty || loading || saving || Boolean(loadError)}
                 onClick={() => setValues({ ...savedValues })}
                 className="rounded-full border border-border px-4 py-2.5 font-mono text-[10px] uppercase tracking-[0.16em] text-muted-foreground transition hover:border-brand hover:text-foreground disabled:cursor-not-allowed disabled:opacity-40"
               >
@@ -1163,7 +1195,7 @@ function WebsiteContent({ demo }: { demo: boolean }) {
               </button>
               <button
                 type="submit"
-                disabled={!dirty || loading || saving}
+                disabled={!dirty || loading || saving || Boolean(loadError)}
                 className="inline-flex items-center gap-2 rounded-full bg-brand px-5 py-2.5 font-mono text-[10px] font-semibold uppercase tracking-[0.18em] text-brand-foreground shadow-glow transition hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:opacity-50"
               >
                 {saving ? (

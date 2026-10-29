@@ -23,6 +23,7 @@
     "test:catalogue": "node scripts/audit-catalogue-pages.mjs",
     "test:product-admin": "node --env-file=.env.local scripts/test-product-taxonomy.mjs",
     "test:admin-demo": "node scripts/test-admin-demo.mjs",
+    "test:public-connection": "node --env-file=.env scripts/test-public-connection.mjs",
     "test:enquiry-rate-limit": "node --env-file=.env.local scripts/test-enquiry-rate-limit.mjs"
   },
   "dependencies": {

@@ -260,9 +260,13 @@ export function getSiteContent(pageId: string) {
 }
 
 function cacheSiteContent(pageId: string, values: Record<string, string>) {
-  const all = readAllContent();
-  all[pageId] = values;
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(all));
+  try {
+    const all = readAllContent();
+    all[pageId] = values;
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(all));
+  } catch {
+    // Browser storage is only a cache; a confirmed remote save must not appear to fail.
+  }
   window.dispatchEvent(new CustomEvent(EVENT_NAME));
 }
 
